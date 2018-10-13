@@ -12,6 +12,7 @@ edsTestingOrder = [1,2,3,4,5,6,7,8]
 inPinCurrentDictionary = {12:"1", 16:"2", 20:"3", 21:"4"}
 outPinRelayDictionary = 
 // control directions comments
+logFileName = 
 fileOutputType = csv
 outputFileName = 
 ...
