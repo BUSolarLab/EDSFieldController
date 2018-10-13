@@ -1,0 +1,51 @@
+
+
+------ CONFIGURATION INITIALIZATION ------
+
+
+EDS
+
+
+edsTestingOrder = [1,2,3,4,5,6,7,8]
+
+
+inPinCurrentDictionary = {12:"1", 16:"2", 20:"3", 21:"4"}
+outPinRelayDictionary = 
+// control directions comments
+fileOutputType = csv
+outputFileName = 
+...
+voltageDividerResistor = 
+...
+
+
+EDS1 = daysBetweenTestingDays, dailyTestingTimes, testDurationTime
+
+
+
+latestTestingTime
+maxTemperatureCelsius
+minTemperatureCelsius
+maxRelativeHumidity
+minRelativeHumidity
+avgShortCircuitCurrent
+thresholdCurrentRange
+
+
+TBD:
+"Thresholds for safe electronics operations"
+
+
+
+
+
+
+--------------------- MAINE --------------
+import GUI_ForUser
+import 
+
+
+
+measureTemperature()
+measureRelativeHumidity()
+
