@@ -54,7 +54,7 @@ class USBMaster:
         if self.name is not None:
             self.USB_file_path = USB_PATH+"/"+self.name
             
-   def process_sequence(self):
+    def process_sequence(self):
         # runs through necessary sequence for single method call
         self.check_if_mounted()
         self.set_USB_name()
