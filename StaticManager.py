@@ -9,9 +9,6 @@ THANKS, THE MANAGEMENT
 CONFIG_FILE_NAME = "config.txt"
 CONFIG_FILE_PATH = "" # assume local?
 
-# testing statics
-TEST_DURATION_SECONDS = 120
-
 # data acquisition statics
 V_DIVIDER_RESISTOR_GROUND = 0
 V_DIVIDER_RESISTOR_BRANCH = 0
@@ -21,6 +18,7 @@ DEFAULT CONFIGURATION FILE VALUES (FOR USE IN CREATING CONFIG FILE IF NONE FOUND
 NOTE: THESE ARE ONLY USED IF CONFIG FILE NOT PROVIDED
 '''
 # EDS default
+TEST_DURATION_SECONDS = 120
 EDS_TESTING_ORDER = [1,2,3,4,5,6,7,8]
 IN_PIN_CURRENT_DICTIONARY = {12:"1", 16:"2", ...}
 OUT_PIN_RELAY_DICTIONARY = {}
@@ -50,12 +48,15 @@ Functionality:
 
 
 class StaticMaster:
+
     def __init__(self):
+        # immutable constants are not put in the dictionary
         self.config_name = CONFIG_FILE_NAME
         self.config_path = CONFIG_FILE_PATH
-        self.test_duration = TEST_DURATION_SECONDS
         self.divider_res_grd = V_DIVIDER_RESISTOR_GROUND
         self.divider_res_branch = V_DIVIDER_RESISTOR_BRANCH
+
+        self.config_dictionary = {} # sets up empty dictionary
 
         if self.check_for_config():
             self.load_config()
@@ -91,19 +92,27 @@ class StaticMaster:
 
     def load_config(self):
         # loads configuration file constants if file exists
+        lines = []
+
         try:
             with open(self.config_path+self.config_name) as cf:
                 lines = cf.read().split('\n')
         except RuntimeError:
             print("Error reading configuration file! Please check file.")
 
-        # loading individual config values
-        
+        # loading individual config values into config dictionary
+        if lines:
+            for c_string in lines:
+                self.config_dictionary[c_string.split('=')[0]] = c_string.split('=')[1]
+                '''
+                I think this works. This is the most concise way of doing what we want here. Each dictionary key will then 
+                just be the first string of each config file parameter.
+                For example, self.config_dictionary['maxRelativeHumidity'] accesses the config value.
+                '''
+        else:
+            print("Configuration file empty! Please check file.")
 
-
-
-
-
-
-        
+    def get_config(self):
+        # returns config dictionary for other functions to use
+        return self.config_dictionary
 
