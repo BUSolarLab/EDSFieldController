@@ -78,7 +78,7 @@ class StaticMaster:
                 "outPinRelayDictionary="+str(OUT_PIN_RELAY_DICTIONARY)+'\n'
                 "daysBetweenTestingDays="+str(DAYS_BETWEEN_TESTING_DAYS)+'\n'
                 "dailyTestingTimes="+str(DAILY_TESTING_TIMES)+'\n'
-                "latestTestingTimes="+str(LATEST_TESTING_TIME)+'\n'
+                "latestTestingTime="+str(LATEST_TESTING_TIME)+'\n'
                 "maxTemperatureCelsius="+str(MAX_TEMPERATURE_CELSIUS)+'\n'
                 "minTemperatureCelsius="+str(MIN_TEMPERATURE_CELSIUS)+'\n'
                 "maxRelativeHumidity="+str(MAX_RELATIVE_HUMIDITY)+'\n'
