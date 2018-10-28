@@ -1,4 +1,5 @@
 import os
+import logfile as lgf
 
 '''
 IMMUTABLE. DO NOT CHANGE UNLESS YOU WANT THINGS TO BREAK.
@@ -62,6 +63,7 @@ class StaticMaster:
             self.load_config()
         else:
             print("Configuration file not found! Creating default file...")
+            lgf.logger.warning("Config file not found, default config file generated")
             self.create_default_config()
 
 
@@ -115,4 +117,20 @@ class StaticMaster:
     def get_config(self):
         # returns config dictionary for other functions to use
         return self.config_dictionary
+    
+    
+    def write_reboot_flag(self):
+        # loads config file then changes reboot flag if currently false
+        self.load_config()
+
+        if not self.config_dictionary["rebootFlag"]:
+            if self.check_for_config():
+                # write reboot flag as True in config file if not already true
+                with open(self.config_path+self.config_name, 'r') as cf:
+                    cf_data = cf.read()
+
+                cf_data = cf_data.replace('rebootFlag=False', 'rebootFlag=True')
+
+                with open(self.config_path+self.config_name, 'w') as cf:
+                    cf.write(cf_data)
 
