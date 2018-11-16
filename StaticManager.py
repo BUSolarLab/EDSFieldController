@@ -1,5 +1,5 @@
 import os
-import logfile as lgf
+#import logfile as lgf
 
 '''
 IMMUTABLE. DO NOT CHANGE UNLESS YOU WANT THINGS TO BREAK.
@@ -21,7 +21,7 @@ NOTE: THESE ARE ONLY USED IF CONFIG FILE NOT PROVIDED
 # EDS default
 TEST_DURATION_SECONDS = 120
 EDS_TESTING_ORDER = [1,2,3,4,5,6,7,8]
-IN_PIN_CURRENT_DICTIONARY = {12:"1", 16:"2", ...}
+IN_PIN_CURRENT_DICTIONARY = {12:"1", 16:"2"}
 OUT_PIN_RELAY_DICTIONARY = {}
 DAYS_BETWEEN_TESTING_DAYS = 0
 DAILY_TESTING_TIMES = [0]
@@ -63,8 +63,9 @@ class StaticMaster:
             self.load_config()
         else:
             print("Configuration file not found! Creating default file...")
-            lgf.logger.warning("Config file not found, default config file generated")
+            #lgf.logger.warning("Config file not found, default config file generated")
             self.create_default_config()
+            self.load_config()
 
 
     def check_for_config(self):
@@ -88,7 +89,8 @@ class StaticMaster:
                 "avgShortCircuitCurrent="+str(AVG_SHORT_CIRCUIT_CURRENT)+'\n'
                 "thresholdCurrentRange="+str(THRESHOLD_CURRENT_RANGE)+'\n'
                 "logFileName="+LOG_FILE_NAME+'\n'
-                "dataFileName="+DATA_FILE_NAME+'\n')
+                "dataFileName="+DATA_FILE_NAME+'\n'
+                "rebootFlag=False"+'\n')
         except RuntimeError:
             print("Error creating default configuration file!")
 
@@ -105,7 +107,8 @@ class StaticMaster:
         # loading individual config values into config dictionary
         if lines:
             for c_string in lines:
-                self.config_dictionary[c_string.split('=')[0]] = c_string.split('=')[1]
+                if c_string != '':
+                    self.config_dictionary[c_string.split('=')[0]] = c_string.split('=')[1]
                 '''
                 I think this works. This is the most concise way of doing what we want here. Each dictionary key will then 
                 just be the first string of each config file parameter.
@@ -119,18 +122,18 @@ class StaticMaster:
         return self.config_dictionary
     
     
-    def write_reboot_flag(self):
+    def write_reboot_flag(self, check, flag):
         # loads config file then changes reboot flag if currently false
         self.load_config()
-
-        if not self.config_dictionary["rebootFlag"]:
+        if self.config_dictionary["rebootFlag"] == check:
             if self.check_for_config():
                 # write reboot flag as True in config file if not already true
                 with open(self.config_path+self.config_name, 'r') as cf:
                     cf_data = cf.read()
 
-                cf_data = cf_data.replace('rebootFlag=False', 'rebootFlag=True')
+                cf_data = cf_data.replace('rebootFlag='+check, 'rebootFlag='+flag)
 
                 with open(self.config_path+self.config_name, 'w') as cf:
                     cf.write(cf_data)
+
 
