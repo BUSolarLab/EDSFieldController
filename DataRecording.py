@@ -2,7 +2,7 @@ import os
 import subprocess
 
 # necessary constants
-USB_PATH = "/media/pi"
+USB_DIR_PATH = "/media/pi/"
 
 
 '''
@@ -16,53 +16,43 @@ Functionality:
 
 class USBMaster:
     def __init__(self):
-        self.name = None
-        self.USB_file_path = None
+        self.USB_name = None
+        self.USB_path = None
         self.is_mounted = False
 
     def reset(self):
         # resets parameters if needed
         self.__init__()
 
-    def check_if_mounted(self):
+    def set_USB_name(self):
         # check if USB mounted
         try:
-            if not subprocess.call("grep -qs '/mnt/usbdrive' /proc/mounts", shell=True):
-                self.is_mounted = True
-
+            dir = str(subprocess.check_output("sudo blkid", shell=True))
+            if "/dev/sda1:" in dir:
+                self.USB_name = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+                print("Found USB named: "+self.USB_name)
             else:
                 self.reset()
                 print("USB not mounted! Please insert USB.")
 
-        except RuntimeError:
+        except:
             self.reset()
             print("ERROR: Shell process malfunction!")
 
-    def set_USB_name(self):
-        # gets USB name if mounted
-        if self.is_mounted:
-            try:
-                proc = subprocess.Popen("ls "+USB_PATH, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE)
-                self.name = proc.stdout.readline()
-
-            except RuntimeError:
-                self.reset()
-                print("ERROR: USB name not found!")
-
-    def set_USB_file_path(self):
+    def set_USB_path(self):
         # gets USB file path for saving if USB name found
-        if self.name is not None:
-            self.USB_file_path = USB_PATH+"/"+self.name
+        if self.USB_name is not None:
+            self.USB_path = USB_DIR_PATH+self.USB_name
             
     def process_sequence(self):
         # runs through necessary sequence for single method call
-        self.check_if_mounted()
         self.set_USB_name()
-        self.set_USB_file_path()
+        self.set_USB_path()
 
-    def get_USB_file_path(self):
+    def get_USB_path(self):
         # outputs USB file path
-        return self.USB_file_path
+        return self.USB_path
+
 
 
 
