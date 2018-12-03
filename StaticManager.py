@@ -15,30 +15,42 @@ V_DIVIDER_RESISTOR_GROUND = 0
 V_DIVIDER_RESISTOR_BRANCH = 0
 
 '''
-DEFAULT CONFIGURATION FILE VALUES (FOR USE IN CREATING CONFIG FILE IF NONE FOUND)
-NOTE: THESE ARE ONLY USED IF CONFIG FILE NOT PROVIDED
+Config file parameters list (ADD NEW PARAMETERS AS DICTIONARY ENTRIES)
+These also serve as default values for config file generation in event of no provided config
 '''
-# EDS default
-TEST_DURATION_SECONDS = 120
-EDS_TESTING_ORDER = [1,2,3,4,5,6,7,8]
-IN_PIN_CURRENT_DICTIONARY = {12:"1", 16:"2"}
-OUT_PIN_RELAY_DICTIONARY = {}
-DAYS_BETWEEN_TESTING_DAYS = 0
-DAILY_TESTING_TIMES = [0]
-LATEST_TESTING_TIME = 5 # hours after solar noon
 
-# testing requirements
-MAX_TEMPERATURE_CELSIUS = 40
-MIN_TEMPERATURE_CELSIUS = 10
-MAX_RELATIVE_HUMIDITY = 50
-MIN_RELATIVE_HUMIDITY = 30
-AVG_SHORT_CIRCUIT_CURRENT = 0
-THRESHOLD_CURRENT_RANGE = 0
-
-# log files
-LOG_FILE_NAME = "log"
-DATA_FILE_NAME = "data"
-
+DEFAULT_CONFIG_PARAM = {
+    # EDS default testing
+    'edsTestingOrder':[1,2,3,4,5,6,7,8],
+    'inPinCurrentDictionary':{12:"1", 16:"2"},
+    'outPinRelayDictionary':{},
+    'daysBetweenTestingDays':0,
+    'dailyTestingTimes':[0],
+    'latestTestingTime':5, # hours after solar noon
+    
+    # testing requirements
+    'maxTemperatureCelsius':40,
+    'minTemperatureCelsius':10,
+    'maxRelativeHumidity':50,
+    'minRelativeHumidity':30, 
+    'avgShortCircuitCurrent':0,
+    'thresholdCurrentRange':0,
+    
+    # log files
+    'logFileName':"log",
+    'dataFileName':"data",
+    
+    # indicators/switches
+    'outPinLEDGood':0,
+    'outPinLEDError':0,
+    'inPinManualActivate':1,
+    'manualEDSNumber':1,
+    
+    # reboot
+    'rebootFlag':False,
+    'random':13,
+    'random2':14
+    }
 
 '''
 Static master class
@@ -46,7 +58,6 @@ Functionality:
 1) Contains and maintains static global values that will remain UNCHANGED
 2) Contains default configuration file values for reference
 '''
-
 
 class StaticMaster:
 
@@ -61,6 +72,7 @@ class StaticMaster:
 
         if self.check_for_config():
             self.load_config()
+            self.check_parameters()
         else:
             print("Configuration file not found! Creating default file...")
             #lgf.logger.warning("Config file not found, default config file generated")
@@ -71,26 +83,14 @@ class StaticMaster:
     def check_for_config(self):
         # checks for pre-existing config file in specified directory
         return os.path.isfile(self.config_path+self.config_name)
-
+    
+    
     def create_default_config(self):
         # create default config file with parameters
         try:
             with open(self.config_name, 'w') as cfd:
-                cfd.writelines("edsTestingOrder="+str(EDS_TESTING_ORDER)+'\n'
-                "inPinCurrentDictionary="+str(IN_PIN_CURRENT_DICTIONARY)+'\n'
-                "outPinRelayDictionary="+str(OUT_PIN_RELAY_DICTIONARY)+'\n'
-                "daysBetweenTestingDays="+str(DAYS_BETWEEN_TESTING_DAYS)+'\n'
-                "dailyTestingTimes="+str(DAILY_TESTING_TIMES)+'\n'
-                "latestTestingTime="+str(LATEST_TESTING_TIME)+'\n'
-                "maxTemperatureCelsius="+str(MAX_TEMPERATURE_CELSIUS)+'\n'
-                "minTemperatureCelsius="+str(MIN_TEMPERATURE_CELSIUS)+'\n'
-                "maxRelativeHumidity="+str(MAX_RELATIVE_HUMIDITY)+'\n'
-                "minRelativeHumidity="+str(MIN_RELATIVE_HUMIDITY)+'\n'
-                "avgShortCircuitCurrent="+str(AVG_SHORT_CIRCUIT_CURRENT)+'\n'
-                "thresholdCurrentRange="+str(THRESHOLD_CURRENT_RANGE)+'\n'
-                "logFileName="+LOG_FILE_NAME+'\n'
-                "dataFileName="+DATA_FILE_NAME+'\n'
-                "rebootFlag=False"+'\n')
+                for key in DEFAULT_CONFIG_PARAM:
+                    cfd.writelines(str(key)+"="+str(DEFAULT_CONFIG_PARAM[key])+'\n')
         except RuntimeError:
             print("Error creating default configuration file!")
 
@@ -102,20 +102,43 @@ class StaticMaster:
             with open(self.config_path+self.config_name) as cf:
                 lines = cf.read().split('\n')
         except RuntimeError:
-            print("Error reading configuration file! Please check file.")
+            print("Error reading configuration file. Generating default config...")
+            self.create_default_config()
+            self.load_config()
 
         # loading individual config values into config dictionary
         if lines:
             for c_string in lines:
                 if c_string != '':
-                    self.config_dictionary[c_string.split('=')[0]] = c_string.split('=')[1]
+                    try:
+                        self.config_dictionary[c_string.split('=')[0]] = c_string.split('=')[1]
+                    except:
+                        print("Configuration format not correct. Generating default config...")
+                        self.create_default_config()
+                        self.load_config()
+                        
                 '''
-                I think this works. This is the most concise way of doing what we want here. Each dictionary key will then 
+                This is the most concise way of doing what we want here. Each dictionary key will then 
                 just be the first string of each config file parameter.
                 For example, self.config_dictionary['maxRelativeHumidity'] accesses the config value.
                 '''
         else:
-            print("Configuration file empty! Please check file.")
+            print("Configuration file empty! Generating default config...")
+            self.create_default_config()
+            self.load_config()
+
+    def check_parameters(self):
+        # checks to make sure all parameters exist in self dictionary after loading from config
+        for key in DEFAULT_CONFIG_PARAM:
+            # if key does not exist in self dictionary, add default value to dictionary
+            if key not in self.config_dictionary.keys():
+                self.config_dictionary[key] = DEFAULT_CONFIG_PARAM[key]
+                print("Adding parameter ["+str(key)+"] to dictionary.\n")
+                # then add parameter with default value to config file (CONFIG MUST EXIST)
+                with open(self.config_path+self.config_name, 'a') as cf:
+                    cf_data = str(key)+"="+str(DEFAULT_CONFIG_PARAM[key])+'\n'
+                    cf.write(cf_data)
+
 
     def get_config(self):
         # returns config dictionary for other functions to use
