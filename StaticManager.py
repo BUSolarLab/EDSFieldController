@@ -22,10 +22,24 @@ These also serve as default values for config file generation in event of no pro
 DEFAULT_CONFIG_PARAM = {
     # EDS default testing
     'edsTestingOrder':[1,2,3,4,5,6,7,8],
-    'inPinCurrentDictionary':{12:"1", 16:"2"},
-    'outPinRelayDictionary':{},
+    'inPinCurrentDictionary':0,
+    'EDS1':27,
+    'EDS2':29,
+    'EDS3':31,
+    'EDS4':33,
+    'EDS5':35,
+    'EDS6':37,
+    'EDS1PV':8,
+    'EDS2PV':10,
+    'EDS3PV':12,
+    'EDS4PV':16,
+    'EDS5PV':18,
+    'CTRL1PV':26,
+    'CTRL2PV':28,
+    'ADC':24,
+    'POWER':32,
     'daysBetweenTestingDays':0,
-    'dailyTestingTimes':[0],
+    'dailyTestingTimes':0,
     'latestTestingTime':5, # hours after solar noon
     
     # testing requirements
@@ -49,7 +63,8 @@ DEFAULT_CONFIG_PARAM = {
     # reboot
     'rebootFlag':False,
     'random':13,
-    'random2':14
+    'random2':14,
+    'random3':200
     }
 
 '''
