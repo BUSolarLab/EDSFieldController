@@ -1,5 +1,6 @@
 import os
-
+import RPi.GPIO as GPIO
+import time
 
 '''
 Testing Sequence Master Class:
@@ -7,6 +8,18 @@ Functionality:
 1) Verifies electrical components
 2) Executes testing sequence
 '''
+
+# GPIO setup
+GPIO.cleanup()
+
+# simplified channel functions
+def channel_out(chn, val):
+    print('here')
+    GPIO.output(chn, val)
+    print('here2')
+
+def channel_in(chn):
+    return GPIO.input(chn)
 
 
 class TestingMaster:
@@ -56,7 +69,7 @@ class TestingMaster:
         return
     
 
-    def run_test(self):
+    def run_test(self, eds_select):
         # checks parameter flags for okay to test before executing main test loop
         execute = True
         for key in self.param_checks:
@@ -67,6 +80,48 @@ class TestingMaster:
             
         # main test sequence
         # if execute:
+        eds_relay = self.test_config[eds_select] # FOUND FROM CONFIG DICTIONARY
+        ps_relay = 32 # FOUND FROM CONFIG DICTIONARY
+        test_duration = 5 # FOUND FROM CONFIG DICTIONARY
+        
+        # 1) EDS activation relays ON
+        time.sleep(0.5)
+        channel_out(eds_relay, 1)
+        time.sleep(0.5) # short delay between relay switching
+        
+        # 2) power supply relay ON
+        channel_out(ps_relay, 1)
+        
+        # 3) wait for test duration
+        time.sleep(test_duration)
+        
+        # 4) power supply relay OFF
+        channel_out(ps_relay, 0)
+        time.sleep(0.5)
+        
+        # 5) EDS activation relays OFF
+        channel_out(eds_relay, 0)
+        time.sleep(0.5)
+        
+        
+    def run_measure(self, pv_select):
+        # flips relay for selected PV cell and captures short-circuit current from ADC
+        pv_relay = self.test_config[pv_select]
+        print(pv_relay)
+        
+        # switch PV relay ON
+        channel_out(pv_relay, 1)
+        time.sleep(0.5)
+        
+        read = 1 # GET READING HERE
+        
+        # switch PV relay OFF
+        channel_out(pv_relay, 0)
+        time.sleep(0.5)
+        # DO CALCS TO GET VALUE
+        return read
+        
+        
         
         
         
