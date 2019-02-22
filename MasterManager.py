@@ -9,6 +9,7 @@ import time
 import busio
 from board import *
 import adafruit_pcf8523
+import AM2315
 
 import StaticManager as SM
 import DataManager as DM
@@ -43,7 +44,6 @@ IN_CHNS = {
 
 # peripheral i2c bus addresses
 RTC_ADD = 0x68
-WEATHER_ADD = 0x5c
 
 # read config, get constants, etc
 print("Initializing...")
@@ -54,6 +54,7 @@ test_master = TM.TestingMaster(static_master.get_config())
 # RTC setup
 i2c_bus = busio.I2C(SCL, SDA)
 rtc = adafruit_pcf8523.PCF8523(i2c_bus)
+
 
 def print_time(t):
     print(str(t.tm_mon) + '/' + str(t.tm_mday) + '/' + str(t.tm_year) + ' ' + str(t.tm_hour) + ':' + str(t.tm_min) + ':' + str(t.tm_sec), end='')
@@ -66,8 +67,8 @@ def print_l(phrase):
 # rtc.datetime = time.struct_time((2019,2,9,16,0,0,5,40,-1))
 
 # weather sensor setup
+weather = AM2315.AM2315()
 
-    
 
 '''
 ~~~CORE LOOP~~~
@@ -127,8 +128,12 @@ while not stopped:
         print("Waiting time: " + str(error_cycle_count) + " seconds.\n")
         
     # print current time in consol
-    # print("Current time: " + RTC_get_time())    
+    # print("Current time: " + RTC_get_time())
     
+    # check weather and print values
+    print("Temp: ", weather.read_temperature(), " C")
+    print("Humid: ", weather.read_humidity(), "%")
+
     # check time against prescribed testing times for each EDS
     # 1) If within 5 seconds of testing time for EDS, initiate testing sequence
     if 1:
