@@ -14,13 +14,10 @@ GPIO.cleanup()
 
 # simplified channel functions
 def channel_out(chn, val):
-    print('here')
     GPIO.output(chn, val)
-    print('here2')
 
 def channel_in(chn):
     return GPIO.input(chn)
-
 
 class TestingMaster:
     
@@ -69,60 +66,80 @@ class TestingMaster:
         return
     
 
-    def run_test(self, eds_select):
+    def run_test(self, eds_select, test_duration, ps_relay):
         # checks parameter flags for okay to test before executing main test loop
+        '''
         execute = True
         for key in self.param_checks:
             if not self.param_checks[key]:
                 execute = False
         if not okay_to_test:
             execute = False
+        '''
             
         # main test sequence
         # if execute:
-        eds_relay = self.test_config[eds_select] # FOUND FROM CONFIG DICTIONARY
-        ps_relay = 32 # FOUND FROM CONFIG DICTIONARY
-        test_duration = 5 # FOUND FROM CONFIG DICTIONARY
+        #eds_relay = self.test_config[eds_select] # FOUND FROM CONFIG DICTIONARY
         
         # 1) EDS activation relays ON
         time.sleep(0.5)
-        channel_out(eds_relay, 1)
+        GPIO.setup(eds_relay, GPIO.OUT)
+        
         time.sleep(0.5) # short delay between relay switching
         
         # 2) power supply relay ON
-        channel_out(ps_relay, 1)
+        GPIO.setup(ps_relay, GPIO.OUT)
         
         # 3) wait for test duration
         time.sleep(test_duration)
         
         # 4) power supply relay OFF
-        channel_out(ps_relay, 0)
+        GPIO.cleanup(ps_relay)
         time.sleep(0.5)
         
         # 5) EDS activation relays OFF
-        channel_out(eds_relay, 0)
+        GPIO.cleanup(eds_relay)
         time.sleep(0.5)
         
         
     def run_measure(self, pv_select):
         # flips relay for selected PV cell and captures short-circuit current from ADC
-        pv_relay = self.test_config[pv_select]
+        pv_relay = pv_select # self.test_config[pv_select]
         print(pv_relay)
         
         # switch PV relay ON
-        channel_out(pv_relay, 1)
-        time.sleep(0.5)
+        GPIO.setup(pv_relay, GPIO.OUT)
+        time.sleep(1)
         
-        read = 1 # GET READING HERE
+        read = 1 # GET READING HERE AND LOG DATA
         
         # switch PV relay OFF
-        channel_out(pv_relay, 0)
+        GPIO.cleanup(pv_relay)
         time.sleep(0.5)
         # DO CALCS TO GET VALUE
         return read
+    
+    
+    def run_test_begin_manual(self, eds_select, ps_relay):
+        # runs the first half of a test (pauses on test duration to allow for indefinite testing)
         
+        # 1) EDS activation relays ON
+        time.sleep(0.5)
+        GPIO.setup(eds_select, GPIO.OUT)
         
+        time.sleep(0.5) # short delay between relay switching
         
+        # 2) power supply relay ON
+        GPIO.setup(ps_relay, GPIO.OUT)
         
+    def run_test_end_manual(self, eds_select, ps_relay):
+        # runs the second half of a test to finish from first half
+        # THIS MUST FOLLOW run_test_begin_manual() TO FINISH TEST PROPERLY
+        # 4) power supply relay OFF
+        GPIO.cleanup(ps_relay)
+        time.sleep(0.5)
         
+        # 5) EDS activation relays OFF
+        GPIO.cleanup(eds_select)
+        time.sleep(0.5)
         
