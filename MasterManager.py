@@ -17,28 +17,31 @@ import RebootManager as RM
 import TestingManager as TM
 
 
+# process delay (delay loop by X seconds to slow necessary computing)
+PROCESS_DELAY = 1
+
 # testing GPIO channels
 OUT_CHNS = {
     'GREEN':11,
     'RED':13,
-    'EDS1':27,
+    'EDS1':18,
     'EDS2':29,
     'EDS3':31,
     'EDS4':33,
     'EDS5':35,
     'EDS6':37,
-    'EDS1PV':8,
+    'EDS1PV':26,
     'EDS2PV':10,
     'EDS3PV':12,
     'EDS4PV':16,
     'EDS5PV':18,
     'CTRL1PV':26,
     'CTRL2PV':28,
-    'POWER':32
+    'POWER':15
 }
 
 IN_CHNS = {
-    'SWITCH':7,
+    'SWITCH':4,
     'ADC':24
 }
 
@@ -82,25 +85,49 @@ This loop governs the overall code for the long term remote testing of the field
 
 # channel setups
 GPIO.setmode(GPIO.BCM)
+GPIO.cleanup()
 
+'''
 for channel in OUT_CHNS:
     GPIO.setup(OUT_CHNS[channel], GPIO.OUT)
     
 for channel in IN_CHNS:
     GPIO.setup(IN_CHNS[channel], GPIO.IN)
+'''
+
+GPIO.setup(OUT_CHNS['GREEN'], GPIO.OUT)
+GPIO.setup(IN_CHNS['SWITCH'], GPIO.IN)
+GPIO.setup(OUT_CHNS['POWER'], GPIO.OUT)
+GPIO.setup(OUT_CHNS['EDS1'], GPIO.OUT)
+GPIO.setup(OUT_CHNS['EDS1PV'], GPIO.OUT)
 
 # var setup
 error_cycle_count = 0
 flip_on = True
+rtc_pass = False
+temp_pass = False
+humid_pass = False
+schedule_pass = False
 
 # detect switch event to manually operate EDS
 GPIO.add_event_detect(IN_CHNS['SWITCH'], GPIO.RISING)
 
+# loop indefinitely
+flag = False
 stopped = False
 while not stopped:
+    # set test pass flags false
+    schedule_pass = False
+    rtc_pass = False
+    temp_pass = False
+    humidity_pass = False
     
     # switch power supply relay OFF (make sure this is always off unless testing)
-    TM.channel_out(OUT_CHNS['POWER'], 0)
+    GPIO.cleanup(OUT_CHNS['POWER'])
+    
+    GPIO.cleanup(OUT_CHNS['EDS1'])
+    
+    GPIO.cleanup(OUT_CHNS['EDS1PV'])
     
     # Check for errors (?)
     # If everything okay, flip green LED output (this will cause LED to blink 1 sec on, 1 sec off
@@ -129,14 +156,32 @@ while not stopped:
         
     # print current time in consol
     # print("Current time: " + RTC_get_time())
+    w_read = weather.read_humidity_temperature()
     
     # check weather and print values
-    print("Temp: ", weather.read_temperature(), " C")
-    print("Humid: ", weather.read_humidity(), "%")
+    print("Temp: ", w_read[1], "C")
+    print("Humid: ", w_read[0], "%")
 
     # check time against prescribed testing times for each EDS
     # 1) If within 5 seconds of testing time for EDS, initiate testing sequence
     if 1:
+        schedule_pass = True
+        
+    if 1:
+        rtc_pass = True
+        
+    print(type(static_master.get_config()['maxTemperatureCelsius']))
+    
+    if w_read[1] < float(static_master.get_config()['maxTemperatureCelsius']) and w_read[1] > float(static_master.get_config()['minTemperatureCelsius']):
+        temp_pass = True
+    
+    if w_read[0] < float(static_master.get_config()['maxRelativeHumidity']) and w_read[0] > float(static_master.get_config()['minRelativeHumidity']):
+        humidity_pass = True
+    
+    #initiate testing procedure only if all flags set
+    #if schedule_pass and rtc_pass and temp_pass and humidity_pass:
+    if flag:
+        
         print_l("Initiating testing procedure for " + "EDS1")
         # run testing procedure
         
@@ -178,41 +223,60 @@ while not stopped:
             print_l("ERROR. Cannot retrieve PV control data ('after'). Please check.")
             
         # finish up and give feedback
+        flag = False
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
     
     
     
     if GPIO.event_detected(IN_CHNS['SWITCH']):
         # run EDS test on selected manual EDS
-        eds_num = static_master.get_config()['manualEDSNumber']
-        name = "EDS" + str(eds_num)
         
-        try:
-            print_l("FORCED. Running " + name + " testing sequence. DO NO INTERRUPT.")
-            test_master.run_test(name)
-        except:
-            print_l("MAJOR ERROR. Cannot initiate " + name + " testing sequence. Please check.")
+        if GPIO.input(IN_CHNS['SWITCH']):
+            # flag for test duration
+            man_flag = False
+            
+            #eds_num = static_master.get_config()['manualEDSNumber']
+            eds_num = 1
+            name = "EDS" + str(eds_num)
+            
+            # solid GREEN for duration of manual test
+            TM.channel_out(OUT_CHNS['GREEN'], 1)
+            print_l("FORCED. Running " + name + " testing sequence. FLIP SWITCH OFF TO STOP.")
+            try:
+                # measure PV current before activation
+                before_cur = test_master.run_measure(OUT_CHNS['EDS1PV'])
+                phrase = name + " PV [BEFORE] scC: " + str(before_cur) + " A"
+                print_l(phrase)
+        
+                # run first half of test
+                test_master.run_test_begin_manual(OUT_CHNS['EDS1'], OUT_CHNS['POWER'])
+                
+                # 3) wait for switch to be flipped OFF
+                while not man_flag:
+                    if GPIO.event_detected(IN_CHNS['SWITCH']):
+                        man_flag = True
+                    
+                    time.sleep(0.1)
+                
+                # then run second half of test (cleanup phase)
+                test_master.run_test_end_manual(OUT_CHNS['EDS1'], OUT_CHNS['POWER'])
+                
+                #test_master.run_test(name)
+                after_cur = test_master.run_measure(OUT_CHNS['EDS1PV'])
+                phrase = name + " PV [AFTER] scC: " + str(after_cur) + " A"
+                print_l(phrase)
+                
+            except:
+                print_l("MAJOR ERROR. Cannot initiate " + name + " testing sequence. Please check.")
+        
+            # either way, turn off GREEN LED indicator
+            TM.channel_out(OUT_CHNS['GREEN'], 0)
     
     # delay to slow down processing
-    time.sleep(1)
+    time.sleep(PROCESS_DELAY)
     
     
     
