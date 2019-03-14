@@ -1,9 +1,22 @@
+'''
+NOTE - Sections of this code are taken from Adafruit at:
+https://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/script
+
+'''
+
+import time
 import os
 import subprocess
+import busio
+import digitalio
+import board
+import csv
+from math import cos, sin
 
 # necessary constants
 USB_DIR_PATH = "/media/pi/"
-
+DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "EDS(#)", "SCC_Before(amps)", "SCC_After(amps)"]
+DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) EDS(#) SCC_Before(amps) SCC_After(amps)"
 
 '''
 USB Master Class:
@@ -56,5 +69,127 @@ class USBMaster:
         return self.USB_path
 
 
+class CSVMaster:
+    # initialize all file names to write to
+    def __init__(self, usb_path):
+        self.location_path = usb_path + '/'
+        self.txt_testing_data = self.location_path + 'testing_data.txt'
+        self.csv_testing_data = self.location_path + 'testing_data.csv'
+        self.txt_noon_data = self.location_path + 'noon_data.txt'
+        self.csv_noon_data = self.location_path + 'noon_data.csv'
+        
+        # set up base csv and txt files if they don't exist
+        self.check_for_txt_file(self.txt_testing_data)
+        self.check_for_txt_file(self.txt_noon_data)
+        self.check_for_csv_file(self.csv_testing_data)
+        self.check_for_csv_file(self.csv_noon_data)
+        
+    
+    # checks for existing data file, and creates it if none exist
+    def check_for_txt_file(self, name):
+        if not os.path.isfile(name):
+            try:
+                with open(name, 'a') as f:
+                    f.writelines(DATA_HEADER_TXT + '\n')
+            except:
+                print("Error creating txt file! Please check.")
+    
+    def check_for_csv_file(self, name):
+        if not os.path.isfile(name):
+            try:
+                with open(name, 'a') as f:
+                    writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    writer.writerow(DATA_HEADER_CSV)
+            except:
+                print("Error creating csv file! Please check.")
+        
+    
+    # construct data object with all the necessary parameters
+    def data_row(self, dt, temp, humid, eds_num, b_cur, a_cur):
+        date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
+        time = str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
+        return [date, time, str(temp), str(humid), str(eds_num), str(b_cur), str(a_cur)]
+    
+    
+    # write to csv version of EDS testing data log file
+    def write_csv_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
+        row = self.data_row(dt, temp, humid, eds_num, b_cur, a_cur)
+        try:
+            # attempt to open csv file in append mode (don't want to create lots of files)
+            with open(self.csv_testing_data, mode='a') as f_csv:
+                # write data to csv file
+                writer = csv.writer(f_csv, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(row)
+        except:
+            print("Error writing csv EDS testing data!")
+        
+    
+    # write to txt version of EDS testing data log file (two copies of data for fidelity)
+    def write_txt_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
+        # process raw data into txt dump format with space delimiters
+        row_raw = self.data_row(dt, temp, humid, eds_num, b_cur, a_cur)
+        row = ""
+        for param in row_raw:
+            row += param
+            row += " "
+        row += '\n'
+        
+        try:
+            with open(self.txt_testing_data, 'a') as f_txt:
+                f_txt.writelines(row)
+        except:
+            print("Error writing txt EDS testing data!")
+    
+    
+    # write to csv version of solar noon testing data log file
+    def write_csv_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
+        row = self.data_row(dt, temp, humid, eds_num, b_cur, a_cur)
+        try:
+            # attempt to open csv file in append mode (don't want to create lots of files)
+            with open(self.csv_noon_data, mode='a') as f_csv:
+                # write data to csv file
+                writer = csv.writer(f_csv, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(row)
+        except:
+            print("Error writing csv solar noon testing data!")    
+    
+    
+    # write to txt version of solar noon testing data log file
+    def write_txt_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
+        # process raw data into txt dump format with space delimiters
+        row_raw = self.data_row(dt, temp, humid, eds_num, b_cur, a_cur)
+        row = ""
+        for param in row_raw:
+            row += param
+            row += " "
+        row += '\n'
+        
+        try:
+            with open(self.txt_noon_data, 'a') as f_txt:
+                f_txt.writelines([row,'\n'])
+        except:
+            print("Error writing txt solar noon data!")
+                            
+    
+'''
+The following function calculates precise solar noon time dependent on given time zone and latitude.
+This will allow testing schedules to coordinate around local solar noon.
+'''
+   
+   
+def get_solar_time(gmt_off, dt, longitude, latitude):
+    # implementation adapted from https://sciencing.com/calculate-solar-time-8612288.html
+    A = 15 * gmt_off
+    B = (dt.tm_yday - 81) * 360 / 365
+    C = 9.87 * sin(2 * B) - 7.53 * cos(B) - 1.58 * sin(B)
+    D = 4 * (A - longitude) + C
+    
+    # return solar time offset in minutes
+    return D
 
 
+        
+        
+        
+        
+        
