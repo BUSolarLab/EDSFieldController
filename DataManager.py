@@ -1,7 +1,6 @@
 '''
 NOTE - Sections of this code are taken from Adafruit at:
 https://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/script
-
 '''
 
 import time
@@ -17,6 +16,7 @@ from math import cos, sin
 USB_DIR_PATH = "/media/pi/"
 DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "EDS(#)", "SCC_Before(amps)", "SCC_After(amps)"]
 DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) EDS(#) SCC_Before(amps) SCC_After(amps)"
+
 
 '''
 USB Master Class:
@@ -67,6 +67,14 @@ class USBMaster:
     def get_USB_path(self):
         # outputs USB file path
         return self.USB_path
+
+
+'''
+CSV Master Class:
+Functionality:
+1) Checks if txt and csv files exit, creates them if not
+2) Has methods for writing data to files
+'''
 
 
 class CSVMaster:
@@ -166,10 +174,63 @@ class CSVMaster:
         
         try:
             with open(self.txt_noon_data, 'a') as f_txt:
-                f_txt.writelines([row,'\n'])
+                f_txt.writelines(row)
         except:
             print("Error writing txt solar noon data!")
-                            
+            
+    
+    # write to testing data files
+    def write_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
+        self.write_txt_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur)
+        self.write_csv_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur)
+        
+    # write to noon data files
+    def write_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
+        self.write_txt_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur)
+        self.write_csv_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur)
+            
+'''
+Log Master Class:
+Functionality:
+1) Checks if log file exists, creates it if not
+2) Has method for writing to log file with current date/time
+'''            
+            
+            
+class LogMaster:
+    # initialize log file name to write to
+    def __init__(self, usb_path, dt):
+        self.location_path = usb_path + '/'
+        self.log_file = self.location_path + 'log.txt'
+        self.date_created = dt
+        
+        # set up base csv and txt files if they don't exist
+        self.check_for_log_file(self.date_created)
+        
+    
+    # checks for existing log file, and creates it if none exist
+    def check_for_log_file(self, dt):
+        if not os.path.isfile(self.log_file):
+            datetime = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year) + ' ' + str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
+            try:
+                with open(self.log_file, 'a') as f:
+                    f.writelines("Log File of Field Unit Activity. Created on: " + datetime + '\n')
+            except:
+                print("Error creating log file! Please check.")
+                
+    
+    # write phrase to log file
+    def write_log(self, dt, phrase):
+        try:
+            # create datetime phrase to log data
+            datetime = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year) + ' ' + str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
+            with open(self.log_file, 'a') as f_log:
+                f_log.writelines(datetime + ' - ' + phrase + '\n')
+        except:
+            print("Error writing to existing log file! Please check.")
+
+                         
+                         
     
 '''
 The following function calculates precise solar noon time dependent on given time zone and latitude.
@@ -188,8 +249,5 @@ def get_solar_time(gmt_off, dt, longitude, latitude):
     return D
 
 
-        
-        
-        
         
         
