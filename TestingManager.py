@@ -12,6 +12,10 @@ from adafruit_mcp3xxx.analog_in import AnalogIn
 ADC_EDS_CHAN = MCP.P0
 ADC_BAT_CHAN = MCP.P1
 
+# tolerances for humidity and temperature scheduling
+T_TOL = 0.1
+H_TOL = 0.1
+
 # GPIO setup
 GPIO.cleanup()
 
@@ -75,9 +79,17 @@ class TestingMaster:
         self.test_config = config_dictionary
         self.adc_m = ADCMaster()
         
-        
+    # simple getter for config dictionary
     def get_config(self):
         return self.test_config
+    
+    # gets a float type value for dictionary entry (will need this a lot)
+    def get_param(self, key):
+        return float(self.test_config[key])
+    
+    # get int type from dicationary if GPIO pin value needed
+    def get_pin(self, key):
+        return int(self.test_config[key])
         
         
     # check time against schedule
@@ -87,78 +99,93 @@ class TestingMaster:
         print(schedule)
         for pair in schedule:
             # if mod of the year day with schedule is zero, then day is correct
-            if dt.tm_yday % pair[0] == 0:
+            if dt.tm_yday % float(pair[0]) == 0:
                 # convert current time to minutes and add solar time offset
                 dt_min = curr.tm_hour * 60 + curr.tm_min + curr.tm_sec / 60
                 dt_min_solar = curr_min + solar_offset
                 
                 # check if current minute is close enough to schedule time offset
                 # calculate schedule time in minutes
-                schedule_min = 720 + pair[1] * 60
+                schedule_min = 720 + float(pair[1]) * 60
                 # if the time is within 30 seconds of scheduled time
                 if abs(dt_min_solar - schedule_min) < 0.5:
                     return True
     
     # check weather against parameters
     def check_temp(self, t_curr):
-        t_low = self.test_config['minTemperatureCelsius']
-        t_high = self.test_config['maxTemperatureCelsius']
+        t_low = self.get_param('minTemperatureCelsius')
+        t_high = self.get_param('maxTemperatureCelsius')
         # check temperature against needed conditions
         if ((1 - T_TOL) * t_low) <= t_curr <= (t_high * (1 + T_TOL)): # tolerance allows a bit outside range
             return True
         else:
+            print("Temperature not within testing parameters. Will check again shortly.")
             return False
         
     def check_humid(self, h_curr):
-        h_low = self.test_config['minRelativeHumidity']
-        h_high = self.test_config['maxRelativeHumidity']
+        h_low = self.get_param('minRelativeHumidity')
+        h_high = self.get_param('maxRelativeHumidity')
         # check humidity against needed conditions
         if ((1 - H_TOL) * h_low) <= h_curr <= (h_high * (1 + H_TOL)): # tolerance allows a bit outside range
             return True
         else:
+            print("Humidity not within testing parameters. Will check again shortly.")
             return False
 
     
-
-    def run_test(self, eds_select):
-        # checks parameter flags for okay to test before executing main test loop
-        '''
-        execute = True
-        for key in self.param_checks:
-            if not self.param_checks[key]:
-                execute = False
-        if not okay_to_test:
-            execute = False
-        '''
-            
-        # main test sequence
-        # if execute:
-        eds_relay = self.test_config[eds_select] # FOUND FROM CONFIG DICTIONARY
+    # main test sequence
+    def run_test(self, eds_num):
+        #  main test sequence to be run after checking flags in MasterManager
+        test_duration = self.get_param('testDurationSeconds')
         
-        # 1) EDS activation relays ON
-        time.sleep(0.5)
-        GPIO.setup(eds_relay, GPIO.OUT)
+        # run first half of test
+        self.run_test_begin(eds_num)
         
-        time.sleep(0.5) # short delay between relay switching
-        
-        # 2) power supply relay ON
-        GPIO.setup(ps_relay, GPIO.OUT)
-        
-        # 3) wait for test duration
+        # wait for test duration
         time.sleep(test_duration)
         
-        # 4) power supply relay OFF
-        GPIO.cleanup(ps_relay)
+        # run second half of test
+        self.run_test_end(eds_num)
+        
+        
+    def run_measure_EDS(self, eds_num):
+        
+        pv_relay = self.get_pin('EDS' + str(eds_num) + 'PV')
+        
+        # flip EDS pv relay to measure SCC
         time.sleep(0.5)
-        
-        # 5) EDS activation relays OFF
-        GPIO.cleanup(eds_relay)
+        GPIO.setup(pv_relay, GPIO.OUT)
         time.sleep(0.5)
-        
-        
-    def run_measure_EDS(self):
         
         read = self.adc_m.get_raw_read_EDS()
+        
+        # close EDS pv relay
+        time.sleep(0.5)
+        GPIO.cleanup(pv_relay)
+        time.sleep(0.5)
+
+        # LOG
+        # DO CALCS TO GET VALUE
+        current = read
+        
+        return current
+    
+    
+    def run_measure_CTRL(self, ctrl_num):
+        
+        pv_relay = self.get_pin('CTRL' + str(ctrl_num) + 'PV')
+        
+        # flip EDS pv relay to measure SCC
+        time.sleep(0.5)
+        GPIO.setup(pv_relay, GPIO.OUT)
+        time.sleep(0.5)
+        
+        read = self.adc_m.get_raw_read_EDS()
+        
+        # close EDS pv relay
+        time.sleep(0.5)
+        GPIO.cleanup(pv_relay)
+        time.sleep(0.5)
 
         # LOG
         # DO CALCS TO GET VALUE
@@ -167,15 +194,19 @@ class TestingMaster:
         return current
 
 
-    def run_measure_BAT(self, relay):
+    def run_measure_BAT(self):
         # flips relay for battery voltage in
-        GPIO.setup(relay, GPIO.OUT)
-        time.sleep(1)
+        bat_relay = self.get_pin('BATTERY')
+        
+        time.sleep(0.5)
+        GPIO.setup(bat_relay, GPIO.OUT)
+        time.sleep(0.5)
         
         # get reading
         read = self.adc_m.get_raw_read_BAT()
         
         # switch relay off
+        time.sleep(0.5)
         GPIO.cleanup(relay)
         time.sleep(0.5)
         
@@ -186,10 +217,10 @@ class TestingMaster:
         return current
         
     
-    def run_test_manual_begin(self, eds_select):
+    def run_test_begin(self, eds_num):
         # runs the first half of a test (pauses on test duration to allow for indefinite testing)
-        eds_select = self.test_config['EDS'+str(eds_select)]
-        ps_relay = self.test_config['POWER']
+        eds_select = self.get_pin('EDS'+str(eds_num))
+        ps_relay = self.get_pin('POWER')
         # 1) EDS activation relays ON
         time.sleep(0.5)
         GPIO.setup(eds_select, GPIO.OUT)
@@ -199,11 +230,11 @@ class TestingMaster:
         # 2) power supply relay ON
         GPIO.setup(ps_relay, GPIO.OUT)
         
-    def run_test_manual_end(self, eds_select):
+    def run_test_end(self, eds_num):
         # runs the second half of a test to finish from first half
-        eds_select = self.test_config['EDS'+str(eds_select)]
-        ps_relay = self.test_config['POWER']
-        # THIS MUST FOLLOW run_test_begin_manual() TO FINISH TEST PROPERLY
+        eds_select = self.get_pin('EDS'+str(eds_num))
+        ps_relay = self.get_pin('POWER')
+        # THIS MUST FOLLOW run_test_begin() TO FINISH TEST PROPERLY
         # 4) power supply relay OFF
         GPIO.cleanup(ps_relay)
         time.sleep(0.5)
@@ -213,37 +244,3 @@ class TestingMaster:
         time.sleep(0.5)
         
 
-'''
-Check Functions
-- these functions are used for checking parameters for initiating testing sequence
-'''
-
-def check_time(curr, solar_offset, schedule):
-    for pair in schedule:
-        # if mod of the year day with schedule is zero, then day is correct
-        if curr.tm_yday % pair[0] == 0:
-            # convert current time to minutes and add solar time offset
-            curr_min = curr.tm_hour * 60 + curr.tm_min + curr.tm_sec / 60
-            curr_min_solar = curr_min + solar_offset
-            
-            # check if current minute is close enough to schedule time offset
-            # calculate schedule time in minutes
-            schedule_min = 720 + pair[1] * 60
-            # if the time is within 30 seconds of scheduled time
-            if abs(curr_min_solar - schedule_min) < 0.5:
-                print_l(curr, 'Solar time fits scheduled testing time.')
-                return True
-            
-    
-            
-            
-            
-            
-
-
-        
-        
-        
-        
-        
-        
