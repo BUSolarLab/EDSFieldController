@@ -1,5 +1,4 @@
 import os
-#import logfile as lgf
 
 '''
 IMMUTABLE. DO NOT CHANGE UNLESS YOU WANT THINGS TO BREAK.
@@ -21,8 +20,12 @@ These also serve as default values for config file generation in event of no pro
 
 DEFAULT_CONFIG_PARAM = {
     # EDS default testing
-    'edsTestingOrder':[1,2,3,4,5,6,7,8],
-    'inPinCurrentDictionary':0,
+    'SCHEDS1':[[1,-3],[1,-2],[1,-1]],
+    'SCHEDS2':[[1,-3],[1,-2]],
+    'SCHEDS3':[[1,-3]],
+    'SCHEDS4':[[2,-3]],
+    'SCHEDS5':[[3,-3]],
+    'SCHEDS6':[[1,0]],
     'EDS1':27,
     'EDS2':29,
     'EDS3':31,
@@ -34,37 +37,35 @@ DEFAULT_CONFIG_PARAM = {
     'EDS3PV':12,
     'EDS4PV':16,
     'EDS5PV':18,
+    'EDSIDS':[[1],[2],[3],[4],[5]],
     'CTRL1PV':26,
     'CTRL2PV':28,
-    'ADC':24,
+    'CTRLIDS':[[1],[2]],
+    'ADC':22,
     'POWER':32,
-    'daysBetweenTestingDays':0,
-    'dailyTestingTimes':0,
-    'latestTestingTime':5, # hours after solar noon
+    'BATTERY':32,
     
     # testing requirements
     'maxTemperatureCelsius':40,
     'minTemperatureCelsius':10,
-    'maxRelativeHumidity':50,
-    'minRelativeHumidity':30, 
-    'avgShortCircuitCurrent':0,
-    'thresholdCurrentRange':0,
-    
-    # log files
-    'logFileName':"log",
-    'dataFileName':"data",
+    'maxRelativeHumidity':60,
+    'minRelativeHumidity':30,
+    'testDurationSeconds':120,
+    'testWindowSeconds':2700,
     
     # indicators/switches
-    'outPinLEDGood':0,
-    'outPinLEDError':0,
-    'inPinManualActivate':1,
+    'outPinLEDGreen':0,
+    'outPinLEDRed':0,
+    'inPinManualActivate':4,
     'manualEDSNumber':1,
+    'solarChargerEDSNumber':6,
     
     # reboot
     'rebootFlag':False,
-    'random':13,
-    'random2':14,
-    'random3':200
+    
+    # location data
+    'degLongitude':-71.05,
+    'offsetGMT':-4,
     }
 
 '''
