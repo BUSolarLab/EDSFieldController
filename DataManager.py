@@ -11,6 +11,7 @@ import digitalio
 import board
 import csv
 from math import cos, sin
+from numpy import deg2rad
 
 # necessary constants
 USB_DIR_PATH = "/media/pi/"
@@ -181,13 +182,13 @@ class CSVMaster:
     
     # write to testing data files
     def write_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
-        self.write_txt_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur)
-        self.write_csv_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur)
+        self.write_txt_testing_data(dt, temp, humid, eds_num, b_cur, a_cur)
+        self.write_csv_testing_data(dt, temp, humid, eds_num, b_cur, a_cur)
         
     # write to noon data files
     def write_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
-        self.write_txt_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur)
-        self.write_csv_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur)
+        self.write_txt_noon_data(dt, temp, humid, eds_num, b_cur, a_cur)
+        self.write_csv_noon_data(dt, temp, humid, eds_num, b_cur, a_cur)
             
 '''
 Log Master Class:
@@ -242,12 +243,15 @@ def get_solar_time(gmt_off, dt, longitude, latitude):
     # implementation adapted from https://sciencing.com/calculate-solar-time-8612288.html
     A = 15 * gmt_off
     B = (dt.tm_yday - 81) * 360 / 365
-    C = 9.87 * sin(2 * B) - 7.53 * cos(B) - 1.58 * sin(B)
+    C = 9.87 * sin(deg2rad(2 * B)) - 7.53 * cos(deg2rad(B)) - 1.58 * sin(deg2rad(B))
     D = 4 * (A - longitude) + C
     
     # return solar time offset in minutes
     return D
 
 
+        
+        
+        
         
         
