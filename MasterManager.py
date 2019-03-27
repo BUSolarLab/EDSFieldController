@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.5
+
 '''
 This is central control.
 This file contains the main looping structure for extended-period field testing.
@@ -46,7 +48,7 @@ rtc = adafruit_pcf8523.PCF8523(i2c_bus)
 # set time to current if needed
 # time struct: (year, month, month_day, hour, min, sec, week_day, year_day, is_daylightsaving?)
 # run this once with the line below uncommented
-# rtc.datetime = time.struct_time((2019,3,14,16,11,0,3,73,1))
+# rtc.datetime = time.struct_time((2019,3,20,18,59,0,2,79,1))
 
 # weather sensor setup
 weather = AM2315.AM2315()
@@ -67,13 +69,12 @@ def print_l(dt, phrase):
 
 # id variables for test coordination
 # FIX THIS, MUST FIX CONFIG FILE STUFF (YAML or JSON FORMATS)
-eds_ids = test_master.get_pin('EDSIDS')
-ctrl_ids = test_master.get_pin('CTRLIDS')
+eds_ids = test_master.get_config()['EDSIDS']
+ctrl_ids = test_master.get_config()['CTRLIDS']
 
 
 # channel setups
 GPIO.setmode(GPIO.BCM)
-
 
 GPIO.setup(test_master.get_pin('outPinLEDGreen'), GPIO.OUT)
 GPIO.setup(test_master.get_pin('outPinLEDRed'), GPIO.OUT)
@@ -84,6 +85,9 @@ GPIO.setup(test_master.get_pin('POWER'), GPIO.OUT)
 for eds in eds_ids:
     GPIO.setup(test_master.get_pin('EDS'+str(eds)), GPIO.OUT)
     GPIO.setup(test_master.get_pin('EDS'+str(eds)+'PV'), GPIO.OUT)
+    
+for ctrl in ctrl_ids:
+    GPIO.setup(test_master.get_pin('CTRL'+str(ctrl)+'PV'), GPIO.OUT)
 
 # var setup
 error_cycle_count = 0
@@ -91,6 +95,20 @@ flip_on = True
 temp_pass = False
 humid_pass = False
 schedule_pass = False
+
+# error handling
+error_list = []
+error_flag = False
+
+def add_error(error):
+    error_flag = True
+    if error not in error_list:
+        error_list.append(error)
+    try:
+        print_l(rtc.datetime, "ERROR FOUND: " + error)
+    except:
+        rtc.datetime = time.struct_time((1,1,1,1,1,1,1,1,1))
+        print_l(rtc.datetime, "ERROR FOUND: " + error)
 
 # location data for easy use in solar time calculation
 gmt_offset = test_master.get_param('offsetGMT')
@@ -123,130 +141,156 @@ while not stopped:
     schedule_pass = False
     weather_pass = False
     
-    # switch power supply and EDS relays OFF (make sure this is always off unless testing)
-    GPIO.cleanup(test_master.get_pin('POWER'))
-    for eds in eds_ids:
-        GPIO.cleanup(test_master.get_pin('EDS'+str(eds)))
-        GPIO.cleanup(test_master.get_pin('EDS'+str(eds)+'PV'))
-
+    # MASTER TRY-EXCEPT -> will still allow RED LED to blink if fatal error occurs in loop
+    try:
     
-    # update time of day by getting data from RTC
-    # 1) Check if RTC exists
-    # 2) If yes, get time data
-    print('------------------------------')
-    #try:
-    #current_time = rtc.datetimebusio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
-    current_time = rtc.datetime
-    print_time(current_time)
-    print()
-    solar_offset = ceil(DM.get_solar_time(gmt_offset, current_time, longitude, latitude) * 100)/100
-    print('Solar offset: ', solar_offset, ' minutes')
-    
-    csv_master.write_txt_testing_data(rtc.datetime, 1, 2, 3, 4, 5)
-    csv_master.write_csv_testing_data(rtc.datetime, 1, 2, 3, 4, 5)
-    csv_master.write_txt_noon_data(rtc.datetime, 1, 2, 3, 4, 5)
-    csv_master.write_csv_noon_data(rtc.datetime, 1, 2, 3, 4, 5)
-    log_master.write_log(rtc.datetime, "I think it's working, and I'm excited.")
-    
-    # flip indicator GREEN LED to show proper working
-    if flip_on:
-        GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
-        flip_on = False
-    else:
-        GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
-        flip_on = True
-
-    # get weather and print values in consol
-    w_read = weather.read_humidity_temperature()
-    print("Temp: ", w_read[1], "C")
-    print("Humid: ", w_read[0], "%")
-    
-
-    '''
-    --------------------------------------------------------------------------
-    BEGIN SOLAR NOON DATA ACQUISITION CODE
-    The following code handles the automated data acquisition of SCC values for each EDS and CTRL at solar noon each day
-    Code outline:
-    1) Check if current time matches solar noon
-    2) If yes, then for each EDS and CTRL in sequence, do the following:
-        2a) Measure SCC from PV cell
-        2b) Write data to CSV/text files
-    3) Then activate EDS6 (the battery charger)
-    '''
-    
-    # get current solar time
-    curr_dt = rtc.datetime
-    solar_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60 + solar_offset
-    
-    # if within 30 seconds of solar noon, run measurements
-    if abs(720 - solar_time_min) < 0.5:
-        # EDS SCC measurements
-        for eds in eds_ids:
-            eds_scc = test_master.run_measure_EDS(eds)
-            print_l(curr_dt, "Solar Noon SCC for EDS" + str(eds) + ": " + str(eds_scc))
-            # write data to solar noon csv/txt
-            csv_master.write_noon_data(curr_dt, w_read[1], w_read[2], eds, eds_scc, eds_scc)
-        
-        # CTRL SCC measurements
-        for ctrl in ctrl_ids:
-            ctrl_scc = test_master.run_measure_CTRL(ctrl)
-            print_l(curr_dt, "Solar Noon SCC for CTRL" + str(ctrl) + ": " + str(ctrl_scc))
-            # write data to solar noon csv/txt
-            csv_master.write_noon_data(curr_dt, w_read[1], w_read[2], ctrl, ctrl_scc, ctrl_scc)
+        # switch power supply and EDS relays OFF (make sure this is always off unless testing)
+        try:
+            GPIO.setup(test_master.get_pin('POWER'),GPIO.OUT)
+            GPIO.output(test_master.get_pin('POWER'), 1)
+            GPIO.cleanup(test_master.get_pin('POWER'))
             
-        # activate EDS6 for full testing cycle (no measurements taken)
-            # turn on GREEN LED for duration of test
-        GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
-            # run test
-        test_master.run_test(test_master.get_pin('solarChargerEDSNumber'))
-            # turn off GREEN LED after test
-        GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+            for eds in eds_ids:
+                GPIO.cleanup(test_master.get_pin('EDS'+str(eds)))
+                GPIO.cleanup(test_master.get_pin('EDS'+str(eds)+'PV'))
+            
+            for ctrl in ctrl_ids:
+                GPIO.cleanup(test_master.get_pin('CTRL'+str(ctrl)+'PV'))
+                
+        except:
+            add_error("GPIO-Cleanup")
+            
+        # update time of day by getting data from RTC
+        # 1) Check if RTC exists
+        # 2) If yes, get time data
+        print('------------------------------')
+        #try:
+        #current_time = rtc.datetimebusio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
+        try:
+            current_time = rtc.datetime
+            print_time(current_time)
+            print()
+            solar_offset = ceil(DM.get_solar_time(gmt_offset, current_time, longitude, latitude) * 100)/100
+            print('Solar offset: ', solar_offset, ' minutes')
+        except:
+            add_error("Sensor-RTC-1")
+        
+        # flip indicator GREEN LED to show proper working
+        if flip_on:
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+            flip_on = False
+        else:
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+            flip_on = True   
 
-    '''
-    END SOLAR NOON DATA ACQUISITION CODE
-    --------------------------------------------------------------------------
-    '''
-    
-    
-    '''
-    --------------------------------------------------------------------------
-    BEGIN AUTOMATIC TESTING ACTIVATION CODE
-    The following code handles the automated activation of the each EDS as specified by their schedule in config.txt
-    Code outline:
-    For each EDS in sequence, do the following:
-    1) Check if current time matches scheduled activation time for EDS
-    2) If yes, check if current weather matches testing weather parameters, within activation window
-    3) If yes, run complete testing procedure for that EDS
-        3a) Measure [before] SCC for control PV cells
-        3b) Measure [before] SCC for EDS PV being tested
-        3c) Flip relays to activate EDS for test duration
-        3d) Measure [after] SCC for EDS PV being tested
-        3e) Measure [after] SCC for control PV cells
-        3f) Write data to CSV/txt files
-    '''
-    
-    
-    # for each EDS check time against schedule, set time flag if yes
-    # put EDS in a queue if multiple are to be activated simultaneously
-    eds_testing_queue = []
-    
-    for eds_num in eds_ids:
-        schedule_pass = test_master.check_time(rtc.datetime, solar_offset, eds_num)
-        eds_testing_queue.append(eds_num)
-    
-    for eds in testing_queue:
-        # if time check is good, check temp and weather within a set window
-        window = 0
-        if schedule_pass:
+        # get weather and print values in console
+        try:
+            w_read = weather.read_humidity_temperature()
+            print("Temp: ", w_read[1], "C")
+            print("Humid: ", w_read[0], "%")
+        except:
+            add_error("Sensor-Weather-1")
+        
+
+        '''
+        --------------------------------------------------------------------------
+        BEGIN SOLAR NOON DATA ACQUISITION CODE
+        The following code handles the automated data acquisition of SCC values for each EDS and CTRL at solar noon each day
+        Code outline:
+        1) Check if current time matches solar noon
+        2) If yes, then for each EDS and CTRL in sequence, do the following:
+            2a) Measure SCC from PV cell
+            2b) Write data to CSV/text files
+        3) Then activate EDS6 (the battery charger)
+        '''
+        
+        # get current solar time
+        try:
+            curr_dt = rtc.datetime
+            yday = TM.Y_DAYS[curr_dt.tm_mon - 1] + curr_dt.tm_mday
+            # print(yday)
+            solar_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60 + solar_offset
+        except:
+            add_error("Sensor-RTC-2")
+        
+        # if within 30 seconds of solar noon, run measurements
+        if abs(720 - solar_time_min) < 0.5:
+
+            print_l(rtc.datetime, "Initiating solar noon procedure for charger, EDS6")
+            # EDS SCC measurements
+            for eds in eds_ids:
+                eds_scc = test_master.run_measure_EDS(eds)
+                print_l(curr_dt, "Solar Noon SCC for EDS" + str(eds) + ": " + str(eds_scc))
+                # write data to solar noon csv/txt
+                csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], eds, eds_scc, eds_scc)
+            
+            # CTRL SCC measurements
+            for ctrl in ctrl_ids:
+                ctrl_scc = test_master.run_measure_CTRL(ctrl)
+                print_l(curr_dt, "Solar Noon SCC for CTRL" + str(ctrl) + ": " + str(ctrl_scc))
+                # write data to solar noon csv/txt
+                csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], -1*ctrl, ctrl_scc, ctrl_scc)
+                
+            # activate EDS6 for full testing cycle (no measurements taken)
+                # turn on GREEN LED for duration of test
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+                # run test
+            test_master.run_test(test_master.get_pin('solarChargerEDSNumber'))
+                # turn off GREEN LED after test
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+
+        '''
+        END SOLAR NOON DATA ACQUISITION CODE
+        --------------------------------------------------------------------------
+        '''
+        
+        
+        '''
+        --------------------------------------------------------------------------
+        BEGIN AUTOMATIC TESTING ACTIVATION CODE
+        The following code handles the automated activation of the each EDS as specified by their schedule in config.txt
+        Code outline:
+        For each EDS in sequence, do the following:
+        1) Check if current time matches scheduled activation time for EDS
+        2) If yes, check if current weather matches testing weather parameters, within activation window
+        3) If yes, run complete testing procedure for that EDS
+            3a) Measure [before] SCC for control PV cells
+            3b) Measure [before] SCC for EDS PV being tested
+            3c) Flip relays to activate EDS for test duration
+            3d) Measure [after] SCC for EDS PV being tested
+            3e) Measure [after] SCC for control PV cells
+            3f) Write data to CSV/txt files
+        '''
+        
+        
+        # for each EDS check time against schedule, set time flag if yes
+        # put EDS in a queue if multiple are to be activated simultaneously
+        eds_testing_queue = []
+        
+        for eds_num in eds_ids:
+            # schedule_pass = test_master.check_time(rtc.datetime, solar_offset, eds_num)
+            schedule_pass = test_master.check_time(curr_dt, yday, 0, eds_num)
+            if schedule_pass:
+                eds_testing_queue.append(eds_num)
+        # print queue    
+        if not not eds_testing_queue:
+            phrase = "EDS Testing Queue: ["
+            for eds in eds_testing_queue:
+                phrase += str(eds) + " "
+            phrase += "]"
+            print_l(rtc.datetime, phrase)
+            
+        for eds in eds_testing_queue:
+            # if time check is good, check temp and weather within a set window
+            window = 0
+            # check temp and humidity until they fall within parameter range or max window reached
+            w_read = weather.read_humidity_temperature()
+            
+            temp_pass = test_master.check_temp(w_read[1])
+            humid_pass = test_master.check_humid(w_read[0])
             weather_pass = temp_pass and humid_pass
+            
             while window < test_master.get_param('testWindowSeconds') and not weather_pass:
-                # check temp and humidity until they fall within parameter range or max window reached
-                w_read = weather.read_humidity_temperature()
-                
-                temp_pass = test_master.check_temp(w_read[1])
-                humid_pass = test_master.check_humid(w_read[0])
-                weather_pass = temp_pass and humid_pass
-                
                 # increment window by 1 sec
                 window += 1
                 time.sleep(1)
@@ -258,19 +302,30 @@ while not stopped:
                 else:
                     GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                     flip_on = True
+                    
+                # check temp and humidity until they fall within parameter range or max window reached
+                try:
+                    w_read = weather.read_humidity_temperature()
+                    
+                    temp_pass = test_master.check_temp(w_read[1])
+                    humid_pass = test_master.check_humid(w_read[0])
+                    weather_pass = temp_pass and humid_pass
+                except:
+                    add_error("Sensor-Weather")
             
             # if out of loop and parameters are met
             if weather_pass:
                 # run test if all flags passed
-                print_l(rtc.datetime, "Checks passed. Initiating testing procedure for EDS" + str(eds))
+                print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for EDS" + str(eds))
                 # run testing procedure
                 
                 curr_dt = rtc.datetime
                 
                 # 1) get control SCC 'before' values for each control
+                ctrl_before = []
                 for ctrl in ctrl_ids:
-                    ctrl_before[ctrl] = test_master.run_measure_CTRL(ctrl)
-                    print_l(rtc.datetime, "Pre-test SCC for CTRL" + str(ctrl) + ": " + str(ctrl_before[ctrl]))
+                    ctrl_before.append(test_master.run_measure_CTRL(ctrl))
+                    print_l(rtc.datetime, "Pre-test SCC for CTRL" + str(ctrl) + ": " + str(ctrl_before[ctrl - 1]))
                                 
                 # 2) get SCC 'before' value for EDS being tested
                 eds_before = test_master.run_measure_EDS(eds)
@@ -292,9 +347,10 @@ while not stopped:
                 
                 
                 # 5) get control SCC 'after' values for each control
+                ctrl_after = []
                 for ctrl in ctrl_ids:
-                    ctrl_after[ctrl] = test_master.run_measure_CTRL(ctrl)
-                    print_l(rtc.datetime, "Post-test SCC for CTRL" + str(ctrl) + ": " + str(ctrl_after[ctrl]))
+                    ctrl_after.append(test_master.run_measure_CTRL(ctrl))
+                    print_l(rtc.datetime, "Post-test SCC for CTRL" + str(ctrl) + ": " + str(ctrl_after[ctrl - 1]))
                     
                 # finish up, write data to CSV and give feedback
                 # write data for EDS tested
@@ -303,80 +359,108 @@ while not stopped:
                 # write control data
                 for ctrl in ctrl_ids:
                     # control pv numbers will show as negative in main data files to differentiate them
-                    csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], -1*ctrl, ctrl_before[ctrl], ctrl_after[ctrl])
+                    csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], -1*ctrl, ctrl_before[ctrl - 1], ctrl_after[ctrl - 1])
                 
-    '''
-    END AUTOMATIC TESTING ACTIVATION CODE
-    --------------------------------------------------------------------------
-    '''
+                print_l(rtc.datetime, "Ended automated scheduled test of EDS" + str(eds))
+                
+        '''
+        END AUTOMATIC TESTING ACTIVATION CODE
+        --------------------------------------------------------------------------
+        '''
 
-    
-    '''
-    --------------------------------------------------------------------------
-    BEGIN MANUAL ACTIVATION CODE
-    The following code handles the manual activation of the specified EDS (in config.txt) by flipping the switch
-    Code outline:
-    1) Check for changing input on switch pin
-    2) If input is changed, and input is high (activate), then begin test
-    3) Check SCC on EDS for [before] measurement
-    4) Run first half of test, but loop until switched off or max time elapsed
-    5) Run second half of test
-    6) Check SCC on EDS for [after] measurement
-    '''
-    
-    if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
-        # run EDS test on selected manual EDS
         
-        if GPIO.input(test_master.get_pin('inPinManualActivate')):
-            # flag for test duration
-            man_flag = False
-            
-            eds_num = test_master.get_pin('manualEDSNumber')
-            
-            # solid GREEN for duration of manual test
-            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
-            print_l(rtc.datetime, "FORCED. Running EDS" + str(eds_num) + " testing sequence. FLIP SWITCH OFF TO STOP.")
-            try:
-                # measure PV current before activation
-                before_cur = test_master.run_measure_EDS()
-                phrase = "EDS" + str(eds_num) + " PV [BEFORE] scC: " + str(before_cur) + " A"
-                print_l(rtc.datetime, phrase)
-                
+        '''
+        --------------------------------------------------------------------------
+        BEGIN MANUAL ACTIVATION CODE
+        The following code handles the manual activation of the specified EDS (in config.txt) by flipping the switch
+        Code outline:
+        1) Check for changing input on switch pin
+        2) If input is changed, and input is high (activate), then begin test
+        3) Check SCC on EDS for [before] measurement
+        4) Run first half of test, but loop until switched off or max time elapsed
+        5) Run second half of test
+        6) Check SCC on EDS for [after] measurement
+        '''
         
-                # run first half of test
-                test_master.run_test_begin(eds_num)
-                time_elapsed = 0
+        if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
+            # run EDS test on selected manual EDS
+            
+            if GPIO.input(test_master.get_pin('inPinManualActivate')):
+                # flag for test duration
+                man_flag = False
                 
-                # 3) wait for switch to be flipped OFF
-                while not man_flag:
-                    if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
-                        man_flag = True
-                        
-                    time_elapsed += 0.1
-                    if time_elapsed > MANUAL_TIME_LIMIT:
-                        man_flag = True
+                eds_num = test_master.get_pin('manualEDSNumber')
+                
+                # get weather and time for data logging
+                curr_dt = rtc.datetime
+                w_read = weather.read_humidity_temperature()
+                
+                # solid GREEN for duration of manual test
+                GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+                print_l(rtc.datetime, "FORCED. Running EDS" + str(eds_num) + " testing sequence. FLIP SWITCH OFF TO STOP.")
+                try:
+                    # measure PV current before activation
+                    eds_before = test_master.run_measure_EDS(eds_num)
+                    print_l(rtc.datetime, "Pre-test SCC for EDS" + str(eds_num) + ": " + str(eds_before))            
+            
+                    # run first half of test
+                    test_master.run_test_begin(eds_num)
+                    time_elapsed = 0
                     
-                    time.sleep(0.1)
+                    # 3) wait for switch to be flipped OFF
+                    while not man_flag:
+                        if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
+                            man_flag = True
+                            
+                        time_elapsed += 0.1
+                        if time_elapsed > MANUAL_TIME_LIMIT:
+                            man_flag = True
+                        
+                        time.sleep(0.1)
+                    
+                    # then run second half of test (cleanup phase)
+                    test_master.run_test_end(eds_num)
+                    
+                    eds_after = test_master.run_measure_EDS(eds_num)
+                    print_l(rtc.datetime, "Post-test SCC for EDS" + str(eds_num) + ": " + str(eds_after))
+                    
+                    # write data for EDS tested
+                    csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], eds_num, eds_before, eds_after)
+                    
+                    print_l(rtc.datetime, "Ended manual test of EDS" + str(eds_num))
                 
-                # then run second half of test (cleanup phase)
-                test_master.run_test_end(eds_num)
-                
-                after_cur = test_master.run_measure()
-                phrase = "EDS" + str(eds_num) + " PV [AFTER] scC: " + str(after_cur) + " A"
-                print_l(phrase)
-                
-            except:
-                print_l(rtc.datetime, "MAJOR ERROR. Cannot initiate EDS" + str(eds_num) + " manual testing sequence. Please check.")
+                except:
+                    print_l(rtc.datetime, "Error with manual testing sequence. Please check.")
+                    add_error("Test-Manual")
+            
+            
+                # either way, turn off GREEN LED indicator
+                GPIO.output(test_master.get_pin('outPinLEDGreen'),0)
         
-        
-            # either way, turn off GREEN LED indicator
-            GPIO.output(test_master.get_pin('outPinLEDGreen'),0)
+        '''
+        END MANUAL ACTIVATION CODE
+        --------------------------------------------------------------------------
+        '''
     
-    '''
-    END MANUAL ACTIVATION CODE
-    --------------------------------------------------------------------------
-    '''
-
+    # END MASTER TRY-EXCEPT envelope
+    except:
+        add_error("FATAL CORE ERROR.")
+        raise
+        
+    
+    if not not error_list:
+        e_phrase = "Current error list: "
+        for err in error_list:
+            e_phrase += " [" + err + "]"
+        print_l(rtc.datetime, e_phrase)
+        
+    # flip indicator RED LED if error flag raised
+    if error_flag:
+        if flip_on:
+            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
+        else:
+            GPIO.output(test_master.get_pin('outPinLEDRed'), 0) 
+    
     
     # delay to slow down processing
     time.sleep(PROCESS_DELAY)
