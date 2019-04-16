@@ -35,7 +35,9 @@ print("Initializing...")
 static_master = SM.StaticMaster()
 usb_master = DM.USBMaster()
 test_master = TM.TestingMaster(static_master.get_config())
+print(usb_master.get_USB_path())
 csv_master = DM.CSVMaster(usb_master.get_USB_path())
+adc_master = TM.ADCMaster(test_master.get_pin('ADCResMain'), test_master.get_pin('ADCResOCV'), test_master.get_pin('ADCResSCC'), test_master.get_pin('ADCBatteryDiv'))
 
 # channel setup
 
@@ -48,7 +50,7 @@ rtc = adafruit_pcf8523.PCF8523(i2c_bus)
 # set time to current if needed
 # time struct: (year, month, month_day, hour, min, sec, week_day, year_day, is_daylightsaving?)
 # run this once with the line below uncommented
-# rtc.datetime = time.struct_time((2019,3,20,18,59,0,2,79,1))
+# rtc.datetime = time.struct_time((2019,4,11,19,59,0,4,100,1))
 
 # weather sensor setup
 weather = AM2315.AM2315()
@@ -134,6 +136,8 @@ This loop governs the overall code for the long term remote testing of the field
 flag = False
 stopped = False
 
+time.sleep(2)
+
 while not stopped:
     # set all flags to False
     temp_pass = False
@@ -149,14 +153,11 @@ while not stopped:
             GPIO.setup(test_master.get_pin('POWER'),GPIO.OUT)
             GPIO.output(test_master.get_pin('POWER'), 1)
             GPIO.cleanup(test_master.get_pin('POWER'))
-            
             for eds in eds_ids:
                 GPIO.cleanup(test_master.get_pin('EDS'+str(eds)))
                 GPIO.cleanup(test_master.get_pin('EDS'+str(eds)+'PV'))
-            
             for ctrl in ctrl_ids:
                 GPIO.cleanup(test_master.get_pin('CTRL'+str(ctrl)+'PV'))
-                
         except:
             add_error("GPIO-Cleanup")
             
@@ -164,6 +165,83 @@ while not stopped:
         # 1) Check if RTC exists
         # 2) If yes, get time data
         print('------------------------------')
+        
+        # [test_ocv, test_scc] = test_master.run_measure_EDS(eds)
+        # [test_ocv, test_scc] = test_master.run_measure_BAT()
+        # print("OCV: ", test_ocv)
+        # print("SCC: ", test_scc)
+        
+        # if out of loop and parameters are met
+        '''
+        # THE FOLLOWING IS TEST CODE FOR DEBUGGING
+        if 0:
+            # run test if all flags passed
+            print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for EDS" + str(eds))
+            # run testing procedure
+            
+            curr_dt = rtc.datetime
+            
+            # 1) get control SCC 'before' values for each control
+            ctrl_ocv_before = []
+            ctrl_scc_before = []
+            for ctrl in ctrl_ids:
+                ocv = 0
+                scc = 0
+                [ocv, scc] = test_master.run_measure_CTRL(ctrl)
+                ctrl_ocv_before.append(ocv)
+                ctrl_scc_before.append(scc)
+                print_l(rtc.datetime, "Pre-test OCV for CTRL" + str(ctrl) + ": " + str(ctrl_ocv_before[ctrl - 1]))
+                print_l(rtc.datetime, "Pre-test SCC for CTRL" + str(ctrl) + ": " + str(ctrl_scc_before[ctrl - 1]))
+                            
+            # 2) get SCC 'before' value for EDS being tested
+            [eds_ocv_before, eds_scc_before] = test_master.run_measure_EDS(eds)
+            print_l(rtc.datetime, "Pre-test OCV for EDS" + str(eds) + ": " + str(eds_ocv_before))
+            print_l(rtc.datetime, "Pre-test SCC for EDS" + str(eds) + ": " + str(eds_scc_before))
+            
+            
+            # 3) activate EDS for test duration
+            
+                # turn on GREEN LED for duration of test
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+                # run test
+            test_master.run_test(eds)
+                # turn off GREEN LED after test
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+            
+            # 4) get PV 'after' value for EDS being tested
+            [eds_ocv_after, eds_scc_after] = test_master.run_measure_EDS(eds)
+            print_l(rtc.datetime, "Post-test OCV for EDS" + str(eds) + ": " + str(eds_ocv_after))
+            print_l(rtc.datetime, "Post-test SCC for EDS" + str(eds) + ": " + str(eds_scc_after))
+            
+            
+            # 5) get control SCC 'after' values for each control
+            ctrl_ocv_after = []
+            ctrl_scc_after = []
+            for ctrl in ctrl_ids:
+                ocv = 0
+                scc = 0
+                [ocv, scc] = test_master.run_measure_CTRL(ctrl)
+                ctrl_ocv_after.append(ocv)
+                ctrl_scc_after.append(scc)
+                print_l(rtc.datetime, "Post-test OCV for CTRL" + str(ctrl) + ": " + str(ctrl_ocv_after[ctrl - 1]))
+                print_l(rtc.datetime, "Post-test SCC for CTRL" + str(ctrl) + ": " + str(ctrl_scc_after[ctrl - 1]))
+                
+            # finish up, write data to CSV and give feedback
+            # write data for EDS tested
+            write_data = [eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after]
+            # append control data
+            for ctrl in ctrl_ids:
+                write_data.append(ctrl_ocv_before[ctrl - 1])
+                write_data.append(ctrl_ocv_after[ctrl - 1])
+                write_data.append(ctrl_scc_before[ctrl - 1])
+                write_data.append(ctrl_scc_after[ctrl - 1])
+            
+            # write data to files
+            print(write_data)
+            csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], eds, *write_data)
+        # END TEST CODE FOR DEBUGGING
+        '''
+        
         #try:
         #current_time = rtc.datetimebusio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
         try:
@@ -172,6 +250,9 @@ while not stopped:
             print()
             solar_offset = ceil(DM.get_solar_time(gmt_offset, current_time, longitude, latitude) * 100)/100
             print('Solar offset: ', solar_offset, ' minutes')
+            # remove error if corrected
+            if "Sensor-RTC-1" in error_list:
+                error_list.remove("Sensor-RTC-1")
         except:
             add_error("Sensor-RTC-1")
         
@@ -181,15 +262,7 @@ while not stopped:
             flip_on = False
         else:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
-            flip_on = True   
-
-        # get weather and print values in console
-        try:
-            w_read = weather.read_humidity_temperature()
-            print("Temp: ", w_read[1], "C")
-            print("Humid: ", w_read[0], "%")
-        except:
-            add_error("Sensor-Weather-1")
+            flip_on = True
         
 
         '''
@@ -217,19 +290,37 @@ while not stopped:
         if abs(720 - solar_time_min) < 0.5:
 
             print_l(rtc.datetime, "Initiating solar noon procedure for charger, EDS6")
+            
+            # get weather and print values in console
+            try:
+                w_read = weather.read_humidity_temperature()
+                print("Temp: ", w_read[1], "C")
+                print("Humid: ", w_read[0], "%")
+                # remove error if corrected
+                if "Sensor-Weather-1" in error_list:
+                    error_list.remove("Sensor-Weather-1")
+            except:
+                add_error("Sensor-Weather-1")
+            
             # EDS SCC measurements
             for eds in eds_ids:
-                eds_scc = test_master.run_measure_EDS(eds)
+                eds_ocv = 0
+                eds_scc = 0
+                [eds_ocv, eds_scc] = test_master.run_measure_EDS(eds)
+                print_l(curr_dt, "Solar Noon OCV for EDS" + str(eds) + ": " + str(eds_ocv))
                 print_l(curr_dt, "Solar Noon SCC for EDS" + str(eds) + ": " + str(eds_scc))
                 # write data to solar noon csv/txt
-                csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], eds, eds_scc, eds_scc)
+                csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], eds, eds_ocv, eds_scc)
             
             # CTRL SCC measurements
             for ctrl in ctrl_ids:
-                ctrl_scc = test_master.run_measure_CTRL(ctrl)
+                ctrl_ocv = 0
+                ctrl_scc = 0
+                [ctrl_ocv, ctrl_scc] = test_master.run_measure_CTRL(ctrl)
+                print_l(curr_dt, "Solar Noon OCV for CTRL" + str(ctrl) + ": " + str(ctrl_ocv))
                 print_l(curr_dt, "Solar Noon SCC for CTRL" + str(ctrl) + ": " + str(ctrl_scc))
                 # write data to solar noon csv/txt
-                csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], -1*ctrl, ctrl_scc, ctrl_scc)
+                csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], -1*ctrl, ctrl_ocv, ctrl_scc)
                 
             # activate EDS6 for full testing cycle (no measurements taken)
                 # turn on GREEN LED for duration of test
@@ -310,8 +401,12 @@ while not stopped:
                     temp_pass = test_master.check_temp(w_read[1])
                     humid_pass = test_master.check_humid(w_read[0])
                     weather_pass = temp_pass and humid_pass
+                    
+                    # remove error if corrected
+                    if "Sensor-Weather-2" in error_list:
+                        error_list.remove("Sensor-Weather-2")
                 except:
-                    add_error("Sensor-Weather")
+                    add_error("Sensor-Weather-2")
             
             # if out of loop and parameters are met
             if weather_pass:
@@ -322,14 +417,21 @@ while not stopped:
                 curr_dt = rtc.datetime
                 
                 # 1) get control SCC 'before' values for each control
-                ctrl_before = []
+                ctrl_ocv_before = []
+                ctrl_scc_before = []
                 for ctrl in ctrl_ids:
-                    ctrl_before.append(test_master.run_measure_CTRL(ctrl))
-                    print_l(rtc.datetime, "Pre-test SCC for CTRL" + str(ctrl) + ": " + str(ctrl_before[ctrl - 1]))
+                    ocv = 0
+                    scc = 0
+                    [ocv, scc] = test_master.run_measure_CTRL(ctrl)
+                    ctrl_ocv_before.append(ocv)
+                    ctrl_scc_before.append(scc)
+                    print_l(rtc.datetime, "Pre-test OCV for CTRL" + str(ctrl) + ": " + str(ctrl_ocv_before[ctrl - 1]))
+                    print_l(rtc.datetime, "Pre-test SCC for CTRL" + str(ctrl) + ": " + str(ctrl_scc_before[ctrl - 1]))
                                 
                 # 2) get SCC 'before' value for EDS being tested
-                eds_before = test_master.run_measure_EDS(eds)
-                print_l(rtc.datetime, "Pre-test SCC for EDS" + str(eds) + ": " + str(eds_before))
+                [eds_ocv_before, eds_scc_before] = test_master.run_measure_EDS(eds)
+                print_l(rtc.datetime, "Pre-test OCV for EDS" + str(eds) + ": " + str(eds_ocv_before))
+                print_l(rtc.datetime, "Pre-test SCC for EDS" + str(eds) + ": " + str(eds_scc_before))
                 
                 
                 # 3) activate EDS for test duration
@@ -342,24 +444,33 @@ while not stopped:
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                 
                 # 4) get PV 'after' value for EDS being tested
-                eds_after = test_master.run_measure_EDS(eds)
-                print_l(rtc.datetime, "Post-test SCC for EDS" + str(eds) + ": " + str(eds_after))
+                [eds_ocv_after, eds_scc_after] = test_master.run_measure_EDS(eds)
+                print_l(rtc.datetime, "Post-test OCV for EDS" + str(eds) + ": " + str(eds_ocv_after))
+                print_l(rtc.datetime, "Post-test SCC for EDS" + str(eds) + ": " + str(eds_scc_after))
                 
                 
                 # 5) get control SCC 'after' values for each control
-                ctrl_after = []
+                ctrl_ocv_after = []
+                ctrl_scc_after = []
                 for ctrl in ctrl_ids:
-                    ctrl_after.append(test_master.run_measure_CTRL(ctrl))
-                    print_l(rtc.datetime, "Post-test SCC for CTRL" + str(ctrl) + ": " + str(ctrl_after[ctrl - 1]))
+                    ocv = 0
+                    scc = 0
+                    [ocv, scc] = test_master.run_measure_CTRL(ctrl)
+                    print_l(rtc.datetime, "Post-test OCV for CTRL" + str(ctrl) + ": " + str(ctrl_ocv_after[ctrl - 1]))
+                    print_l(rtc.datetime, "Post-test SCC for CTRL" + str(ctrl) + ": " + str(ctrl_scc_after[ctrl - 1]))
                     
                 # finish up, write data to CSV and give feedback
                 # write data for EDS tested
-                csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], eds, eds_before, eds_after)
-                
-                # write control data
+                write_data = [eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after]
+                # append control data
                 for ctrl in ctrl_ids:
-                    # control pv numbers will show as negative in main data files to differentiate them
-                    csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], -1*ctrl, ctrl_before[ctrl - 1], ctrl_after[ctrl - 1])
+                    write_data.append(ctrl_ocv_before[ctrl - 1])
+                    write_data.append(ctrl_ocv_after[ctrl - 1])
+                    write_data.append(ctrl_scc_before[ctrl - 1])
+                    write_data.append(ctrl_scc_after[ctrl - 1])
+                
+                # write data to files
+                csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], eds, write_data)
                 
                 print_l(rtc.datetime, "Ended automated scheduled test of EDS" + str(eds))
                 
@@ -400,8 +511,9 @@ while not stopped:
                 print_l(rtc.datetime, "FORCED. Running EDS" + str(eds_num) + " testing sequence. FLIP SWITCH OFF TO STOP.")
                 try:
                     # measure PV current before activation
-                    eds_before = test_master.run_measure_EDS(eds_num)
-                    print_l(rtc.datetime, "Pre-test SCC for EDS" + str(eds_num) + ": " + str(eds_before))            
+                    [eds_ocv_before, eds_scc_before] = test_master.run_measure_EDS(eds_num)
+                    print_l(rtc.datetime, "Pre-test OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_before)) 
+                    print_l(rtc.datetime, "Pre-test SCC for EDS" + str(eds_num) + ": " + str(eds_scc_before))            
             
                     # run first half of test
                     test_master.run_test_begin(eds_num)
@@ -421,11 +533,12 @@ while not stopped:
                     # then run second half of test (cleanup phase)
                     test_master.run_test_end(eds_num)
                     
-                    eds_after = test_master.run_measure_EDS(eds_num)
-                    print_l(rtc.datetime, "Post-test SCC for EDS" + str(eds_num) + ": " + str(eds_after))
+                    [eds_ocv_after, eds_scc_after] = test_master.run_measure_EDS(eds_num)
+                    print_l(rtc.datetime, "Post-test SCC for EDS" + str(eds_num) + ": " + str(eds_ocv_after))
+                    print_l(rtc.datetime, "Post-test SCC for EDS" + str(eds_num) + ": " + str(eds_scc_after))
                     
                     # write data for EDS tested
-                    csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], eds_num, eds_before, eds_after)
+                    csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after)
                     
                     print_l(rtc.datetime, "Ended manual test of EDS" + str(eds_num))
                 
@@ -441,10 +554,14 @@ while not stopped:
         END MANUAL ACTIVATION CODE
         --------------------------------------------------------------------------
         '''
+        
+        # remove error if corrected
+        if "FATAL CORE ERROR" in error_list:
+            error_list.remove("FATAL CORE ERROR")
     
     # END MASTER TRY-EXCEPT envelope
     except:
-        add_error("FATAL CORE ERROR.")
+        add_error("FATAL CORE ERROR")
         raise
         
     
