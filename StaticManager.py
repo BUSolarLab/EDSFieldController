@@ -8,7 +8,7 @@ THANKS, THE MANAGEMENT
 
 # configuration file statics
 CONFIG_FILE_NAME = "config.json"
-CONFIG_FILE_PATH = "" # assume local?
+CONFIG_FILE_PATH = "/home/pi/EDSPython/" # assume local?
 
 
 '''
@@ -39,9 +39,9 @@ DEFAULT_CONFIG_PARAM = {
     'CTRL1PV':15,
     'CTRL2PV':23,
     'CTRLIDS':[1,2],
-    'ADC':22,
     'POWER':24,
-    'BATTERY':25,
+    'OCVBRANCH':25,
+    'SCCBRANCH':7,
     
     # testing requirements
     'maxTemperatureCelsius':40,
@@ -50,13 +50,15 @@ DEFAULT_CONFIG_PARAM = {
     'minRelativeHumidity':30,
     'testDurationSeconds':120,
     'testWindowSeconds':2700,
-    'voltDivResGround':0,
-    'voltDivResBranch':0,
+    'ADCResMain':68000,
+    'ADCResOCV':10000,
+    'ADCResSCC':1,
+    'ADCBatteryDiv':10,
     
     # indicators/switches
     'outPinLEDGreen':5,
     'outPinLEDRed':13,
-    'inPinManualActivate':8,
+    'inPinManualActivate':22,
     'manualEDSNumber':1,
     'solarChargerEDSNumber':6,
     
@@ -100,15 +102,16 @@ class StaticMaster:
     
     def create_default_config(self):
         # create config file with default parameters
-        with open(CONFIG_FILE_NAME, 'w') as cf:
+        with open(self.config_path+self.config_name, 'w') as cf:
             json.dump(DEFAULT_CONFIG_PARAM, cf)
             
             
     def load_config(self):
         # load config file if already exists
         try:
-            with open(CONFIG_FILE_NAME, 'r') as cf:
+            with open(self.config_path+self.config_name, 'r') as cf:
                 self.config_dictionary = json.load(cf)
+                print("Loaded .json file successfully.")
         except:
             # remove faulty file if it can't be loaded
             print("Error loading configuration file. Deleting and remaking with default parameters!")
