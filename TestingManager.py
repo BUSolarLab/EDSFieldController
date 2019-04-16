@@ -5,12 +5,18 @@ import subprocess
 import busio
 import digitalio
 import board
-import adafruit_mcp3xxx.mcp3008 as MCP
-from adafruit_mcp3xxx.analog_in import AnalogIn
+import Adafruit_GPIO.SPI as SPI
+import Adafruit_MCP3008
+# import adafruit_mcp3xxx.mcp3008 as MCP
+# from adafruit_mcp3xxx.analog_in import AnalogIn
 
 # adc constants
-ADC_EDS_CHAN = MCP.P0
-ADC_BAT_CHAN = MCP.P1
+ADC_PV_CHAN = 1
+ADC_BAT_CHAN = 2
+SPI_PORT   = 0
+SPI_DEVICE = 0
+VREF = 3.3
+STEPS = 1023
 
 # year days for start of each month (because the clock doesn't want to keep tm_yday for some reason)
 # don't care about leap year
@@ -42,31 +48,34 @@ Functionality:
 
 
 class ADCMaster:
-    def __init__(self):
-        # create the spi bus
-        self.spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
-
-        # create the cs (chip select)
-        self.cs = digitalio.DigitalInOut(board.D22)
-
-        # create the mcp object
-        self.mcp = MCP.MCP3008(self.spi, self.cs)
-
-        # create an analog input channel on pin 0
-        # GET MORE CHANNELS AS NECESSARY
-        self.chan0 = AnalogIn(self.mcp, ADC_EDS_CHAN)
-        self.chan1 = AnalogIn(self.mcp, ADC_BAT_CHAN)
-
-    def get_raw_read_EDS(self):
-        return self.chan0.voltage
+    def __init__(self, r1, r2, r3, bdiv):
+        # using hardware SPI
+        self.mcp = Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
+        # circuit resistor values
+        self.main_res = r1
+        self.ocv_res = r2
+        self.scc_res = r3
+        self.bat_div = bdiv
+        
+    def get_ocv_PV(self, chan):
+        raw = self.mcp.read_adc(chan)
+        print('PV raw volt read: ', raw)
+        # voltage divider multiplier
+        vdiv = self.main_res / self.ocv_res
+        # get percent of vref, then multiply by vdiv for actual volts
+        return vdiv * VREF * raw / STEPS
     
-    def get_raw_read_BAT(self):
-        return self.chan1.voltage
+    def get_scc_PV(self, chan):
+        raw = self.mcp.read_adc(chan)
+        print('PV raw curr read: ', raw)
+        # approximate SCC because scc_res << main_res
+        return raw * VREF / STEPS / self.scc_res
     
-    def process_read(self, val):
-        # PROCESS RAW DATA HERE
-        # might have to do some remapping from the 16-bit input
-        return 1
+    def get_ocv_BAT(self, chan):
+        raw = self.mcp.read_adc(chan)
+        print('Battery raw volt read: ', raw)
+        # voltage divider calc
+        return self.bat_div * VREF * raw / STEPS        
 
 
 '''
@@ -82,7 +91,7 @@ class TestingMaster:
     def __init__(self, config_dictionary):
         self.okay_to_test = False
         self.test_config = config_dictionary
-        self.adc_m = ADCMaster()
+        self.adc_m = ADCMaster(self.test_config['ADCResMain'], self.test_config['ADCResOCV'], self.test_config['ADCResSCC'], self.test_config['ADCBatteryDiv'])
         
     # simple getter for config dictionary
     def get_config(self):
@@ -149,72 +158,98 @@ class TestingMaster:
         self.run_test_end(eds_num)
         
     def run_measure_EDS(self, eds_num):
-        
+        # get pin for PV relay
         pv_relay = self.get_pin('EDS' + str(eds_num) + 'PV')
+        ocv_trans = self.get_pin('OCVBRANCH')
+        scc_trans = self.get_pin('SCCBRANCH')
         
         # flip EDS pv relay to measure SCC
         time.sleep(0.5)
         GPIO.setup(pv_relay, GPIO.OUT)
         time.sleep(0.5)
         
-        read = self.adc_m.get_raw_read_EDS()
+        # OCV READ
+        # switch transistor to draw through branch
+        GPIO.setup(ocv_trans, GPIO.OUT)
+        GPIO.output(ocv_trans, 1)
+        time.sleep(0.5)
+        # get reading
+        read_ocv = self.adc_m.get_ocv_PV(ADC_PV_CHAN)
+        # switch transistor back
+        time.sleep(0.25)
+        GPIO.output(ocv_trans, 0)
+        GPIO.cleanup(ocv_trans)
+        
+        # SCC READ
+        # switch transistor to draw through branch
+        GPIO.setup(scc_trans, GPIO.OUT)
+        GPIO.output(scc_trans, 1)
+        time.sleep(0.5)
+        # get reading
+        read_scc = self.adc_m.get_scc_PV(ADC_PV_CHAN)
+        # switch transistor back
+        time.sleep(0.25)
+        GPIO.output(scc_trans, 0)
+        GPIO.cleanup(scc_trans)
         
         # close EDS pv relay
         time.sleep(0.5)
         GPIO.cleanup(pv_relay)
         time.sleep(0.5)
-
-        # LOG
-        # DO CALCS TO GET VALUE
-        current = read
         
-        return current
+        return [read_ocv, read_scc]
     
     
     def run_measure_CTRL(self, ctrl_num):
-        
+        # get pin for PV relay
         pv_relay = self.get_pin('CTRL' + str(ctrl_num) + 'PV')
+        ocv_trans = self.get_pin('OCVBRANCH')
+        scc_trans = self.get_pin('SCCBRANCH')
         
         # flip EDS pv relay to measure SCC
         time.sleep(0.5)
         GPIO.setup(pv_relay, GPIO.OUT)
         time.sleep(0.5)
         
-        read = self.adc_m.get_raw_read_EDS()
+        # OCV READ
+        # switch transistor to draw through branch
+        GPIO.setup(ocv_trans, GPIO.OUT)
+        GPIO.output(ocv_trans, 1)
+        time.sleep(0.5)
+        # get reading
+        read_ocv = self.adc_m.get_ocv_PV(ADC_PV_CHAN)
+        # switch transistor back
+        time.sleep(0.25)
+        GPIO.output(ocv_trans, 0)
+        GPIO.cleanup(ocv_trans)
+        
+        # SCC READ
+        # switch transistor to draw through branch
+        GPIO.setup(scc_trans, GPIO.OUT)
+        GPIO.output(scc_trans, 1)
+        time.sleep(0.5)
+        # get reading
+        read_scc = self.adc_m.get_scc_PV(ADC_PV_CHAN)
+        # switch transistor back
+        time.sleep(0.25)
+        GPIO.output(scc_trans, 0)
+        GPIO.cleanup(scc_trans)
         
         # close EDS pv relay
         time.sleep(0.5)
         GPIO.cleanup(pv_relay)
         time.sleep(0.5)
-
-        # LOG
-        # DO CALCS TO GET VALUE
-        current = read
         
-        return current
+        return [read_ocv, read_scc]
 
 
     def run_measure_BAT(self):
-        # flips relay for battery voltage in
-        bat_relay = self.get_pin('BATTERY')
-        
-        time.sleep(0.5)
-        GPIO.setup(bat_relay, GPIO.OUT)
-        time.sleep(0.5)
+        # the battery will not require flipping relays/transistors (only ~14uW power lost)
         
         # get reading
-        read = self.adc_m.get_raw_read_BAT()
+        read_ocv = self.adc_m.get_ocv_BAT(ADC_BAT_CHAN)
         
-        # switch relay off
-        time.sleep(0.5)
-        GPIO.cleanup(relay)
-        time.sleep(0.5)
-        
-        # LOG
-        # DO CALCS TO GET CURRENT VALUE
-        current = read
-        
-        return current
+        return read_ocv
         
     
     def run_test_begin(self, eds_num):
@@ -239,19 +274,4 @@ class TestingMaster:
         # 5) EDS activation relays OFF
         GPIO.cleanup(eds_select)
         time.sleep(0.5)
-        
-
-            
-    
-            
-            
-            
-            
-
-
-        
-        
-        
-        
-        
         
