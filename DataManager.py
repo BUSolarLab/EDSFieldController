@@ -14,10 +14,12 @@ from math import cos, sin
 from numpy import deg2rad
 
 # necessary constants
-USB_DIR_PATH = "/media/pi/"
-DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "EDS(#)", "SCC_Before(amps)", "SCC_After(amps)"]
-DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) EDS(#) SCC_Before(amps) SCC_After(amps)"
+USB_DIR_PATH = "/media/usb"
+DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "EDS(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "CTRL1_OCV_Before(V)", "CTRL1_OCV_Before(V)", "CTRL1_SCC_Before(A)", "CTRL1_SCC_After(A)", "CTRL2_OCV_Before(V)", "CTRL2_OCV_After(V)", "CTRL2_SCC_Before(A)", "CTRL2_SCC_After(A)"]
+DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) EDS(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) CTRL1_OCV_Before(V) CTRL1_OCV_Before(V) CTRL1_SCC_Before(A) CTRL1_SCC_After(A) CTRL2_OCV_Before(V) CTRL2_OCV_After(V) CTRL2_SCC_Before(A) CTRL2_SCC_After(A)"
 
+NOON_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "EDS(#)", "OCV(V)", "SCC(A)"]
+NOON_HEADER_TXT = "Date Time Temperature(C) Humidity(%) EDS(#) OCV(V) SCC(A)"
 
 '''
 USB Master Class:
@@ -31,10 +33,10 @@ Functionality:
 class USBMaster:
     def __init__(self):
         self.USB_name = None
-        self.USB_path = None
+        self.USB_path = USB_DIR_PATH
         self.is_mounted = False
         self.set_USB_name()
-        self.set_USB_path()
+        # self.set_USB_path()
 
     def reset(self):
         # resets parameters if needed
@@ -59,7 +61,7 @@ class USBMaster:
         # gets USB file path for saving if USB name found
         if self.USB_name is not None:
             self.USB_path = USB_DIR_PATH+self.USB_name
-            
+    
     def process_sequence(self):
         # runs through necessary sequence for single method call
         self.set_USB_name()
@@ -99,7 +101,10 @@ class CSVMaster:
         if not os.path.isfile(name):
             try:
                 with open(name, 'a') as f:
-                    f.writelines(DATA_HEADER_TXT + '\n')
+                    if name is self.txt_testing_data:
+                        f.writelines(DATA_HEADER_TXT + '\n')
+                    if name is self.txt_noon_data:
+                        f.writelines(NOON_HEADER_TXT + '\n')
             except:
                 print("Error creating txt file! Please check.")
     
@@ -108,21 +113,32 @@ class CSVMaster:
             try:
                 with open(name, 'a') as f:
                     writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                    writer.writerow(DATA_HEADER_CSV)
+                    if name is self.csv_testing_data:
+                        writer.writerow(DATA_HEADER_CSV)
+                    if name is self.csv_noon_data:
+                        writer.writerow(NOON_HEADER_CSV)
             except:
                 print("Error creating csv file! Please check.")
         
     
     # construct data object with all the necessary parameters
-    def data_row(self, dt, temp, humid, eds_num, b_cur, a_cur):
+    def data_row_test(self, dt, temp, humid, eds_num, *params):
         date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
         time = str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
-        return [date, time, str(temp), str(humid), str(eds_num), str(b_cur), str(a_cur)]
-    
+        out = [date, time, str(temp), str(humid), str(eds_num)]
+        for par in params:
+            out.append(str(par))
+        return out
+
+    def data_row_noon(self, dt, temp, humid, eds_num, volt, cur):
+        date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
+        time = str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
+        return [date, time, str(temp), str(humid), str(eds_num), str(volt), str(cur)]
     
     # write to csv version of EDS testing data log file
-    def write_csv_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
-        row = self.data_row(dt, temp, humid, eds_num, b_cur, a_cur)
+    def write_csv_testing_data(self, dt, temp, humid, eds_num, *params):
+        row = self.data_row_test(dt, temp, humid, eds_num, *params)
+        print("CSV: ", row)
         try:
             # attempt to open csv file in append mode (don't want to create lots of files)
             with open(self.csv_testing_data, mode='a') as f_csv:
@@ -134,9 +150,10 @@ class CSVMaster:
         
     
     # write to txt version of EDS testing data log file (two copies of data for fidelity)
-    def write_txt_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
+    def write_txt_testing_data(self, dt, temp, humid, eds_num, *params):
         # process raw data into txt dump format with space delimiters
-        row_raw = self.data_row(dt, temp, humid, eds_num, b_cur, a_cur)
+        row_raw = self.data_row_test(dt, temp, humid, eds_num, *params)
+        print("TXT: ", row_raw)
         row = ""
         for param in row_raw:
             row += param
@@ -151,8 +168,8 @@ class CSVMaster:
     
     
     # write to csv version of solar noon testing data log file
-    def write_csv_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
-        row = self.data_row(dt, temp, humid, eds_num, b_cur, a_cur)
+    def write_csv_noon_data(self, dt, temp, humid, eds_num, volt, cur):
+        row = self.data_row_noon(dt, temp, humid, eds_num, b_volt, volt, cur)
         try:
             # attempt to open csv file in append mode (don't want to create lots of files)
             with open(self.csv_noon_data, mode='a') as f_csv:
@@ -164,9 +181,9 @@ class CSVMaster:
     
     
     # write to txt version of solar noon testing data log file
-    def write_txt_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
+    def write_txt_noon_data(self, dt, temp, humid, eds_num, volt, cur):
         # process raw data into txt dump format with space delimiters
-        row_raw = self.data_row(dt, temp, humid, eds_num, b_cur, a_cur)
+        row_raw = self.data_row_noon(dt, temp, humid, eds_num, volt, cur)
         row = ""
         for param in row_raw:
             row += param
@@ -181,14 +198,14 @@ class CSVMaster:
             
     
     # write to testing data files
-    def write_testing_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
-        self.write_txt_testing_data(dt, temp, humid, eds_num, b_cur, a_cur)
-        self.write_csv_testing_data(dt, temp, humid, eds_num, b_cur, a_cur)
+    def write_testing_data(self, dt, temp, humid, eds_num, *params):
+        self.write_txt_testing_data(dt, temp, humid, eds_num, *params)
+        self.write_csv_testing_data(dt, temp, humid, eds_num, *params)
         
     # write to noon data files
-    def write_noon_data(self, dt, temp, humid, eds_num, b_cur, a_cur):
-        self.write_txt_noon_data(dt, temp, humid, eds_num, b_cur, a_cur)
-        self.write_csv_noon_data(dt, temp, humid, eds_num, b_cur, a_cur)
+    def write_noon_data(self, dt, temp, humid, eds_num, volt, cur):
+        self.write_txt_noon_data(dt, temp, humid, eds_num, volt, cur)
+        self.write_csv_noon_data(dt, temp, humid, eds_num, volt, cur)
             
 '''
 Log Master Class:
