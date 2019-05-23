@@ -33,6 +33,8 @@ Y_DAYS = [0,31,59,90,120,151,181,212,243,273,304,334]
 # tolerances for humidity and temperature scheduling
 T_TOL = 0.1
 H_TOL = 0.1
+
+# how close current time must be to scheduled time to initiate test (min)
 MIN_CHECK_THRESHOLD = 0.5
 
 # GPIO setup
