@@ -1,6 +1,6 @@
 '''
 =============================
-Title: Data Manager - EDS Field Control
+Title: Configuration File Management - EDS Field Control
 Author: Benjamin Considine
 Started: September 2018
 =============================
@@ -56,7 +56,7 @@ DEFAULT_CONFIG_PARAM = {
     'minTemperatureCelsius':10,
     'maxRelativeHumidity':60,
     'minRelativeHumidity':30,
-    'testDurationSeconds':120,
+    'testDurationSeconds':10,
     'testWindowSeconds':2700,
     'ADCResMain':68000,
     'ADCResOCV':10000,
