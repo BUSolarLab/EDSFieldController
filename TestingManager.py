@@ -1,3 +1,11 @@
+'''
+=============================
+Title: Testing and Data Collection - EDS Field Control
+Author: Benjamin Considine
+Started: September 2018
+=============================
+'''
+
 import RPi.GPIO as GPIO
 import time
 import os
@@ -262,6 +270,7 @@ class TestingMaster:
         time.sleep(0.5) # short delay between relay switching
         # 2) power supply relay ON
         GPIO.setup(ps_relay, GPIO.OUT)
+        GPIO.output(ps_relay, 1)
         
     def run_test_end(self, eds_num):
         # runs the second half of a test to finish from first half
@@ -269,9 +278,13 @@ class TestingMaster:
         ps_relay = self.get_pin('POWER')
         # THIS MUST FOLLOW run_test_begin() TO FINISH TEST PROPERLY
         # 4) power supply relay OFF
+        GPIO.output(ps_relay, 0)
         GPIO.cleanup(ps_relay)
         time.sleep(0.5)
         # 5) EDS activation relays OFF
         GPIO.cleanup(eds_select)
         time.sleep(0.5)
+        
+
+
         
