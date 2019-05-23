@@ -1,3 +1,11 @@
+'''
+=============================
+Title: Data Manager - EDS Field Control
+Author: Benjamin Considine
+Started: September 2018
+=============================
+'''
+
 import os
 import json
 
