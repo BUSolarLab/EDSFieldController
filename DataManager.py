@@ -1,4 +1,12 @@
 '''
+=============================
+Title: Data Manager - EDS Field Control
+Author: Benjamin Considine
+Started: September 2018
+=============================
+'''
+
+'''
 NOTE - Sections of this code are taken from Adafruit at:
 https://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/script
 '''
