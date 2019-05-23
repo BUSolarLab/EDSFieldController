@@ -1,6 +1,6 @@
 '''
 =============================
-Title: Data Manager - EDS Field Control
+Title: USB and Data Writing - EDS Field Control
 Author: Benjamin Considine
 Started: September 2018
 =============================
@@ -274,9 +274,3 @@ def get_solar_time(gmt_off, dt, longitude, latitude):
     # return solar time offset in minutes
     return D
 
-
-        
-        
-        
-        
-        
