@@ -1,6 +1,14 @@
 #!/usr/bin/env python3.5
 
 '''
+=============================
+Title: Master Control - EDS Field Control
+Author: Benjamin Considine
+Started: September 2018
+=============================
+'''
+
+'''
 This is central control.
 This file contains the main looping structure for extended-period field testing.
 '''
@@ -173,8 +181,10 @@ while not stopped:
         
         # if out of loop and parameters are met
         '''
+        '''
         # THE FOLLOWING IS TEST CODE FOR DEBUGGING
-        if 0:
+        if 1:
+            eds = 5
             # run test if all flags passed
             print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for EDS" + str(eds))
             # run testing procedure
@@ -240,6 +250,7 @@ while not stopped:
             print(write_data)
             csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], eds, *write_data)
         # END TEST CODE FOR DEBUGGING
+        '''
         '''
         
         #try:
