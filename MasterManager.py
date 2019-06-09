@@ -183,7 +183,7 @@ while not stopped:
         '''
         '''
         # THE FOLLOWING IS TEST CODE FOR DEBUGGING
-        if 1:
+        if 0:
             eds = 5
             # run test if all flags passed
             print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for EDS" + str(eds))
