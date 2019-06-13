@@ -12,5 +12,6 @@ Please follow these steps to set up a brand new Raspberry Pi 3 B+
 6. Run MasterManager.py once to make sure everything works
 7. Recomment line 60 so that it does not reset time again
 8. Change config.json file to location and setup specifications
-9. Add the following line above 'exit 0' in /etc/rc.local (must use root access to edit file 'sudo nano /etc/rc.local')
+9. Add the following line above 'exit 0' in /etc/rc.local (must use root access to edit file 'sudo nano /etc/rc.local'):
+(sleep 15; sudo python3 /home/pi/EDSPython/MasterManager.py)&
 10. RPi is now ready for automated function
