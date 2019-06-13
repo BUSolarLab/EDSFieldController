@@ -3,7 +3,7 @@
 echo Initiating EDS Controller Setup...
 echo ---
 echo Creating EDSPython folder
-mkdir /home/pi/EDSPython
+mkdir -m 777 /home/pi/EDSPython
 cd /home/pi/EDSPython
 echo ---
 #
