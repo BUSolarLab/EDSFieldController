@@ -23,7 +23,6 @@ import AM2315
 
 import StaticManager as SM
 import DataManager as DM
-import RebootManager as RM
 import TestingManager as TM
 
 from math import floor, ceil
