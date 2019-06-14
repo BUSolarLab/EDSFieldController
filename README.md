@@ -6,7 +6,7 @@ Please follow these steps to set up a brand new Raspberry Pi 3 B+
 
 1. Download and install Raspbian on the RPi
 2. Download and run eds_setup.sh (click 'raw' then right-click 'Save As', then open terminal and use 'chmod +x eds_setup.sh' then 'sudo ./eds_setup.sh' (you will have to type 'y' as a prompt at some point during the installation)
-3. Enable SPI and I2C
+3. Enable SPI and I2C, and set to boot into CLI (command line interface) instead of the desktop
 4. Reboot system 'sudo reboot'
 5. Open MasterManager.py and uncomment line 60, filling in the appropriate time variables for the eventual location of test unit (this initiates the RTC for a certain time that it will maintain)
 6. Run MasterManager.py once to make sure everything works
