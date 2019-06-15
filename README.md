@@ -16,4 +16,5 @@ Please follow these steps to set up a brand new Raspberry Pi 3 B+
 > (sleep 15; sudo python3 /home/pi/EDSPython/MasterManager.py)&
 
 *This is how the code will start automatically on boot. 'sleep 15' is there to create a window for entering the RPi desktop before the code executes.*
+
 10. RPi is now ready for automated function. The code will begin automatically on boot. From now on, if you want to enter the desktop environment on this RPi you can type 'startx' in the command line during the 15 second pause before the MasterManager.py code is run.
