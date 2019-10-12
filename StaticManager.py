@@ -1,8 +1,7 @@
 '''
 =============================
 Title: Configuration File Management - EDS Field Control
-Author: Benjamin Considine
-Editor: Brian Mahabir, Aditya Wikara
+Author: Benjamin Considine, Brian Mahabir, Aditya Wikara
 Started: September 2018
 =============================
 '''
