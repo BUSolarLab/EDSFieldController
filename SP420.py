@@ -38,7 +38,10 @@ class Irradiance(object):
         except SerialException:
             if (port == '/dev/ttyACM0'):
                 port = '/dev/tty.usbmodem14201' #NEW PORT NAME
-                self.apogee = Serial(port, 115200, timeout=0.5)
+                try:
+                    self.apogee = Serial(port, 115200, timeout=0.5)
+                except SerialException:
+                    self.apogee = None
             else:
                 #No Pyranometer Found
                 self.apogee = None

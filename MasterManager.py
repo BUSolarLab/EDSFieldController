@@ -50,7 +50,6 @@ adc_master = TM.ADCMaster()
 pow_master = TM.PowerMaster()
 pr_master = TM.PerformanceRatio()
 soil_master = TM.Soiling()
-irr_master = SP420.Irradiance()
 
 # weather sensor setup
 weather = AM2315.AM2315()
@@ -244,6 +243,7 @@ while not stopped:
                 add_error("Sensor-Weather-1")
             
             # Get global irradiance data from pyranometer
+            irr_master = SP420.Irradiance()
             g_poa = irr_master.get_irradiance()
             
             # (1) EDS Panels Pre-EDS Activation Measurements
@@ -447,6 +447,7 @@ while not stopped:
                     data_ocv_scc.append(ctrl_scc_data[ctrl - 1])
                 
                 # 6) get readings from the SP420 pyranometer
+                irr_master = SP420.Irradiance()
                 g_poa =irr_master.get_irradiance()
                 print_l(rtc.datetime, "Global Irradiance" + str(eds) + ": " + str(g_poa))
                 
@@ -516,6 +517,7 @@ while not stopped:
                 print_l(rtc.datetime, "FORCED. Running EDS" + str(eds_num) + " testing sequence. FLIP SWITCH OFF TO STOP.")
                 try:
                     # Get global irradiance data from pyranometer
+                    irr_master = SP420.Irradiance()
                     g_poa = irr_master.get_irradiance()
 
                     # measure PV current before activation
