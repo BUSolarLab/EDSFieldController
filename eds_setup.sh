@@ -14,7 +14,6 @@ cp /home/pi/EDSPython/EDSFieldController/DataManager.py /home/pi/EDSPython
 cp /home/pi/EDSPython/EDSFieldController/MasterManager.py /home/pi/EDSPython
 cp /home/pi/EDSPython/EDSFieldController/StaticManager.py /home/pi/EDSPython
 cp /home/pi/EDSPython/EDSFieldController/TestingManager.py /home/pi/EDSPython
-cp /home/pi/EDSPython/EDSFieldController/config.json /home/pi/EDSPython
 echo ---
 #
 echo Installing external dependencies. THIS TAKES A MINUTE. PLEASE WAIT...
@@ -64,6 +63,3 @@ service watchdog start
 echo ---
 #
 echo INSTALLATION COMPLETE. THANK YOU FOR PLAYING.
-echo Now please follow the rest of the steps to set up this Raspberry Pi.
-echo Cheers,      
-echo    Ben Considine
