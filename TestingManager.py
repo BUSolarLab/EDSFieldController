@@ -63,7 +63,7 @@ class ADCMaster:
     
     def get_scc_PV(self):
         spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
-		cs = digitalio.DigitalInOut(board.CE0)
+		cs = digitalio.DigitalInOut(board.D18)
         mcp = MCP.MCP3008(spi, cs)
         chan=AnalogIn(mcp, MCP.P0)
         raw = chan.voltage
@@ -73,7 +73,7 @@ class ADCMaster:
     
     def get_ocv_BAT(self):
         spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
-		cs = digitalio.DigitalInOut(board.CE0)
+		cs = digitalio.DigitalInOut(board.D18)
         mcp = MCP.MCP3008(spi, cs)
         chan=AnalogIn(mcp, MCP.P0)
         raw = self.mcp.read_adc(chan)
@@ -106,7 +106,6 @@ class TestingMaster:
     # get int type from dicationary if GPIO pin value needed
     def get_pin(self, key):
         return int(self.test_config[key])
-        
         
     # check time against schedule
     def check_time(self, dt, yday, solar_offset, eds_num):
