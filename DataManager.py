@@ -145,7 +145,7 @@ class CSVMaster:
         return out
 
     def data_row_noon(self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr):
-        date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' ßß+ str(dt.tm_year)
+        date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
         time = str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
         return [date, time, str(temp), str(humid), str(g_poa), str(eds_act),str(eds_ctrl_num), str(volt), str(cur), str(power), str(pr), str(sr)]
 

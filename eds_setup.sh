@@ -20,7 +20,9 @@ echo ---
 echo Installing external dependencies. THIS TAKES A MINUTE. PLEASE WAIT...
 pip3 install RPI.GPIO
 pip3 install adafruit-circuitpython-pcf8523
+pip3 install i2cdev
 sudo apt-get update
+sudo apt-get dist-upgrade
 sudo apt-get install build-essential python-pip python-dev python-smbus git
 git clone https://github.com/adafruit/Adafruit_Python_GPIO.git
 cd Adafruit_Python_GPIO
