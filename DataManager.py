@@ -16,7 +16,7 @@ from math import cos, sin
 from numpy import deg2rad
 
 # necessary constants
-USB_DIR_PATH = "/media/usb"
+USB_DIR_PATH = "/media/pi/"
 DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)","EDS(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "CTRL1_OCV(V)", "CTRL1_SCC(A)", "CTRL2_OCV(V)", "CTRL2_SCC(A)", "EDS_PWR_Before(W)", "EDS_PWR_After(W)", "CTRL1_PWR(W)","CTRL2_PWR(W)"]
 DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) CTRL1_OCV(V) CTRL1_SCC(A) CTRL2_OCV(V) CTRL2_SCC(A) EDS_PWR_Before(W) EDS_PWR_After(W) CTRL1_PWR(W) CTRL2_PWR(W)"
 
@@ -40,7 +40,7 @@ class USBMaster:
         self.USB_path = USB_DIR_PATH
         self.is_mounted = False
         self.set_USB_name()
-        # self.set_USB_path()
+        self.set_USB_path()
 
     def reset(self):
         # resets parameters if needed
