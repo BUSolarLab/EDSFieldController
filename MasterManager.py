@@ -24,7 +24,7 @@ import SP420
 
 import StaticManager as SM
 import DataManager as DM
-import RebootManager as RM
+#import RebootManager as RM
 import TestingManager as TM
 
 from math import floor, ceil
@@ -86,7 +86,6 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(test_master.get_pin('outPinLEDGreen'), GPIO.OUT)
 GPIO.setup(test_master.get_pin('outPinLEDRed'), GPIO.OUT)
 GPIO.setup(test_master.get_pin('inPinManualActivate'), GPIO.IN)
-GPIO.setup(test_master.get_pin('POWER'), GPIO.OUT)
 GPIO.setup(25, GPIO.OUT)
 
 # for each EDS, CTRL id, set up GPIO channel

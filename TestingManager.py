@@ -52,10 +52,10 @@ class ADCMaster:
         self.bat_div = 10
         
     def get_ocv_PV(self):
-		spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
-		cs = digitalio.DigitalInOut(board.CE0)
+        spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
+        cs = digitalio.DigitalInOut(board.D18)
         mcp = MCP.MCP3008(spi, cs)
-		chan=AnalogIn(mcp, MCP.P0)
+        chan=AnalogIn(mcp, MCP.P0)
         raw = chan.voltage
         print('PV Raw volt read: ' + str(raw) + '[V]')
         # Since we divided voltage by 11, multiply by 11 to get actual Voc
@@ -63,7 +63,7 @@ class ADCMaster:
     
     def get_scc_PV(self):
         spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
-		cs = digitalio.DigitalInOut(board.D18)
+        cs = digitalio.DigitalInOut(board.D18)
         mcp = MCP.MCP3008(spi, cs)
         chan=AnalogIn(mcp, MCP.P0)
         raw = chan.voltage
@@ -73,7 +73,7 @@ class ADCMaster:
     
     def get_ocv_BAT(self):
         spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
-		cs = digitalio.DigitalInOut(board.D18)
+        cs = digitalio.DigitalInOut(board.D18)
         mcp = MCP.MCP3008(spi, cs)
         chan=AnalogIn(mcp, MCP.P0)
         raw = self.mcp.read_adc(chan)
