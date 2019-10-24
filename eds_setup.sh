@@ -24,6 +24,7 @@ sudo pip3 install adafruit-circuitpython-am2320
 sudo pip3 install i2cdev
 sudo apt-get update
 sudo apt-get dist-upgrade
+sudo apt-get upgrade
 sudo apt-get install build-essential python-pip python-dev python-smbus git
 git clone https://github.com/adafruit/Adafruit_Python_GPIO.git
 cd Adafruit_Python_GPIO
@@ -42,6 +43,9 @@ echo ---
 #echo ---
 #
 echo Installing USB auto mount library and setting config...
+sudo apt-get install ntfs-3g
+sudo apt-get install exfat-fuse
+sudo apt-get install exfat-utils
 sudo apt-get install usbmount
 # change config settings
 sed -i "s/\(FS_MOUNTOPTIONS *= *\).*/\1\"-fstype=vfat,gid=users,dmask=0007,fmask=0117\"/" /etc/usbmount/usbmount.conf
