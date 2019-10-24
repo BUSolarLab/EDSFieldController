@@ -178,25 +178,24 @@ class TestingMaster:
         # Setup GPIO pins to measure Voc and Isc of desired panel
         time.sleep(0.5)
         GPIO.setup(pv_relay, GPIO.OUT)
-        GPIO.setup(25, GPIO.OUT)
         time.sleep(0.5)
         
         # OCV READ
         # Switch the relay to read Voc
-        GPIO.output(25, GPIO.HIGH)
+        GPIO.setup(25, GPIO.IN)
         time.sleep(0.5)
         # Get reading
         read_ocv = self.adc_m.get_ocv_PV()
         
         # SCC READ
         # Switch relay to read Isc
-        GPIO.output(25, GPIO.LOW)
+        GPIO.setup(25, GPIO.OUT)
         time.sleep(0.5)
         # get reading
         read_scc = self.adc_m.get_scc_PV()
 
         # Default pin is LOW, no need to switch, just clean up
-        time.sleep(0.25)
+        time.sleep(0.5)
         GPIO.cleanup(25)
         
         # Close EDS PV Relay
@@ -214,24 +213,23 @@ class TestingMaster:
         # Setup GPIO pins to measure Voc and Isc of desired panel
         time.sleep(0.5)
         GPIO.setup(pv_relay, GPIO.OUT)
-        GPIO.setup(25, GPIO.OUT)
         time.sleep(0.5)
         
         # OCV READ
         # Switch the relay to read Voc
-        GPIO.output(25, GPIO.HIGH)
+        GPIO.setup(25, GPIO.IN)
         time.sleep(0.5)
         # Get reading
         read_ocv = self.adc_m.get_ocv_PV()
         
         # SCC READ
         # Switch relay to read Isc
-        GPIO.output(25, GPIO.LOW)
+        GPIO.setup(25, GPIO.OUT)
         time.sleep(0.5)
         # get reading
         read_scc = self.adc_m.get_scc_PV()
         # Default pin is LOW, no need to switch, just clean up
-        time.sleep(0.25)
+        time.sleep(0.5)
         GPIO.cleanup(25)
         
         # Close EDS PV Relay
@@ -263,7 +261,7 @@ class TestingMaster:
     def run_test_end(self, eds_num):
         # runs the second half of a test to finish from first half
         eds_select = self.get_pin('EDS'+str(eds_num))
-        #ps_relay = self.get_pin('POWER')
+
         # THIS MUST FOLLOW run_test_begin() TO FINISH TEST PROPERLY
         # deactivate the EDS
         GPIO.output(eds_select, GPIO.LOW)
