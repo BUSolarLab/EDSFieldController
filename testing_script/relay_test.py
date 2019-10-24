@@ -37,6 +37,7 @@ GPIO.setmode(GPIO.BCM)
 
 pinList = [4,17,6,19,26,27,25,23,15,20,16,12,8,7]
 
+#LED ON
 for i in pinList:
     GPIO.setup(i,GPIO.OUT)
 
