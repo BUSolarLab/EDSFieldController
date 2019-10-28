@@ -85,7 +85,7 @@ GPIO.setmode(GPIO.BCM)
 
 GPIO.setup(test_master.get_pin('outPinLEDGreen'), GPIO.OUT)
 GPIO.setup(test_master.get_pin('outPinLEDRed'), GPIO.OUT)
-GPIO.setup(test_master.get_pin('inPinManualActivate'), GPIO.IN)
+GPIO.setup(test_master.get_pin('inPinManualActivate'), GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(25, GPIO.OUT)
 
 # for each EDS, CTRL id, set up GPIO channel
@@ -303,7 +303,7 @@ while not stopped:
             # turn off GREEN LED after test
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
 
-            # (4) EDS Panels Post-EDS Activation OCV and SCC measurements
+            # (4) EDS Panels Post-EDS Activation Measurements
             for eds in eds_ids:
                 eds_ocv_post = 0
                 eds_scc_post = 0
@@ -502,78 +502,90 @@ while not stopped:
         if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
             # run EDS test on selected manual EDS
             
-            if GPIO.input(test_master.get_pin('inPinManualActivate')):
-                # flag for test duration
-                man_flag = False
-                
-                eds_num = test_master.get_pin('manualEDSNumber')
-                
-                # get weather and time for data logging
-                curr_dt = rtc.datetime
-                w_read = weather.read_humidity_temperature()
-                
-                # solid GREEN for duration of manual test
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), GPIO.HIGH)
-                print_l(rtc.datetime, "FORCED. Running EDS" + str(eds_num) + " testing sequence. FLIP SWITCH OFF TO STOP.")
-                try:
-                    # Get global irradiance data from pyranometer
-                    irr_master = SP420.Irradiance()
-                    g_poa = irr_master.get_irradiance()
-
-                    # measure PV current before activation
-                    [eds_ocv_before, eds_scc_before] = test_master.run_measure_EDS(eds_num)
-                    print_l(rtc.datetime, "Pre-test OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_before))
-                    print_l(rtc.datetime, "Pre-test SCC for EDS" + str(eds_num) + ": " + str(eds_scc_before))
-
-                    # get the panel temperature using ambient temperature
-                    amb_temp = w_read[1]
-                    pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
-                    
-                    # compute the power measurements for each panel
-                    eds_power_before = pow_master.get_power_out(eds_ocv_before,eds_scc_before,pan_temp)
-                    print_l(curr_dt, "Pre-EDS Manual Activation Power for EDS" + str(eds) + ": " + str(eds_power_before))
+            # flag for test duration
+            man_flag = False
             
-                    # run first half of test
-                    test_master.run_test_begin(eds_num)
-                    time_elapsed = 0
-                    
-                    # 3) wait for switch to be flipped OFF
-                    while not man_flag:
-                        if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
-                            man_flag = True
-                            
-                        time_elapsed += 0.1
-                        if time_elapsed > MANUAL_TIME_LIMIT:
-                            man_flag = True
+            eds_num = test_master.get_pin('manualEDSNumber')
+            
+            # get weather and time for data logging
+            curr_dt = rtc.datetime
+            w_read = weather.read_humidity_temperature()
+            
+            # solid GREEN for duration of manual test
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), GPIO.HIGH)
+            print_l(rtc.datetime, "FORCED. Running EDS" + str(eds_num) + " testing sequence. FLIP SWITCH OFF TO STOP.")
+            try:
+                # Get global irradiance data from pyranometer
+                irr_master = SP420.Irradiance()
+                g_poa = irr_master.get_irradiance()
+
+                # measure PV current before activation
+                [eds_ocv_before, eds_scc_before] = test_master.run_measure_EDS(eds_num)
+                print_l(rtc.datetime, "Pre-test OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_before))
+                print_l(rtc.datetime, "Pre-test SCC for EDS" + str(eds_num) + ": " + str(eds_scc_before))
+
+                # get the panel temperature using ambient temperature
+                amb_temp = w_read[1]
+                pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
+                
+                # compute the power measurements for each panel
+                eds_power_before = pow_master.get_power_out(eds_ocv_before,eds_scc_before,pan_temp)
+                print_l(curr_dt, "Pre-EDS Manual Activation Power Calculation for EDS" + str(eds) + ": " + str(eds_power_before))
+
+                # compute the PR before eds activation
+                eds_pr_before = pr_master.get_pr(eds_ocv_before,eds_scc_before,pan_temp,eds_power_before,g_poa)
+                print_l(curr_dt, "Pre-EDS Manual Activation PR Calculation for EDS" + str(eds) + ": " + str(eds_pr_after))
+
+                # run first half of test
+                test_master.run_test_begin(eds_num)
+                time_elapsed = 0
+                
+                '''
+                # wait for switch to be flipped OFF
+                while not man_flag:
+                    if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
+                        man_flag = True
                         
-                        time.sleep(0.1)
+                    time_elapsed += 0.1
+                    if time_elapsed > MANUAL_TIME_LIMIT:
+                        man_flag = True
                     
-                    # then run second half of test (cleanup phase)
-                    test_master.run_test_end(eds_num)
+                    time.sleep(0.1)
+                '''
+                # then run second half of test (cleanup phase)
+                test_master.run_test_end(eds_num)
 
-                    [eds_ocv_after, eds_scc_after] = test_master.run_measure_EDS(eds_num)
-                    print_l(rtc.datetime, "Post-EDS Manual Activation OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_after))
-                    print_l(rtc.datetime, "Post-EDS Manual Activation SCC for EDS" + str(eds_num) + ": " + str(eds_scc_after))
-                    
-                    # get the panel temperature using ambient temperature
-                    amb_temp = w_read[1]
-                    pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
-                    
-                    # compute the power measurements for each panel
-                    eds_power_after = pow_master.get_power_out(eds_ocv_after,eds_scc_after,pan_temp)
-                    print_l(curr_dt, "Post-EDS Manual Activation Power for EDS" + str(eds) + ": " + str(eds_power_after))
-                    
-                    # write data for EDS tested
-                    csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power_before, eds_power_after)
-                    print_l(rtc.datetime, "Ended Manual Activation Test of EDS" + str(eds_num))
+                [eds_ocv_after, eds_scc_after] = test_master.run_measure_EDS(eds_num)
+                print_l(rtc.datetime, "Post-EDS Manual Activation OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_after))
+                print_l(rtc.datetime, "Post-EDS Manual Activation SCC for EDS" + str(eds_num) + ": " + str(eds_scc_after))
                 
-                except:
-                    print_l(rtc.datetime, "Error with manual testing sequence. Please check.")
-                    add_error("Test-Manual")
+                # get the panel temperature using ambient temperature
+                amb_temp = w_read[1]
+                pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
+                
+                # compute the power measurements Post EDS
+                eds_power_after = pow_master.get_power_out(eds_ocv_after,eds_scc_after,pan_temp)
+                print_l(curr_dt, "Post-EDS Manual Activation Power for EDS" + str(eds) + ": " + str(eds_power_after))
+                
+                # compute the PR measurement Post EDS                       # compute the PR before eds activation
+                eds_pr_after = pr_master.get_pr(eds_ocv_after,eds_scc_after,pan_temp,eds_power_after,g_poa)
+                print_l(curr_dt, "Post-EDS Manual Activation PR Calculation for EDS" + str(eds) + ": " + str(eds_pr_after))
+
+                # compile data
+                man_power_data = [eds_power_before,eds_power_after]
+                man_pr_data = [eds_pr_before,eds_pr_after]
+
+                # write data for EDS tested
+                csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, man_power_data, man_pr_data)
+                print_l(rtc.datetime, "Ended Manual Activation Test of EDS" + str(eds_num))
             
-                # either way, turn off GREEN LED indicator
-                GPIO.output(test_master.get_pin('outPinLEDGreen'),GPIO.LOW)
+            except:
+                print_l(rtc.datetime, "Error with manual testing sequence. Please check.")
+                add_error("Test-Manual")
         
+            # either way, turn off GREEN LED indicator
+            GPIO.output(test_master.get_pin('outPinLEDGreen'),GPIO.LOW)
+    
         '''
         END MANUAL ACTIVATION CODE
         --------------------------------------------------------------------------
