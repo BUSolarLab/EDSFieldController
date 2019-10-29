@@ -68,7 +68,7 @@ class ADCMaster:
         chan=AnalogIn(mcp, MCP.P0)
         raw = chan.voltage
         print('PV Raw curr read: ' + str(raw) + '[A]')
-        #SCC = Voc x 1 ohm
+        #SCC = Voc x 1 Ohm
         return raw
     
     def get_ocv_BAT(self):
@@ -178,6 +178,7 @@ class TestingMaster:
         # Setup GPIO pins to measure Voc and Isc of desired panel
         time.sleep(0.5)
         GPIO.setup(pv_relay, GPIO.OUT)
+        GPIO.setup(25,GPIO.OUT)
         time.sleep(0.5)
         
         # OCV READ
@@ -213,6 +214,7 @@ class TestingMaster:
         # Setup GPIO pins to measure Voc and Isc of desired panel
         time.sleep(0.5)
         GPIO.setup(pv_relay, GPIO.OUT)
+        GPIO.setup(25,GPIO.OUT)
         time.sleep(0.5)
         
         # OCV READ
