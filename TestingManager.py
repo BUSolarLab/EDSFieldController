@@ -68,7 +68,7 @@ class ADCMaster:
         chan=AnalogIn(mcp, MCP.P0)
         raw = chan.voltage
         print('PV Raw curr read: ' + str(raw) + '[A]')
-        #SCC = Voc x 1 ohm
+        #SCC = Voc x 1 Ohm
         return raw
     
     def get_ocv_BAT(self):
