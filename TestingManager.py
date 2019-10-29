@@ -178,6 +178,7 @@ class TestingMaster:
         # Setup GPIO pins to measure Voc and Isc of desired panel
         time.sleep(0.5)
         GPIO.setup(pv_relay, GPIO.OUT)
+        GPIO.setup(25,GPIO.OUT)
         time.sleep(0.5)
         
         # OCV READ
@@ -213,6 +214,7 @@ class TestingMaster:
         # Setup GPIO pins to measure Voc and Isc of desired panel
         time.sleep(0.5)
         GPIO.setup(pv_relay, GPIO.OUT)
+        GPIO.setup(25,GPIO.OUT)
         time.sleep(0.5)
         
         # OCV READ
