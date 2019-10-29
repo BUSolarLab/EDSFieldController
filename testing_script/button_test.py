@@ -17,7 +17,7 @@ message = input("Press enter to quit program\n")
 GPIO.cleanup()
 '''
 
-#Using event_detection
+#Using event_detection instead of callback function
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(10,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 GPIO.add_event_detect(10,GPIO.RISING)
