@@ -123,6 +123,7 @@ longitude = test_master.get_param('degLongitude')
 latitude = 1 # latitude currently unused
 
 # detect switch event to manually operate EDS
+GPIO.setup(test_master.get_pin('inPinManualActivate'),GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
 GPIO.add_event_detect(test_master.get_pin('inPinManualActivate'), GPIO.RISING)
 
 '''
@@ -534,7 +535,7 @@ while not stopped:
 
                 # compute the PR before eds activation
                 eds_pr_before = pr_master.get_pr(eds_ocv_before,eds_scc_before,pan_temp,eds_power_before,g_poa)
-                print_l(curr_dt, "Pre-EDS Manual Activation PR Calculation for EDS" + str(eds) + ": " + str(eds_pr_after))
+                print_l(curr_dt, "Pre-EDS Manual Activation PR Calculation for EDS" + str(eds) + ": " + str(eds_pr_before))
 
                 # run first half of test
                 test_master.run_test_begin(eds_num)
