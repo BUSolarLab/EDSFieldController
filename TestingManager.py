@@ -359,6 +359,6 @@ class Soiling:
         self.gstc = 1000
 
     #Soiling Ratio Formula
-    def get_sr(self,isc_soiled):
-        SR = isc_soiled/self.isc_clean
+    def get_sr(self,isc_soiled, gpoa):
+        SR = (isc_soiled/gpoa)/(self.isc_clean/self.gstc)
         return round(SR,2)

@@ -58,12 +58,6 @@ weather = AM2315.AM2315()
 i2c_bus = busio.I2C(SCL, SDA)
 rtc = adafruit_pcf8523.PCF8523(i2c_bus)
 
-
-# set time to current if needed
-#time struct: (year, month, month_day, hour, min, sec, week_day {Monday=0}, year_day, is_daylightsaving?)
-# run this once with the line below uncommented
-#rtc.datetime = time.struct_time((2019,7,5,12,8,0,0,173,1))
-
 # set up log file
 log_master = DM.LogMaster(usb_master.get_USB_path(), rtc.datetime)
 
@@ -83,6 +77,7 @@ ctrl_ids = test_master.get_config()['CTRLIDS']
 # channel setups
 GPIO.setmode(GPIO.BCM)
 
+# port setup
 GPIO.setup(test_master.get_pin('outPinLEDGreen'), GPIO.OUT)
 GPIO.setup(test_master.get_pin('outPinLEDRed'), GPIO.OUT)
 GPIO.setup(test_master.get_pin('inPinManualActivate'), GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -97,7 +92,6 @@ for ctrl in ctrl_ids:
     GPIO.setup(test_master.get_pin('CTRL'+str(ctrl)+'PV'), GPIO.OUT)
 
 # var setup
-error_cycle_count = 0
 flip_on = True
 temp_pass = False
 humid_pass = False
@@ -242,14 +236,13 @@ while not stopped:
             except:
                 add_error("Sensor-Weather-1")
             
-            # Get global irradiance data from pyranometer
-            irr_master = SP420.Irradiance()
-            g_poa = irr_master.get_irradiance()
-            
             # (1) EDS Panels Pre-EDS Activation Measurements
             for eds in eds_ids:
                 eds_ocv_pre = 0
                 eds_scc_pre = 0
+                # measure global irradiance data from pyranometer
+                irr_master = SP420.Irradiance()
+                g_poa = irr_master.get_irradiance()
                 # measure ocv and scc
                 [eds_ocv_pre, eds_scc_pre] = test_master.run_measure_EDS(eds)
                 print_l(curr_dt, "Pre-EDS Solar Noon OCV for EDS" + str(eds) + ": " + str(eds_ocv_pre))
@@ -264,7 +257,7 @@ while not stopped:
                 eds_pr_pre = pr_master.get_pr(eds_ocv_pre,eds_scc_pre,pan_temp,eds_power_pre,g_poa)
                 print_l(curr_dt, "Pre-EDS Solar Noon PR for EDS" + str(eds) + ": " + str(eds_pr_pre))
                 # compute the SR measurements for each panel
-                eds_sr_pre = soil_master.get_sr(eds_scc_pre)
+                eds_sr_pre = soil_master.get_sr(eds_scc_pre, g_poa)
                 print_l(curr_dt, "Pre-EDS Solar Noon SR for EDS" + str(eds) + ": " + str(eds_sr_pre))
                 # write data to solar noon csv/txt
                 eds_num = "EDS"+str(eds)
@@ -275,6 +268,9 @@ while not stopped:
             for ctrl in ctrl_ids:
                 ctrl_ocv = 0
                 ctrl_scc = 0
+                # measure global irradiance data from pyranometer
+                irr_master = SP420.Irradiance()
+                g_poa = irr_master.get_irradiance()
                 # measure the ocv and scc
                 [ctrl_ocv, ctrl_scc] = test_master.run_measure_CTRL(ctrl)
                 print_l(curr_dt, "Solar Noon OCV for CTRL" + str(ctrl) + ": " + str(ctrl_ocv))
@@ -289,7 +285,7 @@ while not stopped:
                 ctrl_pr = pr_master.get_pr(ctrl_ocv,ctrl_scc,pan_temp,ctrl_power,g_poa)
                 print_l(curr_dt, "Solar Noon PR for CTRL" + str(ctrl) + ": " + str(ctrl_pr))
                 # compute the SR measurements for each panel
-                ctrl_sr = soil_master.get_sr(ctrl_scc)
+                ctrl_sr = soil_master.get_sr(ctrl_scc,g_poa)
                 print_l(curr_dt, "Solar Noon SR for CTRL" + str(ctrl) + ": " + str(ctrl_sr))
                 # write data to solar noon csv/txt
                 ctrl_num = "CTRL"+str(ctrl)
@@ -308,6 +304,9 @@ while not stopped:
             for eds in eds_ids:
                 eds_ocv_post = 0
                 eds_scc_post = 0
+                # measure global irradiance data from pyranometer
+                irr_master = SP420.Irradiance()
+                g_poa = irr_master.get_irradiance()
                 # measure the ocv and scc
                 [eds_ocv_post, eds_scc_post] = test_master.run_measure_EDS(eds)
                 print_l(curr_dt, "Post-EDS Solar Noon OCV for EDS" + str(eds) + ": " + str(eds_ocv_post))
@@ -322,7 +321,7 @@ while not stopped:
                 eds_pr_post = pr_master.get_pr(eds_ocv_post,eds_scc_post,pan_temp,eds_power_post,g_poa)
                 print_l(curr_dt, "Post-EDS Solar Noon PR for EDS" + str(eds) + ": " + str(eds_pr_post))
                 # compute the SR measurements for each panel
-                eds_sr_post = soil_master(eds_scc_post)
+                eds_sr_post = soil_master(eds_scc_post,g_poa)
                 print_l(curr_dt, "Post-EDS Solar Noon SR for EDS" + str(eds) + ": " + str(eds_sr_post))
                 # write data to solar noon csv/txt
                 eds_num = "EDS"+str(eds)
@@ -348,6 +347,7 @@ while not stopped:
             3c) Flip relays to activate EDS for test duration
             3d) Measure [after] OCV and SCC for EDS PV being tested
             3e) Write data to CSV/txt files
+        '''
         '''
         # for each EDS check time against schedule, set time flag if yes
         # put EDS in a queue if multiple are to be activated simultaneously
@@ -483,6 +483,7 @@ while not stopped:
                 print_l(rtc.datetime, "Ended automated scheduled test of EDS" + str(eds))
                 
         '''
+        '''
         END AUTOMATIC TESTING ACTIVATION CODE
         --------------------------------------------------------------------------
         '''
@@ -502,10 +503,6 @@ while not stopped:
         
         if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
             # run EDS test on selected manual EDS
-            
-            # flag for test duration
-            man_flag = False
-            
             eds_num = test_master.get_pin('manualEDSNumber')
             
             # get weather and time for data logging
@@ -537,22 +534,14 @@ while not stopped:
                 eds_pr_before = pr_master.get_pr(eds_ocv_before,eds_scc_before,pan_temp,eds_power_before,g_poa)
                 print_l(curr_dt, "Pre-EDS Manual Activation PR Calculation for EDS" + str(eds) + ": " + str(eds_pr_before))
 
+                # compute the SR before eds activation
+                eds_sr_before = soil_master.get_sr(eds_scc_before, g_poa)
+                print_l(curr_dt, "Pre-EDS Manual Activation SR Calculation for EDS" + str(eds) + ": " + str(eds_sr_before))
+
                 # run first half of test
                 test_master.run_test_begin(eds_num)
                 time_elapsed = 0
-                
-                '''
-                # wait for switch to be flipped OFF
-                while not man_flag:
-                    if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
-                        man_flag = True
-                        
-                    time_elapsed += 0.1
-                    if time_elapsed > MANUAL_TIME_LIMIT:
-                        man_flag = True
-                    
-                    time.sleep(0.1)
-                '''
+
                 # then run second half of test (cleanup phase)
                 test_master.run_test_end(eds_num)
 
@@ -572,12 +561,17 @@ while not stopped:
                 eds_pr_after = pr_master.get_pr(eds_ocv_after,eds_scc_after,pan_temp,eds_power_after,g_poa)
                 print_l(curr_dt, "Post-EDS Manual Activation PR Calculation for EDS" + str(eds) + ": " + str(eds_pr_after))
 
+                # compute the SR before eds activation
+                eds_sr_after = soil_master.get_sr(eds_scc_after, g_poa)
+                print_l(curr_dt, "Post-EDS Manual Activation SR Calculation for EDS" + str(eds) + ": " + str(eds_sr_after))
+
                 # compile data
                 man_power_data = [eds_power_before,eds_power_after]
                 man_pr_data = [eds_pr_before,eds_pr_after]
+                man_sr_data = [eds_sr_before, eds_sr_after]
 
                 # write data for EDS tested
-                csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, man_power_data, man_pr_data)
+                csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, man_power_data, man_pr_data, man_sr_data)
                 print_l(rtc.datetime, "Ended Manual Activation Test of EDS" + str(eds_num))
             
             except:
