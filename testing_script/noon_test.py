@@ -32,8 +32,10 @@ solar_offset = ceil(get_solar_time(gmt_offset, current_time, longitude, latitude
 curr_dt = rtc.datetime
 yday = Y_DAYS[curr_dt.tm_mon - 1] + curr_dt.tm_mday
 solar_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60 + solar_offset
+curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
+solar_noon_min = 720 + solar_offset
 
 # if within 60 seconds of solar noon, run measurements
-tres = abs(720 - solar_time_min)
+tres = abs(solar_noon_min - curr_time_min)
 if tres < 1.0:
     print("Hello")
