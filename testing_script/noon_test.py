@@ -2,7 +2,7 @@ import busio
 import adafruit_pcf8523
 import time
 from board import *
-from math import floor, ceil
+from math import floor, ceil, cos, sin
 
 def get_solar_time(gmt_off, dt, longitude, latitude):
     # implementation adapted from https://sciencing.com/calculate-solar-time-8612288.html
