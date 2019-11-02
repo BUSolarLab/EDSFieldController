@@ -21,19 +21,27 @@ Y_DAYS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
 i2c_bus = busio.I2C(SCL, SDA)
 rtc = adafruit_pcf8523.PCF8523(i2c_bus)
 
-# get solar offset
-current_time = rtc.datetime
-longitude = -71.05
-gmt_offset = -4
-latitude = 1
-solar_offset = ceil(get_solar_time(gmt_offset, current_time, longitude, latitude) * 100)/100
 
-# get solar noon
-curr_dt = rtc.datetime
-yday = Y_DAYS[curr_dt.tm_mon - 1] + curr_dt.tm_mday
-solar_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60 + solar_offset
+while True:
+    # get solar offset
+    current_time = rtc.datetime
+    longitude = -71.05
+    gmt_offset = -4
+    latitude = 1
+    solar_offset = ceil(get_solar_time(gmt_offset, current_time, longitude, latitude) * 100)/100
 
-# if within 60 seconds of solar noon, run measurements
-tres = abs(720 - solar_time_min)
-if tres < 1.0:
-    print("Hello")
+    # get solar noon
+    curr_dt = rtc.datetime
+    yday = Y_DAYS[curr_dt.tm_mon - 1] + curr_dt.tm_mday
+    solar_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60 + solar_offset
+    curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
+    solar_noon_min = 720 + solar_offset
+
+    sample = "Current Time
+
+    # if within 60 seconds of solar noon, run measurements
+    if abs(solar_noon_min - curr_time_min) < 1.0:
+        with open('test.txt', 'a') as f:
+            f.writelines(curr_dt)
+            f.writelines(" - Solar Noon Time in Minutes: " + str(solar_noon_min))
+            f.writelines("\n")
