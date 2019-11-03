@@ -26,7 +26,7 @@ while True:
     # get solar offset
     current_time = rtc.datetime
     longitude = -71.05
-    gmt_offset = -4
+    gmt_offset = -5
     latitude = 1
     solar_offset = ceil(get_solar_time(gmt_offset, current_time, longitude, latitude) * 100)/100
 

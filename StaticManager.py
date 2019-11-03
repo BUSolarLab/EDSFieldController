@@ -59,7 +59,7 @@ DEFAULT_CONFIG_PARAM = {
     
     # location data
     'degLongitude': -71.05,
-    'offsetGMT': -4,
+    'offsetGMT': -5,
     }
 
 '''
