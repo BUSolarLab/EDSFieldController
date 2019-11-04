@@ -14,6 +14,14 @@ def get_solar_time(gmt_off, dt, longitude, latitude):
     # return solar time offset in minutes
     return D
 
+def print_time(dt):
+    return (str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year) + ' ' + str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec), end='')
+
+def print_l(dt, phrase):
+    print_time(dt)
+    print(" " + phrase)
+    log_master.write_log(dt, phrase)
+
 #Days per month
 Y_DAYS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
 
@@ -37,11 +45,10 @@ while True:
     curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
     solar_noon_min = 720 + solar_offset
 
-    sample = "Current Time
 
     # if within 60 seconds of solar noon, run measurements
     if abs(solar_noon_min - curr_time_min) < 1.0:
         with open('test.txt', 'a') as f:
-            f.writelines(curr_dt)
+            f.writelines(print_time(curr_dt))
             f.writelines(" - Solar Noon Time in Minutes: " + str(solar_noon_min))
             f.writelines("\n")
