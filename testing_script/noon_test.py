@@ -15,12 +15,8 @@ def get_solar_time(gmt_off, dt, longitude, latitude):
     return D
 
 def print_time(dt):
-    return (str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year) + ' ' + str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec), end='')
+    return (str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year) + ' ' + str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec) + '')
 
-def print_l(dt, phrase):
-    print_time(dt)
-    print(" " + phrase)
-    log_master.write_log(dt, phrase)
 
 #Days per month
 Y_DAYS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
