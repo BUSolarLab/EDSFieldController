@@ -17,3 +17,7 @@ rtc = adafruit_pcf8523.PCF8523(i2c_bus)
 t = rtc.datetime
 print(t)
 print(t.tm_hour, t.tm_min)
+print("\n")
+curr_dt = rtc.datetime
+curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
+print(curr_time_min)
