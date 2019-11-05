@@ -43,8 +43,8 @@ while True:
 
 
     # if within 60 seconds of solar noon, run measurements
-    if abs(solar_noon_min - curr_time_min) < 1.0:
-        with open('test.txt', 'a') as f:
+    if abs(solar_noon_min - curr_time_min) < 1:
+        with open('test.txt', 'a+') as f:
             f.writelines(print_time(curr_dt))
             f.writelines(" - Solar Noon Time in Minutes: " + str(solar_noon_min))
             f.writelines("\n")
