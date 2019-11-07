@@ -23,8 +23,8 @@ DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS(#) OCV_Be
 NOON_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "PRE/POST","EDS/CTRL(#)", "OCV(V)", "SCC(A)", "Power(W)", "PR", "SR"]
 NOON_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) PRE/POST EDS/CTRL(#) OCV(V) SCC(A) Power(W) PR SR"
 
-MANUAL_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "EDS(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "EDS_PWR_Before(W)","EDS_PWR_After(W)","EDS_PR_Before", "EDS_PR_After", "EDS_SR_Before", "EDS_SR_After"]
-MANUAL_HEADER_TXT = "Date Time Temperature(C) Humidity(%) EDS(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) EDS_PWR_Before(W) EDS_PWR_After(W) EDS_PR_BEFORE EDS_PR_AFTER EDS_SR_BEFORE EDS_SR_AFTER"
+MANUAL_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)","EDS(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "EDS_PWR_Before(W)","EDS_PWR_After(W)","EDS_PR_Before", "EDS_PR_After", "EDS_SR_Before", "EDS_SR_After"]
+MANUAL_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) EDS_PWR_Before(W) EDS_PWR_After(W) EDS_PR_BEFORE EDS_PR_AFTER EDS_SR_BEFORE EDS_SR_AFTER"
 
 '''
 USB Master Class:
