@@ -149,10 +149,10 @@ class CSVMaster:
         time = str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
         return [date, time, str(temp), str(humid), str(g_poa), str(eds_act),str(eds_ctrl_num), str(volt), str(cur), str(power), str(pr), str(sr)]
 
-    def data_row_manual(self, dt, temp, humid, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
+    def data_row_manual(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
         date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
         time = str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
-        out = [date, time, str(temp), str(humid), str(eds_num), str(eds_ocv_before), str(eds_ocv_after), str(eds_scc_before), str(eds_scc_after)]
+        out = [date, time, str(temp), str(humid), str(g_poa), str(eds_num), str(eds_ocv_before), str(eds_ocv_after), str(eds_scc_before), str(eds_scc_after)]
         #Append power data
         for x in eds_power:
             out.append(str(x))
@@ -226,8 +226,8 @@ class CSVMaster:
             print("Error writing txt solar noon data!")
     
     # write to csv version of manual testing data log file
-    def write_csv_manual_data(self, dt, temp, humid, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,sr_data):
-        row = self.data_row_manual(dt, temp, humid, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,sr_data)
+    def write_csv_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,sr_data):
+        row = self.data_row_manual(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,sr_data)
         try:
             # attempt to open csv file in append mode (don't want to create lots of files)
             with open(self.csv_manual_data, mode='a') as f_csv:
@@ -238,9 +238,9 @@ class CSVMaster:
             print("Error writing csv manual testing data!")
     
     # write to txt version of manual  testing data log file
-    def write_txt_manual_data(self, dt, temp, humid, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
+    def write_txt_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
         # process raw data into txt dump format with space delimiters
-        row_raw = self.data_row_manual(dt, temp, humid, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
+        row_raw = self.data_row_manual(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
         row = ""
         for param in row_raw:
             row += param
@@ -265,9 +265,9 @@ class CSVMaster:
         self.write_csv_noon_data(dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr)
     
     # write to manual data files
-    def write_manual_data(self, dt, temp, humid, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
-        self.write_txt_manual_data(dt, temp, humid, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
-        self.write_csv_manual_data(dt, temp, humid, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
+    def write_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
+        self.write_txt_manual_data(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
+        self.write_csv_manual_data(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
             
 '''
 Log Master Class:

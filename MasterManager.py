@@ -518,6 +518,7 @@ while not stopped:
                 # Get global irradiance data from pyranometer
                 irr_master = SP420.Irradiance()
                 g_poa = irr_master.get_irradiance()
+                print_l(rtc.datetime, "GPOA Measurement for EDS " + str(eds_num) + ": " + str(g_poa))
 
                 # measure PV current before activation
                 [eds_ocv_before, eds_scc_before] = test_master.run_measure_EDS(eds_num)
@@ -573,7 +574,7 @@ while not stopped:
                 man_sr_data = [eds_sr_before, eds_sr_after]
 
                 # write data for EDS tested
-                csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, man_power_data, man_pr_data, man_sr_data)
+                csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, man_power_data, man_pr_data, man_sr_data)
                 print_l(rtc.datetime, "Ended Manual Activation Test of EDS" + str(eds_num))
             
             except:
