@@ -46,7 +46,7 @@ while True:
             f.writelines(print_time(curr_dt))
             f.writelines(" - Solar Noon Time in Min: " + str(solar_noon_min) + ", Current Time in Min: " + str(curr_time_min) + ", Difference is: "+ str(abs(solar_noon_min-curr_time_min)))
             f.writelines("\n")
-
+    print("SUCCESS")
     # if within 60 seconds/30 min of solar noon, run measurements
     if abs(solar_noon_min - curr_time_min) < 30:
         with open('test.txt', 'a+') as f:
