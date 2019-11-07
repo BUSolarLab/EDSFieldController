@@ -531,15 +531,15 @@ while not stopped:
                 
                 # compute the power measurements for each panel
                 eds_power_before = pow_master.get_power_out(eds_ocv_before,eds_scc_before,pan_temp)
-                print_l(curr_dt, "Pre-EDS Manual Activation Power Calculation for EDS" + str(eds) + ": " + str(eds_power_before))
+                print_l(curr_dt, "Pre-EDS Manual Activation Power Calculation for EDS" + str(eds_num) + ": " + str(eds_power_before))
 
                 # compute the PR before eds activation
                 eds_pr_before = pr_master.get_pr(eds_ocv_before,eds_scc_before,pan_temp,eds_power_before,g_poa)
-                print_l(curr_dt, "Pre-EDS Manual Activation PR Calculation for EDS" + str(eds) + ": " + str(eds_pr_before))
+                print_l(curr_dt, "Pre-EDS Manual Activation PR Calculation for EDS" + str(eds_num) + ": " + str(eds_pr_before))
 
                 # compute the SR before eds activation
                 eds_sr_before = soil_master.get_sr(eds_scc_before, g_poa)
-                print_l(curr_dt, "Pre-EDS Manual Activation SR Calculation for EDS" + str(eds) + ": " + str(eds_sr_before))
+                print_l(curr_dt, "Pre-EDS Manual Activation SR Calculation for EDS" + str(eds_num) + ": " + str(eds_sr_before))
 
                 # run first half of test
                 test_master.run_test_begin(eds_num)
@@ -558,15 +558,15 @@ while not stopped:
                 
                 # compute the power measurements Post EDS
                 eds_power_after = pow_master.get_power_out(eds_ocv_after,eds_scc_after,pan_temp)
-                print_l(curr_dt, "Post-EDS Manual Activation Power for EDS" + str(eds) + ": " + str(eds_power_after))
+                print_l(curr_dt, "Post-EDS Manual Activation Power for EDS" + str(eds_num) + ": " + str(eds_power_after))
                 
                 # compute the PR measurement Post EDS                       # compute the PR before eds activation
                 eds_pr_after = pr_master.get_pr(eds_ocv_after,eds_scc_after,pan_temp,eds_power_after,g_poa)
-                print_l(curr_dt, "Post-EDS Manual Activation PR Calculation for EDS" + str(eds) + ": " + str(eds_pr_after))
+                print_l(curr_dt, "Post-EDS Manual Activation PR Calculation for EDS" + str(eds_num) + ": " + str(eds_pr_after))
 
                 # compute the SR before eds activation
                 eds_sr_after = soil_master.get_sr(eds_scc_after, g_poa)
-                print_l(curr_dt, "Post-EDS Manual Activation SR Calculation for EDS" + str(eds) + ": " + str(eds_sr_after))
+                print_l(curr_dt, "Post-EDS Manual Activation SR Calculation for EDS" + str(eds_num) + ": " + str(eds_sr_after))
 
                 # compile data
                 man_power_data = [eds_power_before,eds_power_after]
