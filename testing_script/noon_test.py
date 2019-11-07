@@ -41,6 +41,12 @@ while True:
     curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
     solar_noon_min = 720 + solar_offset
 
+    #testing purposes
+    with open('test.txt', 'a+') as f:
+            f.writelines(print_time(curr_dt))
+            f.writelines(" - Solar Noon Time in Minutes: " + str(solar_noon_min))
+            f.writelines("\n")
+
 
     # if within 60 seconds/30 min of solar noon, run measurements
     if abs(solar_noon_min - curr_time_min) < 30:
@@ -48,3 +54,5 @@ while True:
             f.writelines(print_time(curr_dt))
             f.writelines(" - Solar Noon Time in Minutes: " + str(solar_noon_min))
             f.writelines("\n")
+
+    time.sleep(5)
