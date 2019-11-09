@@ -41,12 +41,14 @@ solar_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60 + s
 curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
 solar_noon_min = 720 + solar_offset
 
+'''
 #testing purposes
 with open('test.txt', 'a+') as f:
         f.writelines(print_time(curr_dt))
         f.writelines(" - Solar Noon Time in Min: " + str(solar_noon_min) + ", Current Time in Min: " + str(curr_time_min) + ", Difference is: "+ str(abs(solar_noon_min-curr_time_min)))
         f.writelines("\n")
 print("SUCCESS")
+'''
 # if within 60 seconds/30 min of solar noon, run measurements
 if abs(solar_noon_min - curr_time_min) < 30:
     with open('test.txt', 'a+') as f:
@@ -54,4 +56,4 @@ if abs(solar_noon_min - curr_time_min) < 30:
         f.writelines(" - Solar Noon Time in Min: " + str(solar_noon_min))
         f.writelines("\n")
 
-#time.sleep(5)
+time.sleep(3)
