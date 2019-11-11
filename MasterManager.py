@@ -24,20 +24,9 @@ import SP420
 
 import StaticManager as SM
 import DataManager as DM
-#import RebootManager as RM
 import TestingManager as TM
 
 from math import floor, ceil
-
-# process delay (delay loop by X seconds to slow necessary computing)
-PROCESS_DELAY = 1
-
-# manual time test limit
-MANUAL_TIME_LIMIT = 300
-WINDOW_CHECK_INTERVAL = 5
-
-# peripheral i2c bus addresses
-RTC_ADD = 0x68
 
 # read config, get constants, etc
 print("Initializing...")
@@ -77,11 +66,16 @@ ctrl_ids = test_master.get_config()['CTRLIDS']
 # channel setups
 GPIO.setmode(GPIO.BCM)
 
-# port setup
+# LED port setup
 GPIO.setup(test_master.get_pin('outPinLEDGreen'), GPIO.OUT)
 GPIO.setup(test_master.get_pin('outPinLEDRed'), GPIO.OUT)
+
+# manual button port setup
 GPIO.setup(test_master.get_pin('inPinManualActivate'), GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(25, GPIO.OUT)
+GPIO.add_event_detect(test_master.get_pin('inPinManualActivate'), GPIO.RISING)
+
+# adc chip port setup
+GPIO.setup(test_master.get_pin('ADC'), GPIO.OUT)
 
 # for each EDS, CTRL id, set up GPIO channel
 for eds in eds_ids:
@@ -91,16 +85,18 @@ for eds in eds_ids:
 for ctrl in ctrl_ids:
     GPIO.setup(test_master.get_pin('CTRL'+str(ctrl)+'PV'), GPIO.OUT)
 
-# var setup
+# flag variables initialization
 flip_on = True
 temp_pass = False
 humid_pass = False
 schedule_pass = False
+weather_pass = False
 
-# error handling
+# error handling initialization
 error_list = []
 error_flag = False
 
+# function to add error to errot list
 def add_error(error):
     error_flag = True
     if error not in error_list:
@@ -116,10 +112,6 @@ gmt_offset = test_master.get_param('offsetGMT')
 longitude = test_master.get_param('degLongitude')
 latitude = 1 # latitude currently unused
 
-# detect switch event to manually operate EDS
-GPIO.setup(test_master.get_pin('inPinManualActivate'),GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
-GPIO.add_event_detect(test_master.get_pin('inPinManualActivate'), GPIO.RISING)
-
 '''
 ~~~CORE LOOP~~~
 This loop governs the overall code for the long term remote testing of the field units
@@ -131,12 +123,9 @@ This loop governs the overall code for the long term remote testing of the field
 '''
 
 # loop indefinitely
-flag = False
-stopped = False
+#flag = False
 
-time.sleep(2)
-
-while not stopped:
+while True:
     # set all flags to False
     temp_pass = False
     humid_pass = False
@@ -190,25 +179,14 @@ while not stopped:
 
         '''
         --------------------------------------------------------------------------
-        Checking the operational time of EDS 8AM-16PM
-        '''
-        current_dt=rtc.datetime
-        if current_dt.tm_hour >= 16 or current_dt.tm_hour <= 8:
-            GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
-            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
-            time.sleep(2)
-            GPIO.output(test_master.get_pin('outPinLEDRed'), 0) 
-            time.sleep(2)
-
-        '''
-        --------------------------------------------------------------------------
         BEGIN SOLAR NOON DATA ACQUISITION CODE
         The following code handles the automated data acquisition of SCC values for each EDS and CTRL at solar noon each day
         Code outline:
         1) Check if current time matches solar noon
         2) If yes, then for each EDS and CTRL in sequence, do the following:
-            2a) Measure SCC from PV cell
-            2b) Write data to CSV/text files
+            2a) Measure Voc,Isc,Irradiance, Temp, Humidity from PV cell
+            2b) Compute power, PR, and SR
+            2c) Write data to CSV/text files
         3) Then activate EDS6 (the battery charger)
         '''
         
@@ -223,9 +201,9 @@ while not stopped:
             add_error("Sensor-RTC-2")
         
         # if within 60 seconds of solar noon, run measurements
-        if abs(solar_noon_min - curr_time_min) < 1.0:
+        if abs(solar_noon_min - curr_time_min) < 1:
 
-            print_l(rtc.datetime, "Initiating solar noon procedure for charger, EDS6")
+            print_l(rtc.datetime, "Initiating Solar Noon Mode")
             
             # get weather and print values in console
             try:
@@ -335,6 +313,20 @@ while not stopped:
         --------------------------------------------------------------------------
         '''
         
+        '''
+        --------------------------------------------------------------------------
+        Checking the operational time of EDS 8AM-16PM
+        '''
+        '''
+        current_dt=rtc.datetime
+        if current_dt.tm_hour >= 16 or current_dt.tm_hour <= 8:
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
+            time.sleep(2)
+            GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
+            time.sleep(2)
+        '''
+
         '''
         --------------------------------------------------------------------------
         BEGIN AUTOMATIC TESTING ACTIVATION CODE
@@ -520,7 +512,7 @@ while not stopped:
                 g_poa = irr_master.get_irradiance()
                 print_l(rtc.datetime, "GPOA Measurement for EDS " + str(eds_num) + ": " + str(g_poa))
 
-                # measure PV current before activation
+                # measure PV voc and isc before EDS activation
                 [eds_ocv_before, eds_scc_before] = test_master.run_measure_EDS(eds_num)
                 print_l(rtc.datetime, "Pre-test OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_before))
                 print_l(rtc.datetime, "Pre-test SCC for EDS" + str(eds_num) + ": " + str(eds_scc_before))
@@ -541,13 +533,10 @@ while not stopped:
                 eds_sr_before = soil_master.get_sr(eds_scc_before, g_poa)
                 print_l(curr_dt, "Pre-EDS Manual Activation SR Calculation for EDS" + str(eds_num) + ": " + str(eds_sr_before))
 
-                # run first half of test
-                test_master.run_test_begin(eds_num)
-                time_elapsed = 0
+                # activate the EDS film
+                test_master.run_test(eds_num)
 
-                # then run second half of test (cleanup phase)
-                test_master.run_test_end(eds_num)
-
+                # measure PV voc and isc after EDS activation
                 [eds_ocv_after, eds_scc_after] = test_master.run_measure_EDS(eds_num)
                 print_l(rtc.datetime, "Post-EDS Manual Activation OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_after))
                 print_l(rtc.datetime, "Post-EDS Manual Activation SCC for EDS" + str(eds_num) + ": " + str(eds_scc_after))
@@ -613,6 +602,6 @@ while not stopped:
             GPIO.output(test_master.get_pin('outPinLEDRed'), 0) 
     
     # delay to slow down processing
-    time.sleep(PROCESS_DELAY)
+    time.sleep(1)
     # END CORE LOOP
 
