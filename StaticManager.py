@@ -6,9 +6,6 @@ Started: September 2018
 =============================
 '''
 
-import os
-import json
-
 '''
 Config file parameters list (ADD NEW PARAMETERS AS DICTIONARY ENTRIES)
 These also serve as default values for config file generation in event of no provided config
@@ -44,7 +41,7 @@ DEFAULT_CONFIG_PARAM = {
     'minTemperatureCelsius': 10,
     'maxRelativeHumidity': 60,
     'minRelativeHumidity': 30,
-    'testDurationSeconds': 120,
+    'testDurationSeconds': 10,
     'testWindowSeconds': 2700,
     
     # indicators/switches
@@ -52,6 +49,7 @@ DEFAULT_CONFIG_PARAM = {
     'outPinLEDRed': 13,
     'inPinManualActivate': 22,
     'manualEDSNumber': 1,
+    'ADC': 25,
     'solarChargerEDSNumber': 6,
     
     # reboot

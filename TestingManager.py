@@ -176,28 +176,32 @@ class TestingMaster:
         pv_relay = self.get_pin('EDS' + str(eds_num) + 'PV')
         
         # Setup GPIO pins to measure Voc and Isc of desired panel
-        time.sleep(0.5)
         GPIO.setup(pv_relay, GPIO.OUT)
-        GPIO.setup(25,GPIO.OUT)
+        GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
+        #GPIO.setup(25,GPIO.OUT)
         time.sleep(0.5)
         
         # OCV READ
         # Switch the relay to read Voc
-        GPIO.setup(25, GPIO.IN)
+        GPIO.setup(self.get_pin('ADC'), GPIO.IN)
+        #GPIO.setup(25, GPIO.IN)
         time.sleep(0.5)
         # Get reading
         read_ocv = self.adc_m.get_ocv_PV()
         
         # SCC READ
         # Switch relay to read Isc
-        GPIO.setup(25, GPIO.OUT)
+        GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
+        #GPIO.setup(25, GPIO.OUT)
         time.sleep(0.5)
+        
         # get reading
         read_scc = self.adc_m.get_scc_PV()
 
         # Default pin is LOW, no need to switch, just clean up
         time.sleep(0.5)
-        GPIO.cleanup(25)
+        GPIO.cleanup(self.get_pin('ADC'))
+        #GPIO.cleanup(25)
         
         # Close EDS PV Relay
         time.sleep(0.5)
@@ -212,27 +216,30 @@ class TestingMaster:
         pv_relay = self.get_pin('CTRL' + str(ctrl_num) + 'PV')
         
         # Setup GPIO pins to measure Voc and Isc of desired panel
-        time.sleep(0.5)
         GPIO.setup(pv_relay, GPIO.OUT)
-        GPIO.setup(25,GPIO.OUT)
+        GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
+        #GPIO.setup(25,GPIO.OUT)
         time.sleep(0.5)
         
         # OCV READ
         # Switch the relay to read Voc
-        GPIO.setup(25, GPIO.IN)
+        GPIO.setup(self.get_pin('ADC'), GPIO.IN)
+        #GPIO.setup(25, GPIO.IN)
         time.sleep(0.5)
         # Get reading
         read_ocv = self.adc_m.get_ocv_PV()
         
         # SCC READ
         # Switch relay to read Isc
-        GPIO.setup(25, GPIO.OUT)
+        GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
+        #GPIO.setup(25, GPIO.OUT)
         time.sleep(0.5)
         # get reading
         read_scc = self.adc_m.get_scc_PV()
         # Default pin is LOW, no need to switch, just clean up
         time.sleep(0.5)
-        GPIO.cleanup(25)
+        GPIO.cleanup(self.get_pin('ADC'))
+        #GPIO.cleanup(25)
         
         # Close EDS PV Relay
         time.sleep(0.5)
@@ -331,9 +338,9 @@ Functionality:
 
 class PerformanceRatio:
     def __init__(self):
-        #Summation of installed module's namemplate rating, for field testing just 1 panel so 12W
+        # Summation of installed module's namemplate rating, for field testing just 1 panel so 12W
         self.ptc = 12
-        #Irradiance at STC
+        # Irradiance at STC
         self.gstc = 1000
 
     def get_pr(self,v_oc,i_sc,temp, power, gpoa):
@@ -360,5 +367,8 @@ class Soiling:
 
     #Soiling Ratio Formula
     def get_sr(self,isc_soiled, gpoa):
-        SR = (isc_soiled/gpoa)/(self.isc_clean/self.gstc)
-        return round(SR,2)
+        if (gpoa == -1):
+            return -1
+        else:
+            SR = (isc_soiled/gpoa)/(self.isc_clean/self.gstc)
+            return round(SR,2)

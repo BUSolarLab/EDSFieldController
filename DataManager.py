@@ -8,9 +8,6 @@ Started: September 2018
 import time
 import os
 import subprocess
-import busio
-import digitalio
-import board
 import csv
 from math import cos, sin
 from numpy import deg2rad
