@@ -191,6 +191,12 @@ while True:
         '''
         
         # get current solar time, solar noon time, current time in minutes
+        curr_dt = rtc.datetime
+        yday = TM.Y_DAYS[curr_dt.tm_mon - 1] + curr_dt.tm_mday
+        solar_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60 + solar_offset
+        curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
+        solar_noon_min = 720 + solar_offset
+        '''
         try:
             curr_dt = rtc.datetime
             yday = TM.Y_DAYS[curr_dt.tm_mon - 1] + curr_dt.tm_mday
@@ -199,6 +205,7 @@ while True:
             solar_noon_min = 720 + solar_offset
         except:
             add_error("Sensor-RTC-2")
+        '''
         
         # if within 60 seconds of solar noon, run measurements
         if abs(solar_noon_min - curr_time_min) < 1:
