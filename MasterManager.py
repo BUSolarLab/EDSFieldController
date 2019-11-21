@@ -91,6 +91,7 @@ temp_pass = False
 humid_pass = False
 schedule_pass = False
 weather_pass = False
+auto = False
 
 # error handling initialization
 error_list = []
@@ -317,7 +318,6 @@ while True:
         --------------------------------------------------------------------------
         Checking the operational time of EDS 8AM-16PM
         '''
-        '''
         current_dt=rtc.datetime
         if current_dt.tm_hour >= 16 or current_dt.tm_hour <= 8:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
@@ -325,7 +325,9 @@ while True:
             time.sleep(2)
             GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
             time.sleep(2)
-        '''
+            auto = True
+        else:
+            auto = False
 
         '''
         --------------------------------------------------------------------------
@@ -342,14 +344,14 @@ while True:
             3d) Measure [after] OCV and SCC for EDS PV being tested
             3e) Write data to CSV/txt files
         '''
-        '''
+        
         # for each EDS check time against schedule, set time flag if yes
         # put EDS in a queue if multiple are to be activated simultaneously
         eds_testing_queue = []
         
         for eds_num in eds_ids:
             schedule_pass = test_master.check_time(curr_dt, yday, 0, eds_num)
-            if schedule_pass:
+            if schedule_pass & auto:
                 eds_testing_queue.append(eds_num)
         
         # print queue
@@ -471,12 +473,12 @@ while True:
                 print_l(rtc.datetime, "Post-test Power for EDS" + str(eds) + ": " + str(eds_power_after))
                 print_l(rtc.datetime, "Power for CTRL1" + str(1) + ": " + str(ctrl1_power))
                 print_l(rtc.datetime, "Power for CTRL2" + str(2) + ": " + str(ctrl2_power))
-                
+
                 # 8) finish up, write data to CSV
                 csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], g_poa, eds, data_ocv_scc, power_data)
                 print_l(rtc.datetime, "Ended automated scheduled test of EDS" + str(eds))
-                
-        '''
+
+        
         '''
         END AUTOMATIC TESTING ACTIVATION CODE
         --------------------------------------------------------------------------

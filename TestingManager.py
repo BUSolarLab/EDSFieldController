@@ -344,7 +344,7 @@ class PerformanceRatio:
         self.gstc = 1000
 
     def get_pr(self,v_oc,i_sc,temp, power, gpoa):
-        inv_eff = 0.95
+        inv_eff = 0.96
         if (gpoa == 0):
             PR = -1
         elif (gpoa == -1):
