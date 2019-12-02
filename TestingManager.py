@@ -344,13 +344,12 @@ class PerformanceRatio:
         self.gstc = 1000
 
     def get_pr(self,v_oc,i_sc,temp, power, gpoa):
-        inv_eff = 0.96
         if (gpoa == 0):
             PR = -1
         elif (gpoa == -1):
             PR = -1
         else:
-            PR = (power*inv_eff)/((self.ptc*gpoa)/self.gstc)
+            PR = power/((self.ptc*gpoa)/self.gstc)
         return round(PR,2)
 
 '''
@@ -361,9 +360,9 @@ Functionality:
 '''
 class Soiling:
     def __init__(self):
-        #Nameplate rating of isc, representing isc_clean
+        #Isc clean, reference isc value
         self.isc_clean = 0.68
-        #Irradiance at STC
+        #irradiance for Isc cleaned, reference irradiance
         self.gstc = 1000
 
     #Soiling Ratio Formula
