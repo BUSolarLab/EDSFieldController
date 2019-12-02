@@ -53,7 +53,7 @@ DEFAULT_CONFIG_PARAM = {
     'solarChargerEDSNumber': 6,
     
     # reboot
-    'rebootFlag': False,
+    #'rebootFlag': False,
     
     # location data
     'degLongitude': -71.05,
