@@ -319,7 +319,7 @@ while True:
         Checking the operational time of EDS 8AM-16PM
         '''
         current_dt=rtc.datetime
-        if current_dt.tm_hour >= 16 or current_dt.tm_hour <= 8:
+        if current_dt.tm_hour >= 13 or current_dt.tm_hour <= 9:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
             GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
             time.sleep(2)
