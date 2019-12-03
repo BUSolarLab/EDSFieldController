@@ -325,9 +325,9 @@ while True:
             time.sleep(2)
             GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
             time.sleep(2)
-            auto = True
-        else:
             auto = False
+        else:
+            auto = True
 
         '''
         --------------------------------------------------------------------------
@@ -351,7 +351,7 @@ while True:
         
         for eds_num in eds_ids:
             schedule_pass = test_master.check_time(curr_dt, yday, 0, eds_num)
-            if schedule_pass & auto:
+            if auto:
                 eds_testing_queue.append(eds_num)
         
         # print queue
@@ -477,6 +477,9 @@ while True:
                 # 8) finish up, write data to CSV
                 csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], g_poa, eds, data_ocv_scc, power_data)
                 print_l(rtc.datetime, "Ended automated scheduled test of EDS" + str(eds))
+
+        #5 min delay before next automatic testing
+        time.sleep(300)
 
         
         '''
