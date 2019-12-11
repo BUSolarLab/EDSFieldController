@@ -322,9 +322,6 @@ while True:
         if current_dt.tm_hour >= 13 or current_dt.tm_hour <= 9:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
             GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
-            time.sleep(2)
-            GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
-            time.sleep(2)
             auto = False
         else:
             auto = True
@@ -399,6 +396,9 @@ while True:
             
             # if out of loop and parameters are met
             if weather_pass:
+                #1 minute delay per panel
+                time.sleep(60)
+
                 # run test if all flags passed
                 print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for EDS" + str(eds))
                 # run testing procedure
