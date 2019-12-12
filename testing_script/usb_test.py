@@ -53,3 +53,19 @@ path = usbmaster.get_USB_path()+"usb_test.txt"
 f = open(path, "a+")
 f.write("Succesfully Writing File!")
 f.close()
+
+#Apply this link: https://www.raspberrypi-spy.co.uk/2014/05/how-to-mount-a-usb-flash-disk-on-the-raspberry-pi/
+#sudo mkdir /media/usb
+#sudo chown -R pi:pi /media/usb
+#sudo mount /dev/sda1 /media/usb -o uid=pi,gid=pi
+#umount /media/usb
+#sudo nano /etc/fstab
+#UUID=sample /media/usb vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0
+
+#Key Dependencies
+#sudo apt-get install ntfs-3g
+#sudo apt-get install exfat-fuse
+#sudo apt-get install exfat-utils
+#sudo apt-get install usbmount
+
+#USB Format = FAT
