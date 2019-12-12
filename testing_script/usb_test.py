@@ -36,7 +36,7 @@ class USBMaster:
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
         if self.USB_name is not None:
-            self.USB_path = USB_DIR_PATH#+str(self.USB_name)
+            self.USB_path = USB_DIR_PATH
     
     def process_sequence(self):
         # runs through necessary sequence for single method call

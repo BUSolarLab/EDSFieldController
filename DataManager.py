@@ -13,7 +13,7 @@ from math import cos, sin
 from numpy import deg2rad
 
 # necessary constants
-USB_DIR_PATH = "/media/pi/eds1"
+USB_DIR_PATH = "/media/usb"
 DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)","EDS(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "CTRL1_OCV(V)", "CTRL1_SCC(A)", "CTRL2_OCV(V)", "CTRL2_SCC(A)", "EDS_PWR_Before(W)", "EDS_PWR_After(W)", "CTRL1_PWR(W)","CTRL2_PWR(W)"]
 DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) CTRL1_OCV(V) CTRL1_SCC(A) CTRL2_OCV(V) CTRL2_SCC(A) EDS_PWR_Before(W) EDS_PWR_After(W) CTRL1_PWR(W) CTRL2_PWR(W)"
 
@@ -33,10 +33,11 @@ Functionality:
 
 class USBMaster:
     def __init__(self):
-        self.USB_name = None
-        self.USB_path = USB_DIR_PATH
         self.is_mounted = False
+        self.USB_name = None
+        self.USB_path = None
         self.set_USB_name()
+        self.set_USB_path()
         #self.set_USB_path()
 
     def reset(self):
@@ -61,7 +62,7 @@ class USBMaster:
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
         if self.USB_name is not None:
-            self.USB_path = USB_DIR_PATH#+self.USB_name
+            self.USB_path = USB_DIR_PATH
     
     def process_sequence(self):
         # runs through necessary sequence for single method call
