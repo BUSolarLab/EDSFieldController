@@ -22,8 +22,8 @@ class USBMaster:
         # check if USB mounted
         try:
             dir = str(subprocess.check_output("sudo blkid", shell=True))
-            if "/dev/sdc1:" in dir:
-                self.USB_name = dir.split('/dev/sdc1:')[1].split('UUID=')[1].split('"')[1]
+            if "/dev/sda1:" in dir:
+                self.USB_name = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
                 print("Found USB named: "+self.USB_name)
             else:
                 self.reset()
