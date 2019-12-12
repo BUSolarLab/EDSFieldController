@@ -3,7 +3,7 @@ import os
 import subprocess
 import csv
 
-USB_DIR_PATH = "/media/pi/"
+USB_DIR_PATH = "/media/usb/"
 
 class USBMaster:
     def __init__(self):
@@ -49,7 +49,7 @@ class USBMaster:
 
 
 usbmaster = USBMaster()
-path = usbmaster.get_USB_path()+"/usb_test.txt"
-f = open(path, "w+")
+path = usbmaster.get_USB_path()#+"/usb_test.txt"
+f = open(path, "a+")
 f.write("Succesfully Writing File!")
 f.close()
