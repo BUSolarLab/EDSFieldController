@@ -23,7 +23,7 @@ class USBMaster:
         try:
             dir = str(subprocess.check_output("sudo blkid", shell=True))
             if "/dev/sda1:" in dir:
-                self.USB_name = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+                self.USB_name = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
                 print("Found USB named: "+self.USB_name)
             else:
                 self.reset()
@@ -50,6 +50,6 @@ class USBMaster:
 
 usbmaster = USBMaster()
 path = usbmaster.get_USB_path()+"/usb_test.txt"
-f = open(path, "a+")
+f = open(path, "w+")
 f.write("Succesfully Writing File!")
 f.close()
