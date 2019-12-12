@@ -7,10 +7,11 @@ USB_DIR_PATH = "/media/pi/"
 
 class USBMaster:
     def __init__(self):
-        self.USB_name = None
-        self.USB_path = USB_DIR_PATH
         self.is_mounted = False
+        self.USB_name = None
+        self.USB_path = None
         self.set_USB_name()
+        self.set_USB_path()
         #self.set_USB_path()
 
     def reset(self):
