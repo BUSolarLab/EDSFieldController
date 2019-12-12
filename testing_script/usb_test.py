@@ -3,7 +3,7 @@ import os
 import subprocess
 import csv
 
-USB_DIR_PATH = "/media/pi/
+USB_DIR_PATH = "/media/pi/"
 
 class USBMaster:
     def __init__(self):
@@ -47,4 +47,4 @@ class USBMaster:
         return self.USB_path
 
 
-usbmaster = USBMaster() 
+usbmaster = USBMaster()
