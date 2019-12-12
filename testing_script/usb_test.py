@@ -48,3 +48,7 @@ class USBMaster:
 
 
 usbmaster = USBMaster()
+path = usbmaster.get_USB_path()+"/usb_test.txt"
+f = open(path, "a+")
+f.write("Succesfully Writing File!")
+f.close()
