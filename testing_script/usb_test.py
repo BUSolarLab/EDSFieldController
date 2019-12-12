@@ -3,7 +3,7 @@ import os
 import subprocess
 import csv
 
-USB_DIR_PATH = "/media/usb/"
+USB_DIR_PATH = "/media/pi/"
 
 class USBMaster:
     def __init__(self):
@@ -23,7 +23,7 @@ class USBMaster:
         try:
             dir = str(subprocess.check_output("sudo blkid", shell=True))
             if "/dev/sda1:" in dir:
-                self.USB_name = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+                self.USB_name = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
                 print("Found USB named: "+self.USB_name)
             else:
                 self.reset()
@@ -36,7 +36,7 @@ class USBMaster:
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
         if self.USB_name is not None:
-            self.USB_path = USB_DIR_PATH#+str(self.USB_name)
+            self.USB_path = USB_DIR_PATH+str(self.USB_name)
     
     def process_sequence(self):
         # runs through necessary sequence for single method call
