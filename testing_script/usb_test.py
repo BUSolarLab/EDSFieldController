@@ -68,4 +68,4 @@ f.close()
 #sudo apt-get install exfat-utils
 #sudo apt-get install usbmount
 
-#USB Format = FAT
+#USB Format = FAT32
