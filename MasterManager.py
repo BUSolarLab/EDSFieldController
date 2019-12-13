@@ -478,9 +478,6 @@ while True:
                 csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], g_poa, eds, data_ocv_scc, power_data)
                 print_l(rtc.datetime, "Ended automated scheduled test of EDS" + str(eds))
 
-        #5 min delay before next automatic testing
-        time.sleep(300)
-
         
         '''
         END AUTOMATIC TESTING ACTIVATION CODE
