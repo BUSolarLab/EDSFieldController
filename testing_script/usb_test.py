@@ -3,7 +3,7 @@ import os
 import subprocess
 import csv
 
-USB_DIR_PATH = "/media/test/"
+USB_DIR_PATH = "/media/keyusb/"
 
 class USBMaster:
     def __init__(self):
@@ -47,7 +47,7 @@ class USBMaster:
         # outputs USB file path
         return self.USB_path
     
-    def get_USB_UUIDs(self):
+    def get_USB_UUID(self):
         f=open("usb_names.txt", "r")
         if f.mode == 'r':
             usb_names = f.read().splitlines() 
@@ -58,20 +58,28 @@ class USBMaster:
 usbmaster = USBMaster()
 
 #Writing to USB Test
-
 path = usbmaster.get_USB_path()+"usb_test.txt"
 f = open(path, "a+")
 f.write("Succesfully Writing File!\n")
 f.close()
 
-'''
+
 #UUID setting
+'''
+uuid_dict = {}
 f=open("usb_names.txt", "r")
 if f.mode == 'r':
     usb_names = f.read().splitlines() 
     print(usb_names)
 f.close()
+for x in usb_names:
+    uuid = x.split()[0]
+    usb_mount = x.split()[1]
+    uuid_dict[uuid] = usb_mount
+print(uuid_dict)
+'''
 
+'''
 f = open("usb_setup.sh", "w+")
 f.write("sudo mkdir /media/eds1\n")
 f.write("sudo chown -R pi:pi /media/eds1\n")
