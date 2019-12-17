@@ -3,7 +3,7 @@ import os
 import subprocess
 import csv
 
-USB_DIR_PATH = "/media/usb/"
+USB_DIR_PATH = "/media/eds/"
 
 class USBMaster:
     def __init__(self):
@@ -46,13 +46,42 @@ class USBMaster:
     def get_USB_path(self):
         # outputs USB file path
         return self.USB_path
+    
+    def get_USB_UUIDs(self):
+        f=open("usb_names.txt", "r")
+        if f.mode == 'r':
+            usb_names = f.read().splitlines() 
+            print(usb_names)
+        f.close()
 
+#Instantiate the usb class
+#usbmaster = USBMaster()
 
-usbmaster = USBMaster()
+#Writing to USB Test
+
 path = usbmaster.get_USB_path()+"usb_test.txt"
 f = open(path, "a+")
-f.write("Succesfully Writing File!")
+f.write("Succesfully Writing File!\n")
 f.close()
+
+'''
+#UUID setting
+f=open("usb_names.txt", "r")
+if f.mode == 'r':
+    usb_names = f.read().splitlines() 
+    print(usb_names)
+f.close()
+
+f = open("usb_setup.sh", "w+")
+f.write("sudo mkdir /media/eds1\n")
+f.write("sudo chown -R pi:pi /media/eds1\n")
+f.write("sudo mount /dev/sda1 /media/eds1 -o uid=pi,gid=pi\n")
+f.write("sudo umount /media/eds1\n")
+f.close()
+
+
+f.write("UUID=18A9-9943 /media/usb vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0")
+'''
 
 #Apply this link: https://www.raspberrypi-spy.co.uk/2014/05/how-to-mount-a-usb-flash-disk-on-the-raspberry-pi/
 #sudo mkdir /media/usb
