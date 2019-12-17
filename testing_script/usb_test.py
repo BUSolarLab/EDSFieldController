@@ -3,7 +3,7 @@ import os
 import subprocess
 import csv
 
-USB_DIR_PATH = "/media/keyusb/"
+USB_DIR_PATH = "/media/redusb/"
 
 class USBMaster:
     def __init__(self):
