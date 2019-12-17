@@ -3,7 +3,7 @@ import os
 import subprocess
 import csv
 
-USB_DIR_PATH = "/media/eds/"
+USB_DIR_PATH = "/media/test/"
 
 class USBMaster:
     def __init__(self):
@@ -79,7 +79,7 @@ f.write("sudo mount /dev/sda1 /media/eds1 -o uid=pi,gid=pi\n")
 f.write("sudo umount /media/eds1\n")
 f.close()
 
-
+f=open("/etc/fstab", "w+)
 f.write("UUID=18A9-9943 /media/usb vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0")
 '''
 
