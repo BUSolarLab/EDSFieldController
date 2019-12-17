@@ -55,7 +55,7 @@ class USBMaster:
         f.close()
 
 #Instantiate the usb class
-#usbmaster = USBMaster()
+usbmaster = USBMaster()
 
 #Writing to USB Test
 
