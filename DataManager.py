@@ -73,7 +73,6 @@ class USBMaster:
                 usb_mount = x.split()[1]
                 uuid_dict[uuid] = usb_mount
             self.USB_path = "/media/" + uuid_dict[self.USB_name]
-            print(self.USB_path)
     
     def process_sequence(self):
         # runs through necessary sequence for single method call
