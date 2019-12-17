@@ -13,7 +13,7 @@ from math import cos, sin
 from numpy import deg2rad
 
 # necessary constants
-USB_DIR_PATH = "/media/redusb"
+#USB_DIR_PATH = "/media/redusb"
 DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)","EDS(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "CTRL1_OCV(V)", "CTRL1_SCC(A)", "CTRL2_OCV(V)", "CTRL2_SCC(A)", "EDS_PWR_Before(W)", "EDS_PWR_After(W)", "CTRL1_PWR(W)","CTRL2_PWR(W)"]
 DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) CTRL1_OCV(V) CTRL1_SCC(A) CTRL2_OCV(V) CTRL2_SCC(A) EDS_PWR_Before(W) EDS_PWR_After(W) CTRL1_PWR(W) CTRL2_PWR(W)"
 
@@ -62,7 +62,18 @@ class USBMaster:
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
         if self.USB_name is not None:
-            self.USB_path = USB_DIR_PATH
+            #self.USB_path = USB_DIR_PATH
+            uuid_dict = {}
+            f=open("usb_names.txt", "r")
+            if f.mode == 'r':
+                usb_names = f.read().splitlines() 
+            f.close()
+            for x in usb_names:
+                uuid = x.split()[0]
+                usb_mount = x.split()[1]
+                uuid_dict[uuid] = usb_mount
+            self.USB_path = "/media/" + uuid_dict[self.USB_name]
+            print(self.USB_path)
     
     def process_sequence(self):
         # runs through necessary sequence for single method call
