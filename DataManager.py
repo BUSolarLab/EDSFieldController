@@ -64,7 +64,7 @@ class USBMaster:
         if self.USB_name is not None:
             #self.USB_path = USB_DIR_PATH
             uuid_dict = {}
-            f=open("usb_names.txt", "r")
+            f=open("./usb_names.txt", "r")
             if f.mode == 'r':
                 usb_names = f.read().splitlines() 
             f.close()
