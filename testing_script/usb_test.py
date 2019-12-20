@@ -95,7 +95,7 @@ class USBMaster:
 usbmaster = USBMaster()
 
 #Writing to USB Test
-path = "/media/pi/JES/usb_test.txt"
+path = "/media/JES/usb_test.txt"
 f = open(path, "a+")
 f.write("Succesfully Writing File!\n")
 f.close()
