@@ -73,7 +73,7 @@ class USBMaster:
         f.close()
         #Run the bash script
         subprocess.call("chmod +x /home/pi/Desktop/EDSFieldController/testing_script/usb_setup.sh", shell=True)
-        subprocess.call("./etc/fstab", shell=True)
+        subprocess.call("./usb_setup.sh", shell=True)
         # edit the stab file
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
         os.chmod("/etc/fstab", 0o777)
