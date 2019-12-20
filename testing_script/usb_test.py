@@ -38,15 +38,15 @@ class USBMaster:
         if self.USB_name is not None:
             #self.USB_path = USB_DIR_PATH
             uuid_dict = {}
+            f=open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "r")
+            if f.mode == 'r':
+                usb_names = f.read().splitlines()
+            f.close()
+            for x in usb_names:
+                uuid = x.split()[0]
+                usb_mount = x.split()[1]
+                uuid_dict[uuid] = usb_mount
             try:
-                f=open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "r")
-                if f.mode == 'r':
-                    usb_names = f.read().splitlines() 
-                f.close()
-                for x in usb_names:
-                    uuid = x.split()[0]
-                    usb_mount = x.split()[1]
-                    uuid_dict[uuid] = usb_mount
                 self.USB_path = "/media/" + uuid_dict[self.USB_name]
                 self.uuid = uuid_dict[self.USB_name]
             except:
@@ -79,6 +79,7 @@ class USBMaster:
         os.chmod("/etc/fstab", 0o777)
         f=open("/etc/fstab", "a+")
         f.write("UUID="+str(uuid)+" /media/"+str(label)+" vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0")
+        f.close()
         # reboot
         #self.reset()
 
