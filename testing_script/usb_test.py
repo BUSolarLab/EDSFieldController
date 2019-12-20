@@ -65,14 +65,14 @@ class USBMaster:
         label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
         uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
         # setup the bash script
-        f = open("usb_setup.sh", "w+")
+        f = open("/home/pi/Desktop/EDSFieldController/testing_script/usb_setup.sh", "w+")
         f.write("sudo mkdir /media/"+str(label)+"\n")
         f.write("sudo chown -R pi:pi /media/"+str(label)+"\n")
         f.write("sudo mount /dev/sda1 /media/"+str(label)+" -o uid=pi,gid=pi\n")
         f.write("sudo umount /media/"+str(label)+"\n")
         f.close()
         # edit the stab file
-        f=open("/etc/fstab", "a+)
+        f=open("/etc/fstab", "a+")
         f.write("UUID="+str(uuid)+" /media/"+str(label)+" vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0")
         # reboot
         self.reset()
