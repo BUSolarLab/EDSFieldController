@@ -39,7 +39,7 @@ class USBMaster:
             #self.USB_path = USB_DIR_PATH
             uuid_dict = {}
             try:
-                f=open("/home/pi/Desktop/EDSFieldController/usb_names.txt", "r")
+                f=open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "r")
                 if f.mode == 'r':
                     usb_names = f.read().splitlines() 
                 f.close()
@@ -77,7 +77,7 @@ class USBMaster:
         f=open("/etc/fstab", "a+")
         f.write("UUID="+str(uuid)+" /media/"+str(label)+" vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0")
         # reboot
-        self.reset()
+        #self.reset()
 
     def get_USB_path(self):
         # outputs USB file path
