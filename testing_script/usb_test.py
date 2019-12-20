@@ -69,7 +69,7 @@ class USBMaster:
         f.write("sudo mkdir /media/"+str(label)+"\n")
         f.write("sudo chown -R pi:pi /media/"+str(label)+"\n")
         f.write("sudo mount /dev/sda1 /media/"+str(label)+" -o uid=pi,gid=pi\n")
-        f.write("sudo umount /media/"+str(label)+"\n")
+        #f.write("sudo umount /media/"+str(label)+"\n")
         f.close()
         # edit the stab file
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
