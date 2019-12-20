@@ -71,6 +71,9 @@ class USBMaster:
         f.write("sudo mount /dev/sda1 /media/"+str(label)+" -o uid=pi,gid=pi\n")
         #f.write("sudo umount /media/"+str(label)+"\n")
         f.close()
+        #Run the bash script
+        subprocess.call("chmod +x /home/pi/Desktop/EDSFieldController/testing_script/usb_setup.sh", shell=True)
+        subprocess.call("./etc/fstab", shell=True)
         # edit the stab file
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
         os.chmod("/etc/fstab", 0o777)
