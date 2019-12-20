@@ -55,7 +55,7 @@ class USBMaster:
                 label = dir.split('/dev/sda1:')[1].split('LABEL_FATBOOT=')[1].split('"')[1]
                 uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
                 f = open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "a+")
-                f.write("0662-0119 "+str(label)+"\n")
+                f.write(str(uuid)+" "+str(label)+"\n")
                 f.close()
                 self.set_mounting_port()
 
