@@ -72,7 +72,7 @@ class USBMaster:
         f.write("sudo umount /media/"+str(label)+"\n")
         f.close()
         # edit the stab file
-        subprocess.call("sudo chown /etc/fstab", shell=True)
+        subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
         os.chmod("/etc/fstab", 0o777)
         f=open("/etc/fstab", "a+")
         f.write("UUID="+str(uuid)+" /media/"+str(label)+" vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0")
