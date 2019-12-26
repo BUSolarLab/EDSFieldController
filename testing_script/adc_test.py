@@ -6,6 +6,9 @@ from adafruit_mcp3xxx.analog_in import AnalogIn
 import RPi.GPIO as GPIO
 import time
 
+# Reset ports
+GPIO.cleanup()
+
 # Set the ports, 
 GPIO.setup(4, GPIO.OUT)
 
