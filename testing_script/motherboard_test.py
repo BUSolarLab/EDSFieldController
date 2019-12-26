@@ -31,10 +31,12 @@ for x in range(5):
     mcp = MCP.MCP3008(spi,cs)
     #create an analog input channel on pin 0
     chan = AnalogIn(mcp, MCP.P0)
+    #correction constant
+    correction_isc = 1.5674
     print("Isc")
     print('Raw ADC Value: ', chan.value)
     print('ADC Voltage: ' + str(chan.voltage) + 'V')
-    print('Isc Ampere: ' + str(chan.voltage) + 'A')
+    print('Isc Ampere: ' + str(chan.voltage*correction_isc) + 'A')
 
     #Delay
     time.sleep(5)
@@ -49,13 +51,16 @@ for x in range(5):
     mcp = MCP.MCP3008(spi,cs)
     #create an analog input channel on pin 0
     chan = AnalogIn(mcp, MCP.P0)
+    #correction constant
+    correction_voc = 1.0520
+
     print("Voc")
     print('Raw ADC Value: ', chan.value)
     print('ADC Voltage: ' + str(chan.voltage) + 'V')
-    print('Voc Voltage: ' + str(chan.voltage*11) + 'V')
+    print('Voc Voltage: ' + str(chan.voltage*11*correction_voc) + 'V')
 
     time.sleep(5) 
-    
+
     #Reset port
     GPIO.setup(7, GPIO.IN)
     GPIO.setup(25, GPIO.IN)
