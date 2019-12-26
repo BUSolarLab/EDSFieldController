@@ -6,9 +6,6 @@ from adafruit_mcp3xxx.analog_in import AnalogIn
 import RPi.GPIO as GPIO
 import time
 
-# Reset ports
-GPIO.cleanup()
-
 # Set the ports, 
 GPIO.setup(4, GPIO.OUT)
 
@@ -44,3 +41,6 @@ print("Voc")
 print('Raw ADC Value: ', chan.value)
 print('ADC Voltage: ' + str(chan.voltage) + 'V')
 print('Voc Voltage: ' + str(chan.voltage*11) + 'V')
+
+#Reset port
+GPIO.cleanup(4)
