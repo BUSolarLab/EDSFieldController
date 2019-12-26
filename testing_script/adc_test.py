@@ -7,8 +7,8 @@ import RPi.GPIO as GPIO
 import time
 
 # Reset ports
-GPIO.cleanup(8)
-GPIO.cleanup(15)
+GPIO.setup(8,GPIO.IN)
+GPIO.setup(15,GPIO.IN)
 
 # Set the ports, 
 GPIO.setup(7, GPIO.OUT)
