@@ -7,7 +7,7 @@ import RPi.GPIO as GPIO
 import time
 
 # Set the ports, 
-GPIO.setup(15, GPIO.OUT)
+GPIO.setup(4, GPIO.OUT)
 
 # Measure Isc
 GPIO.setup(25, GPIO.OUT)
