@@ -47,4 +47,5 @@ print('ADC Voltage: ' + str(chan.voltage) + 'V')
 print('Voc Voltage: ' + str(chan.voltage*11) + 'V')
 
 #Reset port
-GPIO.setup(7, GPIO.IN)
+GPIO.setup(7, GPIO.OUT)
+GPIO.setup(25, GPIO.IN)
