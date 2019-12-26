@@ -15,6 +15,7 @@ GPIO.setup(7, GPIO.OUT)
 
 # Measure Isc
 GPIO.setup(25, GPIO.OUT)
+time.sleep(3)
 #create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
 #create the cs (chip select)
