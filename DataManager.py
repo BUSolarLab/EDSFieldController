@@ -34,12 +34,14 @@ class USBMaster:
     def __init__(self):
         self.USB_name = None
         self.USB_path = None
+        self.uuid = None
+        self.label = None
         self.set_USB_name()
-        self.set_USB_path()
+        self.check_new_USB()
 
     def reset(self):
-        # resets parameters if needed
-        self.__init__()
+        # reboots the system
+        subprocess.call("sudo reboot", shell=True)
 
     def set_USB_name(self):
         # check if USB mounted
@@ -51,30 +53,63 @@ class USBMaster:
             else:
                 self.reset()
                 print("USB not mounted! Please insert USB.")
-
         except:
             self.reset()
             print("ERROR: Shell process malfunction!")
+    
+    def check_new_USB(self):
+        # set label and uuid
+        dir = str(subprocess.check_output("sudo blkid", shell=True))
+        self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
+        self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+        # get the uuid and labels from usb_names.txt
+        f=open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "r")
+        usb_names = f.read().splitlines() 
+        f.close()
+        # put them in a seperate list
+        uuid_list = []
+        label_list = []
+        for x in usb_names:
+            uuid_list.append(x.split()[0])
+            label_list.append(x.split()[1])
+        # cross check label and uuid with usb_names.txt
+        if self.label in label_list:
+            print("USB Already Registered!")
+            self.set_USB_path()
+            self.set_mounting_port()
+        else:
+            print("Configurating new USB drive in FTU system!")
+            f = open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "a+")
+            f.write(str(self.uuid)+" "+str(self.label)+"\n")
+            f.close()
+            self.set_mounting_port()
 
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
         if self.USB_name is not None:
-            #self.USB_path = USB_DIR_PATH
-            uuid_dict = {}
-            f=open("/home/pi/Desktop/EDSFieldController/usb_names.txt", "r")
-            if f.mode == 'r':
-                usb_names = f.read().splitlines() 
-            f.close()
-            for x in usb_names:
-                uuid = x.split()[0]
-                usb_mount = x.split()[1]
-                uuid_dict[uuid] = usb_mount
-            self.USB_path = "/media/" + uuid_dict[self.USB_name]
+            self.USB_path = "/media/" + self.label
+
+    def set_mounting_port(self):
+        # setup the bash script
+        f = open("/home/pi/Desktop/EDSFieldController/testing_script/usb_setup.sh", "w+")
+        f.write("sudo mkdir /media/"+str(self.label)+"\n")
+        f.write("sudo chown -R pi:pi /media/"+str(self.label)+"\n")
+        f.write("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi\n")
+        #f.write("sudo umount /media/"+str(label)+"\n")
+        f.close()
+        #Run the bash script
+        subprocess.call("chmod +x /home/pi/Desktop/EDSFieldController/testing_script/usb_setup.sh", shell=True)
+        subprocess.call("./usb_setup.sh", shell=True)
+        # edit the stab file
+        subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
+        os.chmod("/etc/fstab", 0o777)
+        f=open("/etc/fstab", "a+")
+        f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0")
 
     def get_USB_path(self):
         # outputs USB file path
         return self.USB_path
-
+    
     def get_USB_UUID(self):
         # outputs USB UUID
         return self.uuid
