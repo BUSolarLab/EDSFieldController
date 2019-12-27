@@ -61,7 +61,32 @@ class USBMaster:
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
         if self.USB_name is not None:
+<<<<<<< HEAD
             self.USB_path = "/media/" + self.uuid
+=======
+            #self.USB_path = USB_DIR_PATH
+            uuid_dict = {}
+            f=open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "r")
+            if f.mode == 'r':
+                usb_names = f.read().splitlines()
+            f.close()
+            for x in usb_names:
+                uuid = x.split()[0]
+                usb_mount = x.split()[1]
+                uuid_dict[uuid] = usb_mount
+            try:
+                self.USB_path = "/media/" + uuid_dict[self.USB_name]
+                self.uuid = uuid_dict[self.USB_name]
+            except:
+                # get associated variables
+                dir = str(subprocess.check_output("sudo blkid", shell=True))
+                label = dir.split('/dev/sda1:')[1].split('LABEL_FATBOOT=')[1].split('"')[1]
+                uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+                f = open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "a+")
+                f.write(str(uuid)+" "+str(label)+"\n")
+                f.close()
+                self.set_mounting_port()
+>>>>>>> 814179fe0ba3040d0229d293b62989be725c34c1
 
     def set_mounting_port(self):
         # setup the bash script
@@ -78,7 +103,14 @@ class USBMaster:
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
         os.chmod("/etc/fstab", 0o777)
         f=open("/etc/fstab", "a+")
+<<<<<<< HEAD
         f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0")
+=======
+        f.write("UUID="+str(uuid)+" /media/"+str(label)+" vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0")
+        f.close()
+        # reboot
+        #self.reset()
+>>>>>>> 814179fe0ba3040d0229d293b62989be725c34c1
 
     def get_USB_path(self):
         # outputs USB file path

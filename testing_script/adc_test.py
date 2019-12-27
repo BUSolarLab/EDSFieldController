@@ -6,11 +6,16 @@ from adafruit_mcp3xxx.analog_in import AnalogIn
 import RPi.GPIO as GPIO
 import time
 
+# Reset ports
+GPIO.setup(8,GPIO.IN)
+GPIO.setup(15,GPIO.IN)
+
 # Set the ports, 
-GPIO.setup(15, GPIO.OUT)
+GPIO.setup(7, GPIO.OUT)
 
 # Measure Isc
 GPIO.setup(25, GPIO.OUT)
+time.sleep(3)
 #create the spi bus
 spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
 #create the cs (chip select)
@@ -41,3 +46,7 @@ print("Voc")
 print('Raw ADC Value: ', chan.value)
 print('ADC Voltage: ' + str(chan.voltage) + 'V')
 print('Voc Voltage: ' + str(chan.voltage*11) + 'V')
+
+#Reset port
+GPIO.setup(7, GPIO.IN)
+GPIO.setup(25, GPIO.IN)
