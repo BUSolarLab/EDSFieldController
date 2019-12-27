@@ -58,8 +58,10 @@ class ADCMaster:
         chan=AnalogIn(mcp, MCP.P0)
         raw = chan.voltage
         print('PV Raw volt read: ' + str(raw) + '[V]')
+        #correction constant
+        correction_voc = 1.0520
         # Since we divided voltage by 11, multiply by 11 to get actual Voc
-        return raw * 11
+        return raw * 11 * correction_voc
     
     def get_scc_PV(self):
         spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -68,8 +70,10 @@ class ADCMaster:
         chan=AnalogIn(mcp, MCP.P0)
         raw = chan.voltage
         print('PV Raw curr read: ' + str(raw) + '[A]')
+        #correction constant
+        correction_isc = 1.5674
         #SCC = Voc x 1 Ohm
-        return raw
+        return raw * correction_isc
     
     def get_ocv_BAT(self):
         spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
