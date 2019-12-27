@@ -11,7 +11,6 @@ class USBMaster:
         self.label = None
         self.set_USB_name()
         self.check_new_USB()
-        self.set_USB_path()
 
     def reset(self):
         # reboots the system
@@ -50,6 +49,7 @@ class USBMaster:
         # cross check label and uuid with usb_names.txt
         if self.label in label_list:
             print("USB Already Registered!")
+            self.set_USB_path()
         else:
             print("Configurating new USB drive in FTU system!")
             f = open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "a+")
