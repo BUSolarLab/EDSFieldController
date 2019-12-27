@@ -58,7 +58,6 @@ class USBMaster:
             f.close()
             self.set_mounting_port()
 
-
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
         if self.USB_name is not None:
