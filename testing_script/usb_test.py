@@ -26,7 +26,6 @@ class USBMaster:
             else:
                 self.reset()
                 print("USB not mounted! Please insert USB.")
-
         except:
             self.reset()
             print("ERROR: Shell process malfunction!")
