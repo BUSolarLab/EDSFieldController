@@ -93,10 +93,10 @@ class USBMaster:
 usbmaster = USBMaster()
 
 #Writing to USB Test
-#path = "/media/JES/usb_test.txt"
-#f = open(path, "a+")
-#f.write("Succesfully Writing File!\n")
-#f.close()
+path = "/media/TAGHEUER/usb_test.txt"
+f = open(path, "a+")
+f.write("Succesfully Writing File!\n")
+f.close()
 
 
 #UUID setting
