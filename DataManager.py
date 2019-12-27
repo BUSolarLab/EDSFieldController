@@ -63,7 +63,7 @@ class USBMaster:
         self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
         self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
         # get the uuid and labels from usb_names.txt
-        f=open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "r")
+        f=open("/home/pi/Desktop/EDSFieldController/usb_names.txt", "r")
         usb_names = f.read().splitlines() 
         f.close()
         # put them in a seperate list
@@ -79,7 +79,7 @@ class USBMaster:
             self.set_mounting_port()
         else:
             print("Configurating new USB drive in FTU system!")
-            f = open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "a+")
+            f = open("/home/pi/Desktop/EDSFieldController/usb_names.txt", "a+")
             f.write(str(self.uuid)+" "+str(self.label)+"\n")
             f.close()
             self.set_mounting_port()
