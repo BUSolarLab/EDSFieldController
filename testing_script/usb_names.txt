@@ -1,3 +1,0 @@
-0662-0119 redusb
-FA50-6FB2 keyusb
-8B89-14F1 blueusb
