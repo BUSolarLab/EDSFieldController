@@ -32,7 +32,7 @@ for x in range(5):
     #create an analog input channel on pin 0
     chan = AnalogIn(mcp, MCP.P0)
     #correction constant
-    correction_isc = 1#1.5674
+    correction_isc = 1.5927#1.5674(M1), 1.5927(M2)
     print("Isc")
     print('Raw ADC Value: ', chan.value)
     print('ADC Voltage: ' + str(chan.voltage) + 'V')
@@ -52,7 +52,7 @@ for x in range(5):
     #create an analog input channel on pin 0
     chan = AnalogIn(mcp, MCP.P0)
     #correction constant
-    correction_voc = 1#1.0520
+    correction_voc = 1.7369#1.0520(M1), 1.7369(M2)
 
     print("Voc")
     print('Raw ADC Value: ', chan.value)
