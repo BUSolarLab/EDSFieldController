@@ -35,7 +35,7 @@ class USBMaster:
     def check_new_USB(self):
         # set label and uuid
         dir = str(subprocess.check_output("sudo blkid", shell=True))
-        self.label = dir.split('/dev/sda1:')[1].split('LABEL_FATBOOT=')[1].split('"')[1]
+        self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
         self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
         # get the uuid and labels from usb_names.txt
         f=open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "r")
@@ -140,7 +140,7 @@ f.write("UUID=18A9-9943 /media/usb vfat auto,nofail,noatime,users,rw,uid=pi,gid=
 #sudo apt-get install exfat-utils
 #sudo apt-get install usbmount
 
-#USB Format = FAT32
+#USB Format = FAT32/FAT
 
 
 
