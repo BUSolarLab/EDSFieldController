@@ -8,7 +8,6 @@ Started: September 2018
 
 '''
 Config file parameters list (ADD NEW PARAMETERS AS DICTIONARY ENTRIES)
-These also serve as default values for config file generation in event of no provided config
 '''
 
 DEFAULT_CONFIG_PARAM = {
@@ -51,10 +50,6 @@ DEFAULT_CONFIG_PARAM = {
     'manualEDSNumber': 1,
     'ADC': 25,
     'solarChargerEDSNumber': 6,
-    
-    # reboot
-    #'rebootFlag': False,
-    
     # location data
     'degLongitude': -71.05,
     'offsetGMT': -5,

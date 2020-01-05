@@ -26,8 +26,8 @@ MANUAL_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS(#) OCV_
 USB Master Class:
 Functionality:
 1) Checks if USB is mounted
-2) If mounted, gets USB name
-3) If USB name found, construct file path for saving files to USB
+2) If mounted, gets USB label and uuid
+3) Sets the USB path for data writing
 '''
 
 class USBMaster:
@@ -39,10 +39,11 @@ class USBMaster:
         self.set_USB_name()
         self.check_new_USB()
 
+    # reset function, basically reboots the system through command line
     def reset(self):
-        # reboots the system
         subprocess.call("sudo reboot", shell=True)
 
+    # setting the USB name by its UUID
     def set_USB_name(self):
         # check if USB mounted
         try:
@@ -57,6 +58,7 @@ class USBMaster:
             self.reset()
             print("ERROR: Shell process malfunction!")
     
+    # check if it is a new USB
     def check_new_USB(self):
         # set label and uuid
         dir = str(subprocess.check_output("sudo blkid", shell=True))
@@ -84,11 +86,13 @@ class USBMaster:
             f.close()
             self.set_mounting_port()
 
+    # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
         if self.USB_name is not None:
             self.USB_path = "/media/" + self.label
 
+    # if new USB, need to mount it and configure new UUID in fstab file
     def set_mounting_port(self):
         # setup the bash script
         f = open("/home/pi/Desktop/EDSFieldController/testing_script/usb_setup.sh", "w+")
@@ -119,7 +123,7 @@ class USBMaster:
 CSV Master Class:
 Functionality:
 1) Checks if txt and csv files exit, creates them if not
-2) Has methods for writing data to files
+2) Has methods for writing data to csv files
 '''
 
 class CSVMaster:
@@ -292,7 +296,6 @@ class CSVMaster:
         except:
             print("Error writing txt manual data!")
             
-    
     # write to testing data files
     def write_testing_data(self, dt, temp, humid, g_poa, eds_num, params, power):
         self.write_txt_testing_data(dt, temp, humid, g_poa, eds_num, params, power)
@@ -315,7 +318,6 @@ Functionality:
 2) Has method for writing to log file with current date/time
 '''
             
-
 class LogMaster:
     # initialize log file name to write to
     def __init__(self, usb_path, dt):

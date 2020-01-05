@@ -1,7 +1,3 @@
-#!/usr/bin/python 
-# modified for GroveWeatherPi to return CRC information
-# SwitchDoc Labs, 2019
-
 # COPYRIGHT 2016 Robert Wolterman
 # MIT License, see LICENSE file for details
 

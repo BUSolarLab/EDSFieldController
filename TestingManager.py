@@ -28,13 +28,6 @@ H_TOL = 0.1
 # how close current time must be to scheduled time to initiate test (min)
 MIN_CHECK_THRESHOLD = 0.5
 
-# simplified channel functions
-def channel_out(chn, val):
-    GPIO.output(chn, val)
-
-def channel_in(chn):
-    return GPIO.input(chn)
-
 '''
 ADC Master Class:
 Functionality:
@@ -60,6 +53,7 @@ class ADCMaster:
         print('PV Raw volt read: ' + str(raw) + '[V]')
         #correction constant
         correction_voc = 1.7369#1.0520(M1), 1.7369(M2)
+
         # Since we divided voltage by 11, multiply by 11 to get actual Voc
         return raw * 11 * correction_voc
     
@@ -72,8 +66,9 @@ class ADCMaster:
         print('PV Raw curr read: ' + str(raw) + '[A]')
         #correction constant
         correction_isc = 1.5927#1.5674(M1), 1.5927(M2)
+        
         #SCC = Voc x 1 Ohm
-        return raw * correction_isc
+        return raw * 1 * correction_isc
     
     def get_ocv_BAT(self):
         spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
@@ -90,6 +85,7 @@ Testing Master Class:
 Functionality:
 1) Verifies electrical components
 2) Executes testing sequence
+3) Measures Voc and Isc pre & post EDS power supply activation
 '''
 
 class TestingMaster:
@@ -182,13 +178,11 @@ class TestingMaster:
         # Setup GPIO pins to measure Voc and Isc of desired panel
         GPIO.setup(pv_relay, GPIO.OUT)
         GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
-        #GPIO.setup(25,GPIO.OUT)
         time.sleep(0.5)
         
         # OCV READ
         # Switch the relay to read Voc
         GPIO.setup(self.get_pin('ADC'), GPIO.IN)
-        #GPIO.setup(25, GPIO.IN)
         time.sleep(0.5)
         # Get reading
         read_ocv = self.adc_m.get_ocv_PV()
@@ -196,7 +190,6 @@ class TestingMaster:
         # SCC READ
         # Switch relay to read Isc
         GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
-        #GPIO.setup(25, GPIO.OUT)
         time.sleep(0.5)
         
         # get reading
@@ -222,13 +215,11 @@ class TestingMaster:
         # Setup GPIO pins to measure Voc and Isc of desired panel
         GPIO.setup(pv_relay, GPIO.OUT)
         GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
-        #GPIO.setup(25,GPIO.OUT)
         time.sleep(0.5)
         
         # OCV READ
         # Switch the relay to read Voc
         GPIO.setup(self.get_pin('ADC'), GPIO.IN)
-        #GPIO.setup(25, GPIO.IN)
         time.sleep(0.5)
         # Get reading
         read_ocv = self.adc_m.get_ocv_PV()
@@ -236,14 +227,12 @@ class TestingMaster:
         # SCC READ
         # Switch relay to read Isc
         GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
-        #GPIO.setup(25, GPIO.OUT)
         time.sleep(0.5)
         # get reading
         read_scc = self.adc_m.get_scc_PV()
         # Default pin is LOW, no need to switch, just clean up
         time.sleep(0.5)
         GPIO.cleanup(self.get_pin('ADC'))
-        #GPIO.cleanup(25)
         
         # Close EDS PV Relay
         time.sleep(0.5)
@@ -252,18 +241,15 @@ class TestingMaster:
         
         return [read_ocv, read_scc]
 
-
     def run_measure_BAT(self):
         # the battery will not require flipping relays/transistors (only ~14uW power lost)
         # get reading
         read_ocv = self.adc_m.get_ocv_BAT()
         return read_ocv
-        
-    
+
     def run_test_begin(self, eds_num):
         # runs the first half of a test (pauses on test duration to allow for indefinite testing)
         eds_select = self.get_pin('EDS'+str(eds_num))
-
         # EDS activation relays ON
         GPIO.setup(eds_select, GPIO.OUT)
         GPIO.output(eds_select, GPIO.HIGH)
@@ -274,7 +260,6 @@ class TestingMaster:
     def run_test_end(self, eds_num):
         # runs the second half of a test to finish from first half
         eds_select = self.get_pin('EDS'+str(eds_num))
-
         # THIS MUST FOLLOW run_test_begin() TO FINISH TEST PROPERLY
         # deactivate the EDS
         GPIO.output(eds_select, GPIO.LOW)
@@ -336,8 +321,8 @@ class PowerMaster:
 '''
 Performance Ratio Class:
 Functionality:
-1) Takes in voc, isc, and temperature as inputs
-2) Measures power output
+1) Takes in power and irradiance
+2) Measures performance ratio
 '''
 
 class PerformanceRatio:
@@ -359,20 +344,21 @@ class PerformanceRatio:
 '''
 Soiling Class:
 Functionality:
-1) Takes in isc before and isc after
-2) Measures soiling ratio
+1) Contains a reference Isc and irradiance denoted as isc_clean and irr_clean
+2) Takes in Isc and irradiance.
+3) Measures soiling ratio
 '''
 class Soiling:
     def __init__(self):
         #Isc clean, reference isc value
         self.isc_clean = 0.68
         #irradiance for Isc cleaned, reference irradiance
-        self.gstc = 1000
+        self.irr_clean = 1000
 
     #Soiling Ratio Formula
     def get_sr(self,isc_soiled, gpoa):
         if (gpoa == -1):
             return -1
         else:
-            SR = (isc_soiled/gpoa)/(self.isc_clean/self.gstc)
+            SR = (isc_soiled/gpoa)/(self.isc_clean/self.irr_clean)
             return round(SR,2)
