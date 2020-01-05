@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 '''
 =============================
 Title: Master Control - EDS Field Control
@@ -8,11 +6,7 @@ Started: September 2018
 =============================
 '''
 
-'''
-This is central control.
-This file contains the main looping structure for extended-period field testing.
-'''
-
+# dependencies
 import RPi.GPIO as GPIO
 import subprocess
 import time
@@ -21,11 +15,9 @@ from board import *
 import adafruit_pcf8523
 import AM2315
 import SP420
-
 import StaticManager as SM
 import DataManager as DM
 import TestingManager as TM
-
 from math import floor, ceil
 
 # read config, get constants, etc
