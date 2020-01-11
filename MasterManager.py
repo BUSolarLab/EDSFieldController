@@ -598,4 +598,3 @@ while True:
     # delay to slow down processing
     time.sleep(1)
     # END CORE LOOP
-
