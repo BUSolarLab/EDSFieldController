@@ -78,7 +78,7 @@ class USBMaster:
         if self.label in label_list:
             print("USB Already Registered!")
             self.set_USB_path()
-            self.set_mounting_port()
+            #self.set_mounting_port()
         else:
             print("Configurating new USB drive in FTU system!")
             f = open("/home/pi/Desktop/EDSFieldController/usb_names.txt", "a+")
