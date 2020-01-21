@@ -69,23 +69,31 @@ class USBMaster:
         usb_names = f.read().splitlines() 
         f.close()
         # put them in a seperate list
-        uuid_list = []
-        label_list = []
-        for x in usb_names:
-            uuid_list.append(x.split()[0])
-            label_list.append(x.split()[1])
-        # cross check label and uuid with usb_names.txt
-        if self.label in label_list:
-            print("USB Already Registered!")
-            self.set_USB_path()
-            #self.set_mounting_port()
-        else:
+        if not usb_names:
             print("Configurating new USB drive in FTU system!")
             f = open("/home/pi/Desktop/usb_names.txt", "a+")
             f.write(str(self.uuid)+" "+str(self.label)+"\n")
             f.close()
             self.set_USB_path()
             self.set_mounting_port()
+        else:
+            uuid_list = []
+            label_list = []
+            for x in usb_names:
+                uuid_list.append(x.split()[0])
+                label_list.append(x.split()[1])
+            # cross check label and uuid with usb_names.txt
+            if self.label in label_list:
+                print("USB Already Registered!")
+                self.set_USB_path()
+                #self.set_mounting_port()
+            else:
+                print("Configurating new USB drive in FTU system!")
+                f = open("/home/pi/Desktop/usb_names.txt", "a+")
+                f.write(str(self.uuid)+" "+str(self.label)+"\n")
+                f.close()
+                self.set_USB_path()
+                self.set_mounting_port()
 
     # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
