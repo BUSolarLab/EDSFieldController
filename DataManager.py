@@ -150,7 +150,7 @@ class CSVMaster:
     def check_for_txt_file(self, name):
         if not os.path.isfile(name):
             try:
-                with open(name, 'a') as f:
+                with open(name, 'a+') as f:
                     if name is self.txt_testing_data:
                         f.writelines(DATA_HEADER_TXT + '\n')
                     if name is self.txt_noon_data:
@@ -163,7 +163,7 @@ class CSVMaster:
     def check_for_csv_file(self, name):
         if not os.path.isfile(name):
             try:
-                with open(name, 'a') as f:
+                with open(name, 'a+') as f:
                     writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     if name is self.csv_testing_data:
                         writer.writerow(DATA_HEADER_CSV)
@@ -292,7 +292,7 @@ class CSVMaster:
         row += '\n'
         
         try:
-            with open(self.txt_manual_data, 'a') as f_txt:
+            with open(self.txt_manual_data, 'a+') as f_txt:
                 f_txt.writelines(row)
         except:
             print("Error writing txt manual data!")
