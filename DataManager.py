@@ -120,7 +120,7 @@ class USBMaster:
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
         os.chmod("/etc/fstab", 0o777)
         f=open("/etc/fstab", "a+")
-        f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" vfat auto,nofail,noatime,users,rw,uid=pi,gid=pi 0 0")
+        f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" vfat auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0")
 
     def get_USB_path(self):
         # outputs USB file path
@@ -357,7 +357,7 @@ class LogMaster:
         try:
             # create datetime phrase to log data
             datetime = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year) + ' ' + str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
-            with open(self.log_file, 'a') as f_log:
+            with open(self.log_file, 'a+') as f_log:
                 f_log.writelines(datetime + ' - ' + phrase + '\n')
         except:
             print("Error writing to existing log file! Please check.")
