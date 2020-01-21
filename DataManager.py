@@ -116,9 +116,9 @@ class USBMaster:
         #subprocess.call("chmod +x /home/pi/Desktop/usb_setup.sh", shell=True)
         #subprocess.call("/home/pi/Desktop/usb_setup.sh", shell=True)
         #subprocess.call("sudo rm /home/pi/Desktop/usb_setup.sh", shell=True)
-        subprocess.call("sudo mkdir /media/"+str(self.label))
-        subprocress.call("sudo chown -R pi:pi /media/"+str(self.label))
-        subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi")
+        subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
+        subprocress.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
+        subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
         
         # edit the stab file
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
