@@ -65,7 +65,7 @@ class USBMaster:
         self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
         self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
         # get the uuid and labels from usb_names.txt
-        f=open("/home/pi/Desktop/EDSFieldController/usb_names.txt", "r")
+        f=open("/home/pi/Desktop/usb_names.txt", "r")
         usb_names = f.read().splitlines() 
         f.close()
         # put them in a seperate list
@@ -81,7 +81,7 @@ class USBMaster:
             #self.set_mounting_port()
         else:
             print("Configurating new USB drive in FTU system!")
-            f = open("/home/pi/Desktop/EDSFieldController/usb_names.txt", "a+")
+            f = open("/home/pi/Desktop/usb_names.txt", "a+")
             f.write(str(self.uuid)+" "+str(self.label)+"\n")
             f.close()
             self.set_USB_path()
@@ -96,7 +96,7 @@ class USBMaster:
     # if new USB, need to mount it and configure new UUID in fstab file
     def set_mounting_port(self):
         # setup the bash script
-        f = open("/home/pi/Desktop/EDSFieldController/usb_setup.sh", "w+")
+        f = open("/home/pi/Desktop/usb_setup.sh", "w+")
         f.write("sudo mkdir /media/"+str(self.label)+"\n")
         f.write("sudo chown -R pi:pi /media/"+str(self.label)+"\n")
         f.write("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi\n")
@@ -105,6 +105,7 @@ class USBMaster:
         #Run the bash script
         subprocess.call("chmod +x /home/pi/Desktop/EDSFieldController/usb_setup.sh", shell=True)
         subprocess.call("./usb_setup.sh", shell=True)
+        subprocess.call("sudo rm /home/pi/Desktop/usb_setup.sh", shell=True)
         # edit the stab file
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
         os.chmod("/etc/fstab", 0o777)
