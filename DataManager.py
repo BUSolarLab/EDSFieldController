@@ -112,7 +112,7 @@ class USBMaster:
         f.close()
         #Run the bash script
         subprocess.call("chmod +x /home/pi/Desktop/usb_setup.sh", shell=True)
-        subprocess.call("./usb_setup.sh", shell=True)
+        subprocess.call("/home/pi/Desktop/usb_setup.sh", shell=True)
         subprocess.call("sudo rm /home/pi/Desktop/usb_setup.sh", shell=True)
         # edit the stab file
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
