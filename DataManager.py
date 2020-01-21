@@ -76,6 +76,7 @@ class USBMaster:
             f.close()
             self.set_USB_path()
             self.set_mounting_port()
+            print("Setting Mount Port")
         else:
             uuid_list = []
             label_list = []
@@ -94,6 +95,7 @@ class USBMaster:
                 f.close()
                 self.set_USB_path()
                 self.set_mounting_port()
+                print("Setting Mount Port")
 
     # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
