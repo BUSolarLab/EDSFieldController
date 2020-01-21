@@ -87,7 +87,9 @@ class USBMaster:
             if self.label in label_list:
                 print("USB Already Registered!")
                 self.set_USB_path()
-                subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
+                subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
+                subprocress.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
+                subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
             else:
                 print("Configurating new USB drive in FTU system!")
                 f = open("/home/pi/Desktop/usb_names.txt", "a+")
