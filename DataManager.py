@@ -106,16 +106,20 @@ class USBMaster:
     # if new USB, need to mount it and configure new UUID in fstab file
     def set_mounting_port(self):
         # setup the bash script
-        f = open("/home/pi/Desktop/usb_setup.sh", "w+")
+        #f = open("/home/pi/Desktop/usb_setup.sh", "w+")
         f.write("sudo mkdir /media/"+str(self.label)+"\n")
         f.write("sudo chown -R pi:pi /media/"+str(self.label)+"\n")
         f.write("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi\n")
         #f.write("sudo umount /media/"+str(label)+"\n")
-        f.close()
+        #f.close()
         #Run the bash script
-        subprocess.call("chmod +x /home/pi/Desktop/usb_setup.sh", shell=True)
-        subprocess.call("/home/pi/Desktop/usb_setup.sh", shell=True)
-        subprocess.call("sudo rm /home/pi/Desktop/usb_setup.sh", shell=True)
+        #subprocess.call("chmod +x /home/pi/Desktop/usb_setup.sh", shell=True)
+        #subprocess.call("/home/pi/Desktop/usb_setup.sh", shell=True)
+        #subprocess.call("sudo rm /home/pi/Desktop/usb_setup.sh", shell=True)
+        subprocess.call("sudo mkdir /media/"+str(self.label))
+        subprocress.call("sudo chown -R pi:pi /media/"+str(self.label))
+        subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi")
+        
         # edit the stab file
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
         os.chmod("/etc/fstab", 0o777)
