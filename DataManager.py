@@ -84,6 +84,7 @@ class USBMaster:
             f = open("/home/pi/Desktop/EDSFieldController/usb_names.txt", "a+")
             f.write(str(self.uuid)+" "+str(self.label)+"\n")
             f.close()
+            self.set_USB_path()
             self.set_mounting_port()
 
     # set the USB path for data writing in MasterManager.py
