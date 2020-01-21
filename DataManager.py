@@ -107,9 +107,9 @@ class USBMaster:
     def set_mounting_port(self):
         # setup the bash script
         #f = open("/home/pi/Desktop/usb_setup.sh", "w+")
-        f.write("sudo mkdir /media/"+str(self.label)+"\n")
-        f.write("sudo chown -R pi:pi /media/"+str(self.label)+"\n")
-        f.write("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi\n")
+        #f.write("sudo mkdir /media/"+str(self.label)+"\n")
+        #f.write("sudo chown -R pi:pi /media/"+str(self.label)+"\n")
+        #f.write("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi\n")
         #f.write("sudo umount /media/"+str(label)+"\n")
         #f.close()
         #Run the bash script
