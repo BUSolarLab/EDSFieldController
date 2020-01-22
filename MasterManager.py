@@ -367,15 +367,6 @@ while True:
                 # increment window by 1 sec
                 window += 1
                 time.sleep(1)
-                
-                # flip GREEN LED because test not initiated yet
-                if flip_on:
-                    GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
-                    flip_on = False
-                else:
-                    GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
-                    flip_on = True
-                    
                 # check temp and humidity until they fall within parameter range or max window reached
                 try:
                     w_read = weather.read_humidity_temperature()
@@ -391,13 +382,17 @@ while True:
             
             # if out of loop and parameters are met
             if weather_pass:
+                # run test if all flags passed
+                print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for EDS" + str(eds))
+
+                # turn green LED on to show automatic testing is operating
+                GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+                flip_on = False
+
                 #1 minute delay per panel
                 time.sleep(60)
 
-                # run test if all flags passed
-                print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for EDS" + str(eds))
                 # run testing procedure
-                
                 curr_dt = rtc.datetime
                 
                 # 1) get control OCV and SCC  values for each control
@@ -473,7 +468,10 @@ while True:
                 csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], g_poa, eds, data_ocv_scc, power_data)
                 print_l(rtc.datetime, "Ended automated scheduled test of EDS" + str(eds))
 
-        
+                # 9) turn of green LED to show testing is done
+                GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+                flip_on = True
+
         '''
         END AUTOMATIC TESTING ACTIVATION CODE
         --------------------------------------------------------------------------
