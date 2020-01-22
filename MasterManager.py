@@ -310,7 +310,7 @@ while True:
         
         '''
         --------------------------------------------------------------------------
-        Checking the operational time of EDS 8AM-16PM
+        Checking the operational time for automatic testing mode 9AM-14PM
         '''
         current_dt=rtc.datetime
         if current_dt.tm_hour > 13 or current_dt.tm_hour < 9:
@@ -319,8 +319,6 @@ while True:
             auto = False
         else:
             auto = True
-        print(current_dt.tm_hour)
-        print(auto)
         '''
         --------------------------------------------------------------------------
         BEGIN AUTOMATIC TESTING ACTIVATION CODE
@@ -336,8 +334,9 @@ while True:
             3d) Measure [after] OCV and SCC for EDS PV being tested
             3e) Write data to CSV/txt files
         '''
-        
-        # for each EDS check time against schedule, set time flag if yes
+        # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
+        #auto = false
+
         # put EDS in a queue if multiple are to be activated simultaneously
         eds_testing_queue = []
         
