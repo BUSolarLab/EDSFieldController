@@ -47,7 +47,7 @@ DEFAULT_CONFIG_PARAM = {
     'outPinLEDGreen': 5,
     'outPinLEDRed': 13,
     'inPinManualActivate': 22,
-    'manualEDSNumber': 1,
+    'manualEDSNumber': 3,
     'ADC': 25,
     'solarChargerEDSNumber': 6,
     # location data
