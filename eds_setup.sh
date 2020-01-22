@@ -2,19 +2,15 @@
 #
 echo Initiating EDS Controller Setup...
 echo ---
-echo Creating EDSPython folder
-mkdir -m 777 /home/pi/EDSPython
-cd /home/pi/EDSPython
+cd /Desktop
 echo ---
 #
 echo Installing Python code from github.com/BUSolarLab/EDSFieldController...
 git clone https://github.com/BUSolarLab/EDSFieldController.git
-cp /home/pi/EDSPython/EDSFieldController/AM2315.py /home/pi/EDSPython
-cp /home/pi/EDSPython/EDSFieldController/DataManager.py /home/pi/EDSPython
-cp /home/pi/EDSPython/EDSFieldController/MasterManager.py /home/pi/EDSPython
-cp /home/pi/EDSPython/EDSFieldController/StaticManager.py /home/pi/EDSPython
-cp /home/pi/EDSPython/EDSFieldController/TestingManager.py /home/pi/EDSPython
-cp /home/pi/EDSPython/EDSFieldController/SP420.py /home/pi/EDSPython
+echo ---
+#
+echo Creating usb_names.txt on Desktop
+touch usb_names.txt
 echo ---
 #
 echo Installing external dependencies. THIS TAKES A MINUTE. PLEASE WAIT...
@@ -33,15 +29,7 @@ git clone https://github.com/adafruit/Adafruit_CircuitPython_MCP3xxx
 cd Adafruit_Python_MCP3xxx
 sudo python3 setup.py install
 echo ---
-#
-#echo Moving files around...
-#cp -r /home/pi/.local/lib/p*/s*/adafruit_register /home/pi/EDSPython
-#cp /home/pi/.local/lib/p*/s*/adafruit_pcf8523.py /home/pi/EDSPython
-#cp -r /home/pi/EDSPython/Adafruit_Python_GPIO/Adafruit_Python_MCP3008 /home
-#cp -r /home/Adafruit_Python_MCP3008/Adafruit_MCP3008 /home/pi/EDSPython
-#cp -r /home/Adafruit_Python_GPIO/Adafruit_GPIO /home/pi/EDSPython
-#echo ---
-#
+# usb mounting dependancies
 echo Installing USB auto mount library and setting config...
 sudo apt-get install ntfs-3g
 sudo apt-get install exfat-fuse
