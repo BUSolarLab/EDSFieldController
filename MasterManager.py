@@ -336,7 +336,7 @@ while True:
             3e) Write data to CSV/txt files
         '''
         # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
-        auto = false
+        auto = False
 
         # put EDS in a queue if multiple are to be activated simultaneously
         eds_testing_queue = []
