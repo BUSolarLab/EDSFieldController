@@ -249,7 +249,7 @@ class CSVMaster:
     
     # write to csv version of solar noon testing data log file
     def write_csv_noon_data(self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr):
-        row = self.data_row_noon(dt, temp, humid, g_poa, eds_act, eds_ctrl_num, b_volt, volt, cur, power, pr, sr)
+        row = self.data_row_noon(dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr)
         try:
             # attempt to open csv file in append mode (don't want to create lots of files)
             with open(self.csv_noon_data, mode='a') as f_csv:
