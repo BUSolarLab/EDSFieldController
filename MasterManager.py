@@ -319,6 +319,7 @@ while True:
             auto = False
         else:
             auto = True
+        print(current_dt.tm_hour)
         print(auto)
         '''
         --------------------------------------------------------------------------
