@@ -198,7 +198,7 @@ while True:
         print("solarnoon current time difference: "+str(abs(solar_noon_min - curr_time_min)))
 
         # if within 60 seconds of solar noon, run measurements
-        if abs(solar_noon_min - curr_time_min) < 90:
+        if abs(solar_noon_min - curr_time_min) < 80:
 
             print_l(rtc.datetime, "Initiating Solar Noon Mode")
             
@@ -240,6 +240,8 @@ while True:
                 eds_num = "EDS"+str(eds)
                 eds_act = "PRE"
                 csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], g_poa, eds_act, eds_num, eds_ocv_pre, eds_scc_pre, eds_power_pre, eds_pr_pre, eds_sr_pre)
+                # delay before changing to next EDS panel
+                time.sleep(5)
             
             # (2) CTRL Panels Pre-EDS Activation Measurements
             for ctrl in ctrl_ids:
@@ -268,6 +270,8 @@ while True:
                 ctrl_num = "CTRL"+str(ctrl)
                 eds_act = "No EDS"
                 csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], g_poa, eds_act,ctrl_num, ctrl_ocv, ctrl_scc, ctrl_power, ctrl_pr, ctrl_sr)
+                # delay before changing to next CTRL panel
+                time.sleep(5)
             
             # (3) EDS Activation For All Panels
             # turn on GREEN LED for duration of EDS activation
@@ -304,6 +308,11 @@ while True:
                 eds_num = "EDS"+str(eds)
                 eds_act = "POST"
                 csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], g_poa, eds_act, eds_num, eds_ocv_post, eds_scc_post, eds_power_post, eds_pr_post, eds_sr_post)
+                # delay before changing to next EDS panel
+                time.sleep(5)
+            
+            # 5) delay for each solar noon activation
+            #time.sleep(180)
 
         '''
         END SOLAR NOON DATA ACQUISITION CODE
