@@ -196,6 +196,7 @@ while True:
             add_error("Sensor-RTC-2")
         
         # if within 60 seconds of solar noon, run measurements
+        print("solarnoon current time difference"+str(abs(solar_noon_min - curr_time_min)))
         if abs(solar_noon_min - curr_time_min) < 1:
 
             print_l(rtc.datetime, "Initiating Solar Noon Mode")
@@ -335,7 +336,7 @@ while True:
             3e) Write data to CSV/txt files
         '''
         # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
-        #auto = false
+        auto = false
 
         # put EDS in a queue if multiple are to be activated simultaneously
         eds_testing_queue = []
