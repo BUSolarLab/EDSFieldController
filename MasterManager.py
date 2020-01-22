@@ -198,7 +198,7 @@ while True:
         print("solarnoon current time difference: "+str(abs(solar_noon_min - curr_time_min)))
 
         # if within 60 seconds of solar noon, run measurements
-        if abs(solar_noon_min - curr_time_min) < 80:
+        if abs(solar_noon_min - curr_time_min) < 1:
 
             print_l(rtc.datetime, "Initiating Solar Noon Mode")
             
