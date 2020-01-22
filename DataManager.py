@@ -66,7 +66,7 @@ class USBMaster:
         self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
         # get the uuid and labels from usb_names.txt
         f=open("/home/pi/Desktop/usb_names.txt", "r")
-        usb_names = f.read().splitlines() 
+        usb_names = f.read().splitlines()
         f.close()
         # put them in a seperate list
         if not usb_names:
@@ -75,8 +75,8 @@ class USBMaster:
             f.write(str(self.uuid)+" "+str(self.label)+"\n")
             f.close()
             self.set_USB_path()
-            self.set_mounting_port()
-            print("Setting Mount Port")
+            self.setup_usb_mount()
+            self.update_fstab_file()
         else:
             uuid_list = []
             label_list = []
@@ -87,17 +87,14 @@ class USBMaster:
             if self.label in label_list:
                 print("USB Already Registered!")
                 self.set_USB_path()
-                subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
-                subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
-                subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
+                self.setup_usb_mount()
             else:
                 print("Configurating new USB drive in FTU system!")
                 f = open("/home/pi/Desktop/usb_names.txt", "a+")
                 f.write(str(self.uuid)+" "+str(self.label)+"\n")
                 f.close()
                 self.set_USB_path()
-                self.set_mounting_port()
-                print("Setting Mount Port")
+                self.update_fstab_file()
 
     # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
@@ -105,13 +102,15 @@ class USBMaster:
         if self.USB_name is not None:
             self.USB_path = "/media/" + self.label
 
-    # if new USB, need to mount it and configure new UUID in fstab file
-    def set_mounting_port(self):
+    def setup_usb_mount(self):
+        print("Mounting new USB")
         # mount the usb
         subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
         subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
         subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
-        
+
+    def update_fstab_file(self):
+        print("Updating fstab file for new USB")
         # edit the stab file
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
         os.chmod("/etc/fstab", 0o777)
