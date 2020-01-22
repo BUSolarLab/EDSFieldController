@@ -196,7 +196,7 @@ while True:
             add_error("Sensor-RTC-2")
         
         print("solarnoon current time difference: "+str(abs(solar_noon_min - curr_time_min)))
-        
+
         # if within 60 seconds of solar noon, run measurements
         if abs(solar_noon_min - curr_time_min) < 90:
 
@@ -298,7 +298,7 @@ while True:
                 eds_pr_post = pr_master.get_pr(eds_ocv_post,eds_scc_post,pan_temp,eds_power_post,g_poa)
                 print_l(curr_dt, "Post-EDS Solar Noon PR for EDS" + str(eds) + ": " + str(eds_pr_post))
                 # compute the SR measurements for each panel
-                eds_sr_post = soil_master(eds_scc_post,g_poa)
+                eds_sr_post = soil_master.get_sr(eds_scc_post,g_poa)
                 print_l(curr_dt, "Post-EDS Solar Noon SR for EDS" + str(eds) + ": " + str(eds_sr_post))
                 # write data to solar noon csv/txt
                 eds_num = "EDS"+str(eds)
