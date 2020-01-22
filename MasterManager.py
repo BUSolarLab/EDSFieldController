@@ -312,7 +312,8 @@ while True:
                 time.sleep(5)
             
             # 5) delay for each solar noon activation
-            #time.sleep(180)
+            print("Completed Solar Noon Activation! Starting 3 min delay")
+            time.sleep(180)
 
         '''
         END SOLAR NOON DATA ACQUISITION CODE
