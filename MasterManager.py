@@ -162,13 +162,15 @@ while True:
         # flip indicator GREEN LED to show proper working
         if flip_on:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+            time.sleep(1)
             flip_on = False
         else:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+            time.sleep(1)
             flip_on = True
         
         # code for power savings
-        GPIO.output(test_master.get_pin('outPinLEDRed'), 0) 
+        GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
 
         '''
         --------------------------------------------------------------------------
@@ -317,7 +319,7 @@ while True:
             auto = False
         else:
             auto = True
-
+        print(auto)
         '''
         --------------------------------------------------------------------------
         BEGIN AUTOMATIC TESTING ACTIVATION CODE

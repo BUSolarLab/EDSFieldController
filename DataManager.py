@@ -103,7 +103,7 @@ class USBMaster:
             self.USB_path = "/media/" + self.label
 
     def setup_usb_mount(self):
-        print("Mounting new USB")
+        print("Mounting USB")
         # mount the usb
         subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
         subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
