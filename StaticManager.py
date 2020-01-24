@@ -40,7 +40,7 @@ DEFAULT_CONFIG_PARAM = {
     'minTemperatureCelsius': 10,
     'maxRelativeHumidity': 60,
     'minRelativeHumidity': 30,
-    'testDurationSeconds': 60,
+    'testDurationSeconds': 5,
     'testWindowSeconds': 2700,
     
     # indicators/switches
