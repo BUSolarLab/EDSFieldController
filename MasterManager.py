@@ -325,12 +325,14 @@ while True:
         Checking the operational time for automatic testing mode 9AM-14PM
         '''
         current_dt=rtc.datetime
-        if current_dt.tm_hour > 13 or current_dt.tm_hour < 9:
+        if current_dt.tm_hour > 8 or current_dt.tm_hour < 11:
+            auto = True
+        elif current_dt.tm_hour > 14 or current_dt.tm_hour < 17:
+            auto = True
+        else:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
             GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
             auto = False
-        else:
-            auto = True
         '''
         --------------------------------------------------------------------------
         BEGIN AUTOMATIC TESTING ACTIVATION CODE
