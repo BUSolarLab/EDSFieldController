@@ -444,7 +444,7 @@ while True:
                 for ctrl in ctrl_ids:
                     data_ocv_scc.append(ctrl_ocv_data[ctrl - 1])
                     data_ocv_scc.append(ctrl_scc_data[ctrl - 1])
-                
+
                 # 6) get readings from the SP420 pyranometer
                 irr_master = SP420.Irradiance()
                 g_poa =irr_master.get_irradiance()
@@ -473,14 +473,16 @@ while True:
                 # print and log the power values
                 print_l(rtc.datetime, "Pre-test Power for EDS" + str(eds) + ": " + str(eds_power_before))
                 print_l(rtc.datetime, "Post-test Power for EDS" + str(eds) + ": " + str(eds_power_after))
-                print_l(rtc.datetime, "Power for CTRL1" + str(1) + ": " + str(ctrl1_power))
-                print_l(rtc.datetime, "Power for CTRL2" + str(2) + ": " + str(ctrl2_power))
+                print_l(rtc.datetime, "Power for CTRL1" + ": " + str(ctrl1_power))
+                print_l(rtc.datetime, "Power for CTRL2" + ": " + str(ctrl2_power))
 
-                # 8) finish up, write data to CSV
+                # 8) soiling ratio measurements
+                
+                # 9) finish up, write data to CSV
                 csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], g_poa, eds, data_ocv_scc, power_data)
                 print_l(rtc.datetime, "Ended automated scheduled test of EDS" + str(eds))
 
-                # 9) turn of green LED to show testing is done
+                # 10) turn of green LED to show testing is done
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                 flip_on = True
 
