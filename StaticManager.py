@@ -39,15 +39,15 @@ DEFAULT_CONFIG_PARAM = {
     'maxTemperatureCelsius': 40,
     'minTemperatureCelsius': 10,
     'maxRelativeHumidity': 60,
-    'minRelativeHumidity': 30,
-    'testDurationSeconds': 5,
+    'minRelativeHumidity': 20, # should be 30
+    'testDurationSeconds': 30, # should be 1-2 min?
     'testWindowSeconds': 2700,
     
     # indicators/switches
     'outPinLEDGreen': 5,
     'outPinLEDRed': 13,
     'inPinManualActivate': 22,
-    'manualEDSNumber': 5,
+    'manualEDSNumber': 5, #EDS 3
     'ADC': 25,
     'solarChargerEDSNumber': 6,
     # location data
