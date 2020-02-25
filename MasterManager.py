@@ -326,13 +326,13 @@ while True:
         '''
         current_dt=rtc.datetime
         if current_dt.tm_hour > 8 or current_dt.tm_hour < 11:
-            auto = True
+            auto_pass = True
         elif current_dt.tm_hour > 14 or current_dt.tm_hour < 17:
-            auto = True
+            auto_pass = True
         else:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
             GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
-            auto = False
+            auto_pass = False
         '''
         --------------------------------------------------------------------------
         BEGIN AUTOMATIC TESTING ACTIVATION CODE
@@ -349,15 +349,14 @@ while True:
             3e) Write data to CSV/txt files
         '''
         # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
-        auto = False
+        #auto = False
 
         # put EDS in a queue if multiple are to be activated simultaneously
         eds_testing_queue = []
         
         for eds_num in eds_ids:
             schedule_pass = test_master.check_time(curr_dt, yday, 0, eds_num)
-            if auto:
-                eds_testing_queue.append(eds_num)
+            eds_testing_queue.append(eds_num)
         
         # print queue
         if not not eds_testing_queue:
@@ -385,7 +384,7 @@ while True:
                     w_read = weather.read_humidity_temperature()
                     temp_pass = test_master.check_temp(w_read[1])
                     humid_pass = test_master.check_humid(w_read[0])
-                    weather_pass = temp_pass and humid_pass
+                    weather_pass = temp_pass and humid_pass and auto_pass
                     
                     # remove error if corrected
                     if "Sensor-Weather-2" in error_list:
