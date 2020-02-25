@@ -83,7 +83,7 @@ temp_pass = False
 humid_pass = False
 schedule_pass = False
 weather_pass = False
-auto = False
+auto_pass = False
 
 # error handling initialization
 error_list = []
