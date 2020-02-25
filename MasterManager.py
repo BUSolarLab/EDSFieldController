@@ -447,7 +447,7 @@ while True:
                 # 6) get readings from the SP420 pyranometer
                 irr_master = SP420.Irradiance()
                 g_poa =irr_master.get_irradiance()
-                print_l(rtc.datetime, "Global Irradiance" + str(eds) + ": " + str(g_poa))
+                print_l(rtc.datetime, "Global Irradiance" + "EDS" + str(eds) + ": " + str(g_poa))
                 
                 # 7) compute the power output from the v_oc and i_sc measurements
                 #initialize empty list
