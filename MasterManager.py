@@ -468,6 +468,8 @@ while True:
                 # 10) turn of green LED to show testing is done
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                 flip_on = True
+            else:
+                print_l(rtc.datetime, "Not within automatic testing mode time window")
 
         '''
         END AUTOMATIC TESTING ACTIVATION CODE
