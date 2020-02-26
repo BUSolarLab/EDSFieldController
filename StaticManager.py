@@ -28,7 +28,7 @@ DEFAULT_CONFIG_PARAM = {
     'CTRL1PV': 15,
     'CTRL2PV': 23,
     'CTRLIDS': [1, 2],
-    'PANELIDS':['eds1','eds2','eds3','eds4','eds5','ctrl1','ctrl2']
+    'PANELIDS':['eds1','eds2','eds3','eds4','eds5','ctrl1','ctrl2'],
     
     # testing requirements
     'maxTemperatureCelsius': 40,
