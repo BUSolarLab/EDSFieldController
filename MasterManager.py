@@ -220,9 +220,9 @@ while True:
             # Pre EDS Activation Panel Measurements
             for panel in panel_ids:
                 # check the eds_number
-                panel_num = panel['num']
+                panel_num = data['num']
                 # check panel type eds/ctrl
-                panel_type = panel['type']
+                panel_type = data['type']
                 # get the date and time
                 data[panel]['date_time'] = curr_dt
                 #get the panel temperature using ambient temperature
