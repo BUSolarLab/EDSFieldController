@@ -199,9 +199,8 @@ while True:
 
         # if within 60 seconds of solar noon, run measurements (20 min right now)
         if abs(solar_noon_min - curr_time_min) < 20:
-
+            '''BEGIN SOLAR NOON MODE'''
             print_l(rtc.datetime, "Initiating Solar Noon Mode")
-            
             # get weather and print values in console
             try:
                 w_read = weather.read_humidity_temperature()
@@ -212,10 +211,8 @@ while True:
                     error_list.remove("Sensor-Weather-1")
             except:
                 add_error("Sensor-Weather-1")
-            
             # Initialize pre and post data dictionaries
             data = panel_data
-            
             # Pre EDS Activation Panel Measurements
             for panel in panel_ids:
                 # check the eds_number
@@ -258,7 +255,7 @@ while True:
                 sr_pre = soil_master.get_sr(scc_pre, g_poa)
                 print_l(curr_dt, "PRE EDS Solar Noon SR for " + panel + ": " + str(sr_pre))
                 data[panel]['sr_pre'] = sr_pre
-                '''EDS activation'''
+                '''EDS ACTIVATION'''
                 # turn on GREEN LED for duration of EDS activation
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
                 # activate the EDS film if it is an eds panel
@@ -303,7 +300,6 @@ while True:
         END SOLAR NOON DATA ACQUISITION CODE
         --------------------------------------------------------------------------
         '''
-        
         '''
         --------------------------------------------------------------------------
         Checking the operational time for automatic testing mode 9AM-14PM
@@ -365,7 +361,7 @@ while True:
             data = panel_data
             # Pre EDS Activation Panel Measurements
             for panel in panel_ids:
-                '''Other sensor measurements'''
+                '''Begin Automatic Testing Mode'''
                 # start the measurement process
                 print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for " + panel + " panel")
                 # turn green LED on to show automatic testing is operating
@@ -411,7 +407,7 @@ while True:
                 sr_pre = soil_master.get_sr(scc_pre, g_poa)
                 print_l(curr_dt, "PRE EDS Automatic Testing Mode SR for " + panel + ": " + str(sr_pre))
                 data[panel]['sr_pre'] = sr_pre
-                '''EDS activation'''
+                '''EDS ACTIVATION'''
                 # turn on GREEN LED for duration of EDS activation
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
                 # activate the EDS film if it is an eds panel
@@ -460,146 +456,6 @@ while True:
             time.sleep(30)
 
         '''
-        # put EDS in a queue if multiple are to be activated simultaneously
-        eds_testing_queue = []
-        
-        for eds_num in eds_ids:
-            eds_testing_queue.append(eds_num)
-        
-        # print queue
-        if not not eds_testing_queue:
-            phrase = "EDS Testing Queue: ["
-            for eds in eds_testing_queue:
-                phrase += str(eds) + " "
-            phrase += "]"
-            print_l(rtc.datetime, phrase)
-            
-        for eds in eds_testing_queue:
-            # if time check is good, check temp and weather within a set window
-            window = 0
-            # check temp and humidity until they fall within parameter range or max window reached
-            w_read = weather.read_humidity_temperature()
-            temp_pass = test_master.check_temp(w_read[1])
-            humid_pass = test_master.check_humid(w_read[0])
-            weather_pass = temp_pass and humid_pass
-            
-            while window < test_master.get_param('testWindowSeconds') and not weather_pass:
-                # increment window by 1 sec
-                window += 1
-                time.sleep(1)
-                # check temp and humidity until they fall within parameter range or max window reached
-                try:
-                    w_read = weather.read_humidity_temperature()
-                    temp_pass = test_master.check_temp(w_read[1])
-                    humid_pass = test_master.check_humid(w_read[0])
-                    weather_pass = temp_pass and humid_pass
-                    
-                    # remove error if corrected
-                    if "Sensor-Weather-2" in error_list:
-                        error_list.remove("Sensor-Weather-2")
-                except:
-                    add_error("Sensor-Weather-2")
-            
-            # if out of loop and parameters are met
-            if weather_pass and auto_pass:
-                # run test if all flags passed
-                print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for EDS" + str(eds))
-
-                # turn green LED on to show automatic testing is operating
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
-                flip_on = False
-
-                #1 minute delay per panel
-                time.sleep(60)
-
-                # run testing procedure
-                curr_dt = rtc.datetime
-                
-                # 1) get control OCV and SCC  values for each control
-                ctrl_ocv_data = []
-                ctrl_scc_data = []
-                for ctrl in ctrl_ids:
-                    ocv = 0
-                    scc = 0
-                    [ocv, scc] = test_master.run_measure_CTRL(ctrl)
-                    ctrl_ocv_data.append(ocv)
-                    ctrl_scc_data.append(scc)
-                    print_l(rtc.datetime, "OCV for CTRL" + str(ctrl) + ": " + str(ctrl_ocv_data[ctrl - 1]))
-                    print_l(rtc.datetime, "SCC for CTRL" + str(ctrl) + ": " + str(ctrl_scc_data[ctrl - 1]))
-                                
-                # 2) get OCV and SCC 'before' value for EDS being tested
-                [eds_ocv_before, eds_scc_before] = test_master.run_measure_EDS(eds)
-                print_l(rtc.datetime, "Pre-test OCV for EDS" + str(eds) + ": " + str(eds_ocv_before))
-                print_l(rtc.datetime, "Pre-test SCC for EDS" + str(eds) + ": " + str(eds_scc_before))
-                
-                # 3) activate EDS for test duration
-                # turn on GREEN LED for duration of test
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
-                # run test
-                test_master.run_test(eds)
-                # turn off GREEN LED after test
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
-                
-                # 4) get OCV and SCC of PV 'after' value for EDS being tested
-                [eds_ocv_after, eds_scc_after] = test_master.run_measure_EDS(eds)
-                print_l(rtc.datetime, "Post-test OCV for EDS" + str(eds) + ": " + str(eds_ocv_after))
-                print_l(rtc.datetime, "Post-test SCC for EDS" + str(eds) + ": " + str(eds_scc_after))
-                
-                # 5) compile all measurements for eds and control
-                # write data for EDS tested
-                data_ocv_scc = [eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after]
-                # append control data
-                for ctrl in ctrl_ids:
-                    data_ocv_scc.append(ctrl_ocv_data[ctrl - 1])
-                    data_ocv_scc.append(ctrl_scc_data[ctrl - 1])
-
-                # 6) get readings from the SP420 pyranometer
-                irr_master = SP420.Irradiance()
-                g_poa =irr_master.get_irradiance()
-                print_l(rtc.datetime, "Global Irradiance " + "EDS" + str(eds) + ": " + str(g_poa))
-                
-                # 7) compute the power output from the v_oc and i_sc measurements
-                #initialize empty list
-                power_data = []
-
-                #get the panel temperature using ambient temperature
-                amb_temp = w_read[1]
-                pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
-                
-                # compute the measurements for each panel
-                eds_power_before = pow_master.get_power_out(eds_ocv_before,eds_scc_before,pan_temp)
-                eds_power_after = pow_master.get_power_out(eds_ocv_after,eds_scc_after,pan_temp)
-                ctrl1_power = pow_master.get_power_out(data_ocv_scc[4],data_ocv_scc[5],pan_temp)
-                ctrl2_power = pow_master.get_power_out(data_ocv_scc[6],data_ocv_scc[7],pan_temp)
-                
-                # compile the results to the list
-                power_data.append(eds_power_before)
-                power_data.append(eds_power_after)
-                power_data.append(ctrl1_power)
-                power_data.append(ctrl2_power)
-                
-                # print and log the power values
-                print_l(rtc.datetime, "Pre-test Power for EDS" + str(eds) + ": " + str(eds_power_before))
-                print_l(rtc.datetime, "Post-test Power for EDS" + str(eds) + ": " + str(eds_power_after))
-                print_l(rtc.datetime, "Power for CTRL1" + ": " + str(ctrl1_power))
-                print_l(rtc.datetime, "Power for CTRL2" + ": " + str(ctrl2_power))
-
-                # 8) soiling ratio measurements
-                
-                # 9) finish up, write data to CSV
-                csv_master.write_testing_data(curr_dt, w_read[1], w_read[0], g_poa, eds, data_ocv_scc, power_data)
-                print_l(rtc.datetime, "Ended automated scheduled test of EDS" + str(eds))
-
-                # 10) turn of green LED to show testing is done
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
-                flip_on = True
-            else:
-                #print_l(rtc.datetime, "Not within automatic testing mode time window")
-                print("Not within automatic testing mode time window")
-                time.sleep(30)
-        '''
-
-        '''
         END AUTOMATIC TESTING ACTIVATION CODE
         --------------------------------------------------------------------------
         '''
@@ -616,7 +472,6 @@ while True:
         5) Run second half of test
         6) Check SCC on EDS for [after] measurement
         '''
-        
         if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
             # run EDS test on selected manual EDS
             eds_num = test_master.get_pin('manualEDSNumber')
@@ -694,7 +549,6 @@ while True:
         
             # either way, turn off GREEN LED indicator
             GPIO.output(test_master.get_pin('outPinLEDGreen'),GPIO.LOW)
-    
         '''
         END MANUAL ACTIVATION CODE
         --------------------------------------------------------------------------
@@ -709,7 +563,7 @@ while True:
         add_error("FATAL CORE ERROR")
         raise
         
-    
+    # error handling
     if not not error_list:
         e_phrase = "Current error list: "
         for err in error_list:
@@ -723,6 +577,4 @@ while True:
         else:
             GPIO.output(test_master.get_pin('outPinLEDRed'), 0) 
     
-    # delay to slow down processing
-    time.sleep(1)
     # END CORE LOOP

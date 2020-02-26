@@ -182,23 +182,9 @@ class CSVMaster:
                         writer.writerow(MANUAL_HEADER_CSV)
             except:
                 print("Error creating csv file! Please check.")
-        
     
-    # construct data object with all the necessary parameters
-    def data_row_test(self, data):
-        date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
-        time = str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
-        out = [date, time, str(temp), str(humid), str(g_poa), str(eds_num)]
-        #Append the voc and isc measurement results from the control panels
-        for par in params:
-            out.append(str(par))
-        #Append the Power results 
-        for i in power:
-            out.append(str(i))
-        return out
-
+    # construct object of data to be inserted in csv/txt file
     def data_row(self, data):
-        # self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr
         # deconstruct the dictionary
         panel_name = data['name']
         dt = data['date_time']
@@ -267,7 +253,6 @@ class CSVMaster:
         except:
             print("Error writing txt EDS testing data!")
     
-    
     # write to csv version of solar noon testing data log file
     def write_csv_noon_data(self, data):
         # self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr
@@ -327,13 +312,11 @@ class CSVMaster:
             
     # write to testing data files
     def write_testing_data(self, data):
-        #self, dt, temp, humid, g_poa, eds_num, params, power
         self.write_txt_testing_data(data)
         self.write_csv_testing_data(data)
         
     # write to noon data files
     def write_noon_data(self, data):
-        # self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr
         self.write_txt_noon_data(data)
         self.write_csv_noon_data(data)
     
