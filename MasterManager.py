@@ -356,7 +356,7 @@ while True:
             w_read = weather.read_humidity_temperature()
             temp_pass = test_master.check_temp(w_read[1])
             humid_pass = test_master.check_humid(w_read[0])
-            weather_pass = temp_pass and humid_pass and auto_pass
+            weather_pass = temp_pass and humid_pass
             
             while window < test_master.get_param('testWindowSeconds') and not weather_pass:
                 # increment window by 1 sec
@@ -376,11 +376,7 @@ while True:
                     add_error("Sensor-Weather-2")
             
             # if out of loop and parameters are met
-            print("Weather Pass")
-            print(weather_pass)
-            print("Auto Pass")
-            print(auto_pass)
-            if weather_pass:
+            if weather_pass and auto_pass:
                 # run test if all flags passed
                 print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for EDS" + str(eds))
 
