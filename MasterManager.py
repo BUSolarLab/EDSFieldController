@@ -265,7 +265,9 @@ while True:
                 # activate the EDS film if it is an eds panel
                 if panel_type == 'eds':
                     test_master.run_test(panel_num)
-                print_l(curr_dt, "Activating EDS for " + panel + " panel")
+                    print_l(curr_dt, "Activating EDS for " + panel + " panel")
+                elif panel_type == 'ctrl':
+                    print_l(curr_dt, "Not Activating EDS for " + panel + " panel")
                 # turn off GREEN LED after test
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                 '''POST EDS ACTIVATION MEASUREMENT'''
@@ -273,9 +275,9 @@ while True:
                 ocv_post = 0
                 scc_post = 0
                 if panel_type == 'eds':
-                    [ocv_pre, scc_pre] = test_master.run_measure_EDS(panel_num)
+                    [ocv_post, scc_post] = test_master.run_measure_EDS(panel_num)
                 else:
-                    [ocv_pre, scc_pre] = test_master.run_measure_CTRL(panel_num)
+                    [ocv_post, scc_post] = test_master.run_measure_CTRL(panel_num)
                 print_l(curr_dt, "POST EDS Solar Noon OCV for " + panel + ": " + str(ocv_post))
                 print_l(curr_dt, "POST EDS Solar Noon SCC for " + panel + ": " + str(scc_post))
                 data[panel]['ocv_post'] = ocv_post
@@ -286,11 +288,11 @@ while True:
                 data[panel]['pwr_post'] = power_post
                 # compute the POST EDS activation PR measurements for each panel
                 pr_post = pr_master.get_pr(ocv_post,scc_post,pan_temp,power_post,g_poa)
-                print_l(curr_dt, "PRE EDS Solar Noon PR for " + panel + ": " + str(pr_post))
+                print_l(curr_dt, "POST EDS Solar Noon PR for " + panel + ": " + str(pr_post))
                 data[panel]['pr_post'] = pr_post
                 # compute the POST EDS activation SR measurements for each panel
                 sr_post = soil_master.get_sr(scc_post, g_poa)
-                print_l(curr_dt, "PRE EDS Solar Noon SR for " + panel + ": " + str(sr_post))
+                print_l(curr_dt, "POST EDS Solar Noon SR for " + panel + ": " + str(sr_post))
                 data[panel]['sr_post'] = sr_post
                 # write data to csv file
                 csv_master.write_noon_data(data[panel])
