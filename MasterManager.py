@@ -265,6 +265,7 @@ while True:
                 # activate the EDS film if it is an eds panel
                 if panel_type == 'eds':
                     test_master.run_test(panel_num)
+                print_l(curr_dt, "Activating EDS for " + panel + " panel")
                 # turn off GREEN LED after test
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                 '''POST EDS ACTIVATION MEASUREMENT'''
@@ -293,6 +294,7 @@ while True:
                 data[panel]['sr_post'] = sr_post
                 # write data to csv file
                 csv_master.write_noon_data(data[panel])
+                print_l(curr_dt, "Writing Noon Mode Measurements Results To CSV and TXT Files")
                 # delay before changing to next EDS panel
                 time.sleep(10)
 
