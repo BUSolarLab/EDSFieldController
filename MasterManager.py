@@ -83,7 +83,6 @@ for ctrl in ctrl_ids:
 flip_on = True
 temp_pass = False
 humid_pass = False
-schedule_pass = False
 weather_pass = False
 auto_pass = False
 
@@ -124,7 +123,6 @@ while True:
     # set all flags to False
     temp_pass = False
     humid_pass = False
-    schedule_pass = False
     weather_pass = False
     
     # MASTER TRY-EXCEPT -> will still allow RED LED to blink if fatal error occurs in loop
@@ -447,7 +445,6 @@ while True:
         eds_testing_queue = []
         
         for eds_num in eds_ids:
-            schedule_pass = test_master.check_time(curr_dt, yday, 0, eds_num)
             eds_testing_queue.append(eds_num)
         
         # print queue
