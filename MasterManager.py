@@ -225,16 +225,16 @@ while True:
                 panel_type = data[panel]['type']
                 # get the date and time
                 data[panel]['date_time'] = curr_dt
+                # measure global irradiance data from pyranometer
+                irr_master = SP420.Irradiance()
+                g_poa = irr_master.get_irradiance()
+                data[panel]['gpoa']
                 #get the panel temperature using ambient temperature
                 amb_temp = w_read[1]
                 pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
                 data[panel]['temp'] = pan_temp
                 # get humidity data
                 data[panel]['humid'] = w_read[0]
-                # measure global irradiance data from pyranometer
-                irr_master = SP420.Irradiance()
-                g_poa = irr_master.get_irradiance()
-                data[panel]['gpoa']
                 '''PRE EDS ACTIVATION MEASUREMENT'''
                 # measure PRE EDS activation ocv and scc
                 ocv_pre = 0
