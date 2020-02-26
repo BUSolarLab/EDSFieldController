@@ -159,6 +159,17 @@ class TestingMaster:
         for eds_num in eds_ids:
             self.run_test_end(eds_num)
 
+    # Activating selected EDS panel
+    def activate_panel_eds(self, panel):
+        #  main test sequence to be run after checking flags in MasterManager
+        eds_duration = self.get_param('testDurationSeconds')
+        # run first half of activation for desired eds panel
+        self.run_test_begin(panel)
+        # wait for EDS to activate
+        time.sleep(eds_duration)
+        # run second half to turn off EDS
+        self.run_test_end(panel)
+    
     # Activating EDS to repel soiling/dust/etc
     def run_test(self, eds_num):
         #  main test sequence to be run after checking flags in MasterManager

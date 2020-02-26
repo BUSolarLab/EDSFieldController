@@ -16,8 +16,8 @@ from numpy import deg2rad
 DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)","EDS(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "CTRL1_OCV(V)", "CTRL1_SCC(A)", "CTRL2_OCV(V)", "CTRL2_SCC(A)", "EDS_PWR_Before(W)", "EDS_PWR_After(W)", "CTRL1_PWR(W)","CTRL2_PWR(W)"]
 DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) CTRL1_OCV(V) CTRL1_SCC(A) CTRL2_OCV(V) CTRL2_SCC(A) EDS_PWR_Before(W) EDS_PWR_After(W) CTRL1_PWR(W) CTRL2_PWR(W)"
 
-NOON_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "PRE/POST","EDS/CTRL(#)", "OCV(V)", "SCC(A)", "Power(W)", "PR", "SR"]
-NOON_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) PRE/POST EDS/CTRL(#) OCV(V) SCC(A) Power(W) PR SR"
+NOON_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "PWR_Before(W)","PWR_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
+NOON_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) PWR_Before PWR_After PR_Before PR_After SR_Before SR_After"
 
 MANUAL_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)","EDS(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "EDS_PWR_Before(W)","EDS_PWR_After(W)","EDS_PR_Before", "EDS_PR_After", "EDS_SR_Before", "EDS_SR_After"]
 MANUAL_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) EDS_PWR_Before(W) EDS_PWR_After(W) EDS_PR_BEFORE EDS_PR_AFTER EDS_SR_BEFORE EDS_SR_AFTER"
@@ -194,10 +194,28 @@ class CSVMaster:
             out.append(str(i))
         return out
 
-    def data_row_noon(self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr):
+    def data_row_noon(self, data):
+        # self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr
+        # deconstruct the dictionary
+        panel_name = date['name']
+        dt = data['date_time']
+        temp = data['temp']
+        humid = data['humid']
+        g_poa = data['gpoa']
+        ocv_pre = data['ocv_pre']
+        ocv_post = data['ocv_post']
+        scc_pre = data['scc_pre']
+        scc_post = data['scc_post']
+        pwr_pre = data['pwr_pre']
+        pwr_post = data['pwr_post']
+        pr_pre = data['pr_pre']
+        pr_post = data['pr_post']
+        sr_pre = data['sr_pre']
+        sr_post = data['sr_post']
+        # create date and time 
         date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
         time = str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
-        return [date, time, str(temp), str(humid), str(g_poa), str(eds_act),str(eds_ctrl_num), str(volt), str(cur), str(power), str(pr), str(sr)]
+        return [date, time, str(temp), str(humid), str(g_poa),panel_name, str(ocv_pre), str(ocv_post), str(scc_pre), str(scc_post), str(pwr_pre), str(pwr_post), str(pr_pre), str(pr_post), str(sr_pre), str(sr_post)]
 
     def data_row_manual(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
         date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
@@ -248,8 +266,9 @@ class CSVMaster:
     
     
     # write to csv version of solar noon testing data log file
-    def write_csv_noon_data(self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr):
-        row = self.data_row_noon(dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr)
+    def write_csv_noon_data(self, data):
+        # self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr
+        row = self.data_row_noon(data)
         try:
             # attempt to open csv file in append mode (don't want to create lots of files)
             with open(self.csv_noon_data, mode='a') as f_csv:
@@ -260,9 +279,9 @@ class CSVMaster:
             print("Error writing csv solar noon testing data!")
     
     # write to txt version of solar noon testing data log file
-    def write_txt_noon_data(self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr):
+    def write_txt_noon_data(self, data):
         # process raw data into txt dump format with space delimiters
-        row_raw = self.data_row_noon(dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr)
+        row_raw = self.data_row_noon(data)
         row = ""
         for param in row_raw:
             row += param
@@ -309,9 +328,10 @@ class CSVMaster:
         self.write_csv_testing_data(dt, temp, humid, g_poa, eds_num, params, power)
         
     # write to noon data files
-    def write_noon_data(self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr):
-        self.write_txt_noon_data(dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr)
-        self.write_csv_noon_data(dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr)
+    def write_noon_data(self, data):
+        # self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr
+        self.write_txt_noon_data(data)
+        self.write_csv_noon_data(data)
     
     # write to manual data files
     def write_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):

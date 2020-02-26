@@ -54,6 +54,8 @@ def print_l(dt, phrase):
 # id variables for test coordination
 eds_ids = test_master.get_config()['EDSIDS']
 ctrl_ids = test_master.get_config()['CTRLIDS']
+panel_ids = test_master.get_config()['PANELIDS']
+panel_data = static_master.get_panel_data()
 
 # channel setups
 GPIO.setmode(GPIO.BCM)
@@ -213,6 +215,91 @@ while True:
             except:
                 add_error("Sensor-Weather-1")
             
+            # Initialize pre and post data dictionaries
+            data = panel_data
+            post_data = panel_data
+            
+            # Pre EDS Activation Panel Measurements
+            for panel in panel_ids:
+                # check the eds_number
+                panel_num = panel['num']
+                # check panel type eds/ctrl
+                panel_type = panel['type']
+                # get the date and time
+                data[panel]['date_time'] = curr_dt
+                #get the panel temperature using ambient temperature
+                amb_temp = w_read[1]
+                pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
+                data[panel]['temp'] = pan_temp
+                # get humidity data
+                data[panel]['humid'] = w_read[0]
+                # measure global irradiance data from pyranometer
+                irr_master = SP420.Irradiance()
+                g_poa = irr_master.get_irradiance()
+                data[panel]['gpoa']
+                '''PRE EDS ACTIVATION MEASUREMENT'''
+                # measure PRE EDS activation ocv and scc
+                ocv_pre = 0
+                scc_pre = 0
+                if panel_type == 'eds':
+                    [ocv_pre, scc_pre] = test_master.run_measure_EDS(panel_num)
+                else:
+                    [ocv_pre, scc_pre] = test_master.run_measure_CTRL(panel_num)
+                print_l(curr_dt, "PRE EDS Solar Noon OCV for " + panel + ": " + str(ocv_pre))
+                print_l(curr_dt, "PRE EDS Solar Noon SCC for " + panel + ": " + str(scc_pre))
+                data[panel]['ocv_pre'] = ocv_pre
+                data[panel]['scc_pre'] = scc_pre
+                # compute the PRE EDS activation power measurements for each panel
+                power_pre = pow_master.get_power_out(ocv_pre,scc_pre,pan_temp)
+                print_l(curr_dt, "PRE EDS Solar Noon Power for " + panel + ": " + str(power_pre))
+                data[panel]['pwr_pre'] = power_pre
+                # compute the PRE EDS activation PR measurements for each panel
+                pr_pre = pr_master.get_pr(ocv_pre,scc_pre,pan_temp,power_pre,g_poa)
+                print_l(curr_dt, "PRE EDS Solar Noon PR for " + panel + ": " + str(pr_pre))
+                data[panel]['pr_pre'] = pr_pre
+                # compute the PRE EDS activation SR measurements for each panel
+                sr_pre = soil_master.get_sr(scc_pre, g_poa)
+                print_l(curr_dt, "PRE EDS Solar Noon SR for " + panel + ": " + str(sr_pre))
+                data[panel]['sr_pre'] = sr_pre
+                '''EDS activation'''
+                # turn on GREEN LED for duration of EDS activation
+                GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+                # activate the EDS film if it is an eds panel
+                if panel_type == 'eds':
+                    test_master.run_test(panel_num)
+                # turn off GREEN LED after test
+                GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+                '''POST EDS ACTIVATION MEASUREMENT'''
+                # measure POST EDS activation ocv and scc
+                ocv_post = 0
+                scc_post = 0
+                if panel_type == 'eds':
+                    [ocv_pre, scc_pre] = test_master.run_measure_EDS(panel_num)
+                else:
+                    [ocv_pre, scc_pre] = test_master.run_measure_CTRL(panel_num)
+                print_l(curr_dt, "POST EDS Solar Noon OCV for " + panel + ": " + str(ocv_post))
+                print_l(curr_dt, "POST EDS Solar Noon SCC for " + panel + ": " + str(scc_post))
+                data[panel]['ocv_post'] = ocv_post
+                data[panel]['scc_post'] = scc_post
+                # compute the POST EDS activation power measurements for each panel
+                power_post = pow_master.get_power_out(ocv_post,scc_post,pan_temp)
+                print_l(curr_dt, "POST EDS Solar Noon Power for " + panel + ": " + str(power_post))
+                data[panel]['pwr_post'] = power_post
+                # compute the POST EDS activation PR measurements for each panel
+                pr_post = pr_master.get_pr(ocv_post,scc_post,pan_temp,power_post,g_poa)
+                print_l(curr_dt, "PRE EDS Solar Noon PR for " + panel + ": " + str(pr_post))
+                data[panel]['pr_post'] = pr_post
+                # compute the POST EDS activation SR measurements for each panel
+                sr_post = soil_master.get_sr(scc_post, g_poa)
+                print_l(curr_dt, "PRE EDS Solar Noon SR for " + panel + ": " + str(sr_post))
+                data[panel]['sr_post'] = sr_post
+                # write data to csv file
+                csv_master.write_noon_data(data[panel])
+                # delay before changing to next EDS panel
+                time.sleep(10)
+
+
+            '''
             # (1) EDS Panels Pre-EDS Activation Measurements
             for eds in eds_ids:
                 eds_ocv_pre = 0
@@ -222,54 +309,54 @@ while True:
                 g_poa = irr_master.get_irradiance()
                 # measure ocv and scc
                 [eds_ocv_pre, eds_scc_pre] = test_master.run_measure_EDS(eds)
-                print_l(curr_dt, "Pre-EDS Solar Noon OCV for EDS" + str(eds) + ": " + str(eds_ocv_pre))
-                print_l(curr_dt, "Pre-EDS Solar Noon SCC for EDS" + str(eds) + ": " + str(eds_scc_pre))
+                print_l(curr_dt, "PRE EDS Solar Noon OCV for EDS" + str(eds) + ": " + str(eds_ocv_pre))
+                print_l(curr_dt, "PRE EDS Solar Noon SCC for EDS" + str(eds) + ": " + str(eds_scc_pre))
                 #get the panel temperature using ambient temperature
                 amb_temp = w_read[1]
                 pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
                 # compute the power measurements for each panel
                 eds_power_pre = pow_master.get_power_out(eds_ocv_pre,eds_scc_pre,pan_temp)
-                print_l(curr_dt, "Pre-EDS Solar Noon Power for EDS" + str(eds) + ": " + str(eds_power_pre))
+                print_l(curr_dt, "PRE EDS Solar Noon Power for EDS" + str(eds) + ": " + str(eds_power_pre))
                 # compute the PR measurements for each panel
                 eds_pr_pre = pr_master.get_pr(eds_ocv_pre,eds_scc_pre,pan_temp,eds_power_pre,g_poa)
-                print_l(curr_dt, "Pre-EDS Solar Noon PR for EDS" + str(eds) + ": " + str(eds_pr_pre))
+                print_l(curr_dt, "PRE EDS Solar Noon PR for EDS" + str(eds) + ": " + str(eds_pr_pre))
                 # compute the SR measurements for each panel
                 eds_sr_pre = soil_master.get_sr(eds_scc_pre, g_poa)
-                print_l(curr_dt, "Pre-EDS Solar Noon SR for EDS" + str(eds) + ": " + str(eds_sr_pre))
+                print_l(curr_dt, "PRE EDS Solar Noon SR for EDS" + str(eds) + ": " + str(eds_sr_pre))
                 # write data to solar noon csv/txt
                 eds_num = "EDS"+str(eds)
-                eds_act = "PRE"
-                csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], g_poa, eds_act, eds_num, eds_ocv_pre, eds_scc_pre, eds_power_pre, eds_pr_pre, eds_sr_pre)
+                # write data to csv file
+                #csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], g_poa, eds_act, eds_num, eds_ocv_pre, eds_scc_pre, eds_power_pre, eds_pr_pre, eds_sr_pre)
                 # delay before changing to next EDS panel
                 time.sleep(5)
             
             # (2) CTRL Panels Pre-EDS Activation Measurements
             for ctrl in ctrl_ids:
-                ctrl_ocv = 0
-                ctrl_scc = 0
+                ctrl_ocv_pre = 0
+                ctrl_scc_pre = 0
                 # measure global irradiance data from pyranometer
                 irr_master = SP420.Irradiance()
                 g_poa = irr_master.get_irradiance()
                 # measure the ocv and scc
-                [ctrl_ocv, ctrl_scc] = test_master.run_measure_CTRL(ctrl)
-                print_l(curr_dt, "Solar Noon OCV for CTRL" + str(ctrl) + ": " + str(ctrl_ocv))
-                print_l(curr_dt, "Solar Noon SCC for CTRL" + str(ctrl) + ": " + str(ctrl_scc))
+                [ctrl_ocv_pre, ctrl_scc_pre] = test_master.run_measure_CTRL(ctrl)
+                print_l(curr_dt, "PRE Solar Noon OCV for CTRL" + str(ctrl) + ": " + str(ctrl_ocv_pre))
+                print_l(curr_dt, "PRE Solar Noon SCC for CTRL" + str(ctrl) + ": " + str(ctrl_scc_pre))
                 # get the panel temperature using ambient temperature
                 amb_temp = w_read[1]
                 pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
                 # compute the measurements for each panel
-                ctrl_power = pow_master.get_power_out(ctrl_ocv,ctrl_scc,pan_temp)
-                print_l(curr_dt, "Solar Noon Power for CTRL" + str(ctrl) + ": " + str(ctrl_power))
+                ctrl_power_pre = pow_master.get_power_out(ctrl_ocv_pre,ctrl_scc_pre,pan_temp)
+                print_l(curr_dt, "PRE Solar Noon Power for CTRL" + str(ctrl) + ": " + str(ctrl_power_pre))
                 # compute the PR measurements for each panel
-                ctrl_pr = pr_master.get_pr(ctrl_ocv,ctrl_scc,pan_temp,ctrl_power,g_poa)
-                print_l(curr_dt, "Solar Noon PR for CTRL" + str(ctrl) + ": " + str(ctrl_pr))
+                ctrl_pr_pre = pr_master.get_pr(ctrl_ocv_pre,ctrl_scc_pre,pan_temp,ctrl_power_pre,g_poa)
+                print_l(curr_dt, "PRE Solar Noon PR for CTRL" + str(ctrl) + ": " + str(ctrl_pr_pre))
                 # compute the SR measurements for each panel
-                ctrl_sr = soil_master.get_sr(ctrl_scc,g_poa)
-                print_l(curr_dt, "Solar Noon SR for CTRL" + str(ctrl) + ": " + str(ctrl_sr))
+                ctrl_sr = soil_master.get_sr(ctrl_scc_pre,g_poa)
+                print_l(curr_dt, "PRE Solar Noon SR for CTRL" + str(ctrl) + ": " + str(ctrl_sr_pre))
                 # write data to solar noon csv/txt
                 ctrl_num = "CTRL"+str(ctrl)
-                eds_act = "No EDS"
-                csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], g_poa, eds_act,ctrl_num, ctrl_ocv, ctrl_scc, ctrl_power, ctrl_pr, ctrl_sr)
+                # write data to csv file
+                #csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], g_poa, eds_act,ctrl_num, ctrl_ocv, ctrl_scc, ctrl_power, ctrl_pr, ctrl_sr)
                 # delay before changing to next CTRL panel
                 time.sleep(5)
             
@@ -290,30 +377,35 @@ while True:
                 g_poa = irr_master.get_irradiance()
                 # measure the ocv and scc
                 [eds_ocv_post, eds_scc_post] = test_master.run_measure_EDS(eds)
-                print_l(curr_dt, "Post-EDS Solar Noon OCV for EDS" + str(eds) + ": " + str(eds_ocv_post))
-                print_l(curr_dt, "Post-EDS Solar Noon SCC for EDS" + str(eds) + ": " + str(eds_scc_post))
+                print_l(curr_dt, "POST EDS Solar Noon OCV for EDS" + str(eds) + ": " + str(eds_ocv_post))
+                print_l(curr_dt, "POST EDS Solar Noon SCC for EDS" + str(eds) + ": " + str(eds_scc_post))
                 #get the panel temperature using ambient temperature
                 amb_temp = w_read[1]
                 pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
                 # compute the measurements for each panel
                 eds_power_post = pow_master.get_power_out(eds_ocv_post,eds_scc_post,pan_temp)
-                print_l(curr_dt, "Post-EDS Solar Noon Power for EDS" + str(eds) + ": " + str(eds_power_post))
+                print_l(curr_dt, "POST EDS Solar Noon Power for EDS" + str(eds) + ": " + str(eds_power_post))
                 # compute the PR measurements for each panel
                 eds_pr_post = pr_master.get_pr(eds_ocv_post,eds_scc_post,pan_temp,eds_power_post,g_poa)
-                print_l(curr_dt, "Post-EDS Solar Noon PR for EDS" + str(eds) + ": " + str(eds_pr_post))
+                print_l(curr_dt, "POST EDS Solar Noon PR for EDS" + str(eds) + ": " + str(eds_pr_post))
                 # compute the SR measurements for each panel
                 eds_sr_post = soil_master.get_sr(eds_scc_post,g_poa)
-                print_l(curr_dt, "Post-EDS Solar Noon SR for EDS" + str(eds) + ": " + str(eds_sr_post))
+                print_l(curr_dt, "POST EDS Solar Noon SR for EDS" + str(eds) + ": " + str(eds_sr_post))
                 # write data to solar noon csv/txt
                 eds_num = "EDS"+str(eds)
                 eds_act = "POST"
-                csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], g_poa, eds_act, eds_num, eds_ocv_post, eds_scc_post, eds_power_post, eds_pr_post, eds_sr_post)
+                # write data to csv file
+                #csv_master.write_noon_data(curr_dt, w_read[1], w_read[0], g_poa, eds_act, eds_num, eds_ocv_post, eds_scc_post, eds_power_post, eds_pr_post, eds_sr_post)
                 # delay before changing to next EDS panel
                 time.sleep(5)
             
-            # 5) delay for each solar noon activation
+            # (6) write the data on csv files
+            csv_master.write_noon_data(curr_dt)
+            
+            # 7) delay for each solar noon activation
             print("Completed Solar Noon Activation! Starting 3 min delay")
             time.sleep(180)
+            '''
 
         '''
         END SOLAR NOON DATA ACQUISITION CODE
