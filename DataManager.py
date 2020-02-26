@@ -17,10 +17,10 @@ from numpy import deg2rad
 #DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) CTRL1_OCV(V) CTRL1_SCC(A) CTRL2_OCV(V) CTRL2_SCC(A) EDS_PWR_Before(W) EDS_PWR_After(W) CTRL1_PWR(W) CTRL2_PWR(W)"
 
 DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "PWR_Before(W)","PWR_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
-DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) PWR_Before PWR_After PR_Before PR_After SR_Before SR_After"
+DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) PWR_Before(W) PWR_After(W) PR_Before PR_After SR_Before SR_After"
 
 NOON_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "PWR_Before(W)","PWR_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
-NOON_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) PWR_Before PWR_After PR_Before PR_After SR_Before SR_After"
+NOON_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) PWR_Before(W) PWR_After(W) PR_Before PR_After SR_Before SR_After"
 
 MANUAL_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)","EDS/CTRL(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "PWR_Before(W)","PWR_After(W)","PR_Before", "PR_After", "SR_Before", "SR_After"]
 MANUAL_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) PWR_Before(W) PWR_After(W) PR_Before PR_After SR_Before EDS_SR_After"
@@ -251,9 +251,9 @@ class CSVMaster:
         
     
     # write to txt version of EDS testing data log file (two copies of data for fidelity)
-    def write_txt_testing_data(self, dt, temp, humid, g_poa, eds_num, params, power):
+    def write_txt_testing_data(self, data):
         # process raw data into txt dump format with space delimiters
-        row_raw = self.data_row_test(dt, temp, humid, g_poa, eds_num, params, power)
+        row_raw = self.data_row(data)
         print("TXT: ", row_raw)
         row = ""
         for param in row_raw:
