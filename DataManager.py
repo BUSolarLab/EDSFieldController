@@ -197,7 +197,7 @@ class CSVMaster:
     def data_row_noon(self, data):
         # self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr
         # deconstruct the dictionary
-        panel_name = date['name']
+        panel_name = data['name']
         dt = data['date_time']
         temp = data['temp']
         humid = data['humid']
