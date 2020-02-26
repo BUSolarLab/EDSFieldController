@@ -317,6 +317,9 @@ while True:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
             GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
             auto_pass = False
+        
+        # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
+        #auto = False
         '''
         --------------------------------------------------------------------------
         BEGIN AUTOMATIC TESTING ACTIVATION CODE
@@ -332,9 +335,131 @@ while True:
             3d) Measure [after] OCV and SCC for EDS PV being tested
             3e) Write data to CSV/txt files
         '''
-        # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
-        #auto = False
+        # check temp and humidity until they fall within parameter range or max window reached
+        window = 0
+        w_read = weather.read_humidity_temperature()
+        temp_pass = test_master.check_temp(w_read[1])
+        humid_pass = test_master.check_humid(w_read[0])
+        weather_pass = temp_pass and humid_pass
+        
+        while window < test_master.get_param('testWindowSeconds') and not weather_pass:
+            # increment window by 1 sec
+            window += 1
+            time.sleep(1)
+            # check temp and humidity until they fall within parameter range or max window reached
+            try:
+                w_read = weather.read_humidity_temperature()
+                temp_pass = test_master.check_temp(w_read[1])
+                humid_pass = test_master.check_humid(w_read[0])
+                weather_pass = temp_pass and humid_pass
+                
+                # remove error if corrected
+                if "Sensor-Weather-2" in error_list:
+                    error_list.remove("Sensor-Weather-2")
+            except:
+                add_error("Sensor-Weather-2")
+        
+        # if weather and time checks pass, do automatic testing mode measurements
+        if weather_pass and auto_pass:
+            # Initialize pre and post data dictionaries
+            data = panel_data
+            # Pre EDS Activation Panel Measurements
+            for panel in panel_ids:
+                '''Other sensor measurements'''
+                # start the measurement process
+                print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for " + panel + " panel")
+                # turn green LED on to show automatic testing is operating
+                GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+                flip_on = False
+                # check the eds_number
+                panel_num = data[panel]['num']
+                # check panel type eds/ctrl
+                panel_type = data[panel]['type']
+                # get the date and time
+                data[panel]['date_time'] = curr_dt
+                # measure global irradiance data from pyranometer
+                irr_master = SP420.Irradiance()
+                g_poa = irr_master.get_irradiance()
+                data[panel]['gpoa']
+                #get the panel temperature using ambient temperature
+                amb_temp = w_read[1]
+                pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
+                data[panel]['temp'] = pan_temp
+                # get humidity data
+                data[panel]['humid'] = w_read[0]
+                '''PRE EDS ACTIVATION MEASUREMENT'''
+                # measure PRE EDS activation ocv and scc
+                ocv_pre = 0
+                scc_pre = 0
+                if panel_type == 'eds':
+                    [ocv_pre, scc_pre] = test_master.run_measure_EDS(panel_num)
+                else:
+                    [ocv_pre, scc_pre] = test_master.run_measure_CTRL(panel_num)
+                print_l(curr_dt, "PRE EDS Automatic Testing Mode OCV for " + panel + ": " + str(ocv_pre))
+                print_l(curr_dt, "PRE EDS Automatic Testing Mode SCC for " + panel + ": " + str(scc_pre))
+                data[panel]['ocv_pre'] = ocv_pre
+                data[panel]['scc_pre'] = scc_pre
+                # compute the PRE EDS activation power measurements for each panel
+                power_pre = pow_master.get_power_out(ocv_pre,scc_pre,pan_temp)
+                print_l(curr_dt, "PRE EDS Automatic Testing Mode Power for " + panel + ": " + str(power_pre))
+                data[panel]['pwr_pre'] = power_pre
+                # compute the PRE EDS activation PR measurements for each panel
+                pr_pre = pr_master.get_pr(ocv_pre,scc_pre,pan_temp,power_pre,g_poa)
+                print_l(curr_dt, "PRE EDS Automatic Testing Mode PR for " + panel + ": " + str(pr_pre))
+                data[panel]['pr_pre'] = pr_pre
+                # compute the PRE EDS activation SR measurements for each panel
+                sr_pre = soil_master.get_sr(scc_pre, g_poa)
+                print_l(curr_dt, "PRE EDS Automatic Testing Mode SR for " + panel + ": " + str(sr_pre))
+                data[panel]['sr_pre'] = sr_pre
+                '''EDS activation'''
+                # turn on GREEN LED for duration of EDS activation
+                GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+                # activate the EDS film if it is an eds panel
+                if panel_type == 'eds':
+                    test_master.run_test(panel_num)
+                    print_l(curr_dt, "Activating EDS for " + panel + " panel")
+                elif panel_type == 'ctrl':
+                    print_l(curr_dt, "Not Activating EDS for " + panel + " panel")
+                # turn off GREEN LED after test
+                GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+                '''POST EDS ACTIVATION MEASUREMENT'''
+                # measure POST EDS activation ocv and scc
+                ocv_post = 0
+                scc_post = 0
+                if panel_type == 'eds':
+                    [ocv_post, scc_post] = test_master.run_measure_EDS(panel_num)
+                else:
+                    [ocv_post, scc_post] = test_master.run_measure_CTRL(panel_num)
+                print_l(curr_dt, "POST EDS Automatic Testing Mode OCV for " + panel + ": " + str(ocv_post))
+                print_l(curr_dt, "POST EDS Automatic Testing Mode SCC for " + panel + ": " + str(scc_post))
+                data[panel]['ocv_post'] = ocv_post
+                data[panel]['scc_post'] = scc_post
+                # compute the POST EDS activation power measurements for each panel
+                power_post = pow_master.get_power_out(ocv_post,scc_post,pan_temp)
+                print_l(curr_dt, "POST EDS Automatic Testing Mode Power for " + panel + ": " + str(power_post))
+                data[panel]['pwr_post'] = power_post
+                # compute the POST EDS activation PR measurements for each panel
+                pr_post = pr_master.get_pr(ocv_post,scc_post,pan_temp,power_post,g_poa)
+                print_l(curr_dt, "POST EDS Automatic Testing Mode PR for " + panel + ": " + str(pr_post))
+                data[panel]['pr_post'] = pr_post
+                # compute the POST EDS activation SR measurements for each panel
+                sr_post = soil_master.get_sr(scc_post, g_poa)
+                print_l(curr_dt, "POST EDS Automatic Testing Mode SR for " + panel + ": " + str(sr_post))
+                data[panel]['sr_post'] = sr_post
+                # write data to csv file
+                csv_master.write_testing_data(data[panel])
+                print_l(curr_dt, "Writing Automatic Testing Mode Measurements Results To CSV and TXT Files")
+                # delay before changing to next EDS panel
+                time.sleep(10)
+                # 10) turn of green LED to show testing is done
+                GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+                flip_on = True
+        else:
+            #print_l(rtc.datetime, "Not within automatic testing mode time window")
+            print("Not within automatic testing mode time window")
+            time.sleep(30)
 
+        '''
         # put EDS in a queue if multiple are to be activated simultaneously
         eds_testing_queue = []
         
@@ -469,7 +594,10 @@ while True:
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                 flip_on = True
             else:
-                print_l(rtc.datetime, "Not within automatic testing mode time window")
+                #print_l(rtc.datetime, "Not within automatic testing mode time window")
+                print("Not within automatic testing mode time window")
+                time.sleep(30)
+        '''
 
         '''
         END AUTOMATIC TESTING ACTIVATION CODE
