@@ -13,18 +13,17 @@ from math import cos, sin
 from numpy import deg2rad
 
 # necessary constants
-#DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)","EDS(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "CTRL1_OCV(V)", "CTRL1_SCC(A)", "CTRL2_OCV(V)", "CTRL2_SCC(A)", "EDS_PWR_Before(W)", "EDS_PWR_After(W)", "CTRL1_PWR(W)","CTRL2_PWR(W)"]
-#DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) CTRL1_OCV(V) CTRL1_SCC(A) CTRL2_OCV(V) CTRL2_SCC(A) EDS_PWR_Before(W) EDS_PWR_After(W) CTRL1_PWR(W) CTRL2_PWR(W)"
+HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "Voc_Before(V)", "Voc_After(V)", "Isc_Before(A)", "Isc_After(A)", "Pout_Before(W)","Pout_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
+HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) Voc_Before(V) Voc_After(V) Isc_Before(A) Isc_After(A) Pout_Before(W) Pout_After(W) PR_Before PR_After SR_Before SR_After"
 
-DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "PWR_Before(W)","PWR_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
-DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) PWR_Before(W) PWR_After(W) PR_Before PR_After SR_Before SR_After"
+DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "Voc_Before(V)", "Voc_After(V)", "Isc_Before(A)", "Isc_After(A)", "Pout_Before(W)","Pout_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
+DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) Voc_Before(V) Voc_After(V) Isc_Before(A) Isc_After(A) Pout_Before(W) Pout_After(W) PR_Before PR_After SR_Before SR_After"
 
-NOON_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "PWR_Before(W)","PWR_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
-NOON_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) PWR_Before(W) PWR_After(W) PR_Before PR_After SR_Before SR_After"
+NOON_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "Voc_Before(V)", "Voc_After(V)", "Isc_Before(A)", "Isc_After(A)", "Pout_Before(W)","Pout_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
+NOON_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) Voc_Before(V) Voc_After(V) Isc_Before(A) Isc_After(A) Pout_Before(W) Pout_After(W) PR_Before PR_After SR_Before SR_After"
 
-MANUAL_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)","EDS/CTRL(#)", "OCV_Before(V)", "OCV_After(V)", "SCC_Before(A)", "SCC_After(A)", "PWR_Before(W)","PWR_After(W)","PR_Before", "PR_After", "SR_Before", "SR_After"]
-MANUAL_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) OCV_Before(V) OCV_After(V) SCC_Before(A) SCC_After(A) PWR_Before(W) PWR_After(W) PR_Before PR_After SR_Before EDS_SR_After"
-
+MANUAL_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "Voc_Before(V)", "Voc_After(V)", "Isc_Before(A)", "Isc_After(A)", "Pout_Before(W)","Pout_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
+MANUAL_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) Voc_Before(V) Voc_After(V) Isc_Before(A) Isc_After(A) Pout_Before(W) Pout_After(W) PR_Before PR_After SR_Before SR_After"
 '''
 USB Master Class:
 Functionality:
@@ -160,12 +159,7 @@ class CSVMaster:
         if not os.path.isfile(name):
             try:
                 with open(name, 'a+') as f:
-                    if name is self.txt_testing_data:
-                        f.writelines(DATA_HEADER_TXT + '\n')
-                    if name is self.txt_noon_data:
-                        f.writelines(NOON_HEADER_TXT + '\n')
-                    if name is self.txt_manual_data:
-                        f.writelines(MANUAL_HEADER_TXT + '\n')
+                    f.writelines(HEADER_TXT + '\n')
             except:
                 print("Error creating txt file! Please check.")
     
@@ -174,12 +168,7 @@ class CSVMaster:
             try:
                 with open(name, 'a+') as f:
                     writer = csv.writer(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                    if name is self.csv_testing_data:
-                        writer.writerow(DATA_HEADER_CSV)
-                    if name is self.csv_noon_data:
-                        writer.writerow(NOON_HEADER_CSV)
-                    if name is self.csv_manual_data:
-                        writer.writerow(MANUAL_HEADER_CSV)
+                    writer.writerow(HEADER_CSV)
             except:
                 print("Error creating csv file! Please check.")
     

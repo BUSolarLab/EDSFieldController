@@ -25,9 +25,6 @@ Y_DAYS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
 T_TOL = 0.1
 H_TOL = 0.1
 
-# how close current time must be to scheduled time to initiate test (min)
-MIN_CHECK_THRESHOLD = 0.5
-
 '''
 ADC Master Class:
 Functionality:
@@ -53,7 +50,6 @@ class ADCMaster:
         print('PV Raw volt read: ' + str(raw) + '[V]')
         #correction constant
         correction_voc = 1.7369#1.0520(M1), 1.7369(M2)
-
         # Since we divided voltage by 11, multiply by 11 to get actual Voc
         return raw * 11 * correction_voc
     
@@ -66,19 +62,8 @@ class ADCMaster:
         print('PV Raw curr read: ' + str(raw) + '[A]')
         #correction constant
         correction_isc = 1.5927#1.5674(M1), 1.5927(M2)
-        
         #SCC = Voc x 1 Ohm
         return raw * 1 * correction_isc
-    
-    def get_ocv_BAT(self):
-        spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)
-        cs = digitalio.DigitalInOut(board.D18)
-        mcp = MCP.MCP3008(spi, cs)
-        chan=AnalogIn(mcp, MCP.P0)
-        raw = self.mcp.read_adc(chan)
-        print('Battery raw volt read: ' + str(raw) + '[V]')
-        # voltage divider calc
-        return self.bat_div * 3.3 * raw / 1023
 
 '''
 Testing Master Class:
@@ -106,25 +91,7 @@ class TestingMaster:
     # get int type from dicationary if GPIO pin value needed
     def get_pin(self, key):
         return int(self.test_config[key])
-        
-    # check time against schedule
-    def check_time(self, dt, yday, solar_offset, eds_num):
-        sched_name = 'SCHEDS'+str(eds_num)
-        schedule = self.test_config[sched_name]
-        for pair in schedule:
-            # if mod of the year day with schedule is zero, then day is correct
-            if yday % float(pair[0]) == 0:
-                # convert current time to minutes and add solar time offset
-                dt_min = dt.tm_hour * 60 + dt.tm_min + dt.tm_sec / 60
-                dt_min_solar = dt_min + solar_offset
-                
-                # check if current minute is close enough to schedule time offset
-                # calculate schedule time in minutes
-                schedule_min = 720 + float(pair[1]) * 60
-                # if the time is within 30 seconds of scheduled time
-                if abs(dt_min_solar - schedule_min) < MIN_CHECK_THRESHOLD:
-                    return True
-    
+
     # check weather against parameters
     def check_temp(self, t_curr):
         t_low = self.get_param('minTemperatureCelsius')
@@ -181,60 +148,50 @@ class TestingMaster:
         # run second half of test
         self.run_test_end(eds_num)
 
-    # Measure Voc and Isc of EDS
+    # Measure Voc and Isc of EDS panel
     def run_measure_EDS(self, eds_num):
         # Get pin for PV relay
         pv_relay = self.get_pin('EDS' + str(eds_num) + 'PV')
-        
         # Setup GPIO pins to measure Voc and Isc of desired panel
         GPIO.setup(pv_relay, GPIO.OUT)
         GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
         time.sleep(0.5)
-        
         # OCV READ
         # Switch the relay to read Voc
         GPIO.setup(self.get_pin('ADC'), GPIO.IN)
         time.sleep(0.5)
         # Get reading
         read_ocv = self.adc_m.get_ocv_PV()
-        
         # SCC READ
         # Switch relay to read Isc
         GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
         time.sleep(0.5)
-        
         # get reading
         read_scc = self.adc_m.get_scc_PV()
-
         # Default pin is LOW, no need to switch, just clean up
         time.sleep(0.5)
         GPIO.cleanup(self.get_pin('ADC'))
         #GPIO.cleanup(25)
-        
         # Close EDS PV Relay
         time.sleep(0.5)
         GPIO.cleanup(pv_relay)
         time.sleep(0.5)
-        
-        return [read_ocv, read_scc]
-    
+        # round the measurement results
+        return [round(read_ocv,2), round(read_scc,2)]
     
     def run_measure_CTRL(self, ctrl_num):
         # Get pin for PV relay
         pv_relay = self.get_pin('CTRL' + str(ctrl_num) + 'PV')
-        
         # Setup GPIO pins to measure Voc and Isc of desired panel
         GPIO.setup(pv_relay, GPIO.OUT)
         GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
         time.sleep(0.5)
-        
         # OCV READ
         # Switch the relay to read Voc
         GPIO.setup(self.get_pin('ADC'), GPIO.IN)
         time.sleep(0.5)
         # Get reading
         read_ocv = self.adc_m.get_ocv_PV()
-        
         # SCC READ
         # Switch relay to read Isc
         GPIO.setup(self.get_pin('ADC'), GPIO.OUT)
@@ -244,19 +201,12 @@ class TestingMaster:
         # Default pin is LOW, no need to switch, just clean up
         time.sleep(0.5)
         GPIO.cleanup(self.get_pin('ADC'))
-        
         # Close EDS PV Relay
         time.sleep(0.5)
         GPIO.cleanup(pv_relay)
         time.sleep(0.5)
-        
-        return [read_ocv, read_scc]
-
-    def run_measure_BAT(self):
-        # the battery will not require flipping relays/transistors (only ~14uW power lost)
-        # get reading
-        read_ocv = self.adc_m.get_ocv_BAT()
-        return read_ocv
+        # round the measurement results
+        return [round(read_ocv,2), round(read_scc,2)]
 
     def run_test_begin(self, eds_num):
         # runs the first half of a test (pauses on test duration to allow for indefinite testing)
@@ -267,7 +217,6 @@ class TestingMaster:
         # short delay between relay switching
         time.sleep(0.5)
 
-        
     def run_test_end(self, eds_num):
         # runs the second half of a test to finish from first half
         eds_select = self.get_pin('EDS'+str(eds_num))
@@ -285,6 +234,7 @@ Functionality:
 '''
 class PowerMaster:
     def __init__(self):
+
         #Solar Panel Specifications
         self.v_mp = 17 #Operating voltage/max point voltage
         self.i_mp = 0.58 #Operating current/max point current
@@ -305,7 +255,7 @@ class PowerMaster:
         FF = self.fill_factor(v_norm)
         #Calculate the output power
         p_out = v_oc * i_sc * FF
-        return p_out
+        return round(p_out,2)
     
     def fill_factor(self,v_norm):
         #Compute fill factor using normalized voltage
@@ -327,7 +277,7 @@ class PowerMaster:
     def get_panel_temp(self,amb_temp, g_poa):
         noct = 47 #This needs to be confirmed
         t_pan = amb_temp + ((noct - 20)*g_poa)/800
-        return t_pan
+        return round(t_pan,2)
 
 '''
 Performance Ratio Class:
@@ -347,7 +297,7 @@ class PerformanceRatio:
         if (gpoa == 0):
             PR = -1
         elif (gpoa == -1):
-            PR = -1
+            PR = 0.75 #defaulted value when pyranometer not connected
         else:
             PR = power/((self.ptc*gpoa)/self.gstc)
         return round(PR,2)
@@ -369,7 +319,8 @@ class Soiling:
     #Soiling Ratio Formula
     def get_sr(self,isc_soiled, gpoa):
         if (gpoa == -1):
-            return -1
+            SR = (isc_soiled)/(self.isc_clean)
+            return round(SR,2)
         else:
             SR = (isc_soiled/gpoa)/(self.isc_clean/self.irr_clean)
             return round(SR,2)
