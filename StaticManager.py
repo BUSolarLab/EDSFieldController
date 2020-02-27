@@ -34,7 +34,7 @@ DEFAULT_CONFIG_PARAM = {
     'maxTemperatureCelsius': 40,
     'minTemperatureCelsius': 10,
     'maxRelativeHumidity': 60,
-    'minRelativeHumidity': 20,
+    'minRelativeHumidity': 5,
     'testDurationSeconds': 60, # 1 minute
     'testWindowSeconds': 2700,
     
