@@ -221,7 +221,8 @@ while True:
                 # measure global irradiance data from pyranometer
                 irr_master = SP420.Irradiance()
                 g_poa = irr_master.get_irradiance()
-                data[panel]['gpoa']
+                data[panel]['gpoa'] = g_poa
+                print_l(curr_dt, "Noon Mode GPOA Irradiance for " + panel + ": " + str(g_poa))
                 #get the panel temperature using ambient temperature
                 amb_temp = w_read[1]
                 pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
@@ -373,7 +374,8 @@ while True:
                 # measure global irradiance data from pyranometer
                 irr_master = SP420.Irradiance()
                 g_poa = irr_master.get_irradiance()
-                data[panel]['gpoa']
+                data[panel]['gpoa'] = g_poa
+                print_l(curr_dt, "Testing Mode GPOA Irradiance for " + panel + ": " + str(g_poa))
                 #get the panel temperature using ambient temperature
                 amb_temp = w_read[1]
                 pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
