@@ -48,6 +48,15 @@ class USBMaster:
             print("USB not mounted! Please insert USB.")
             self.reset()
     
+    # check if there is a usb connected or not, if not reboot
+    def check_USB(self):
+        dir = str(subprocess.check_output("sudo blkid", shell=True))
+        if "/dev/sda1:" in dir:
+            print("Found USB named: "+self.USB_name)
+        else:
+            print("USB not mounted! Please insert USB.")
+            self.reset()
+
     # check if it is a new USB
     def check_new_USB(self):
         # set label and uuid
