@@ -40,17 +40,13 @@ class USBMaster:
     # setting the USB name by its UUID
     def set_USB_name(self):
         # check if USB mounted
-        try:
-            dir = str(subprocess.check_output("sudo blkid", shell=True))
-            if "/dev/sda1:" in dir:
-                self.USB_name = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
-                print("Found USB named: "+self.USB_name)
-            else:
-                self.reset()
-                print("USB not mounted! Please insert USB.")
-        except:
+        dir = str(subprocess.check_output("sudo blkid", shell=True))
+        if "/dev/sda1:" in dir:
+            self.USB_name = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+            print("Found USB named: "+self.USB_name)
+        else:
+            print("USB not mounted! Please insert USB.")
             self.reset()
-            print("ERROR: Shell process malfunction!")
     
     # check if it is a new USB
     def check_new_USB(self):
