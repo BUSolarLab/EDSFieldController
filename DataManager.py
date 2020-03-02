@@ -52,10 +52,22 @@ class USBMaster:
     # check if there is a usb connected or not, if not reboot
     def check_USB(self):
         dir = str(subprocess.check_output("sudo blkid", shell=True))
+        # check if theres a usb
         if "/dev/sda1:" in dir:
-            print("Found USB named: "+self.USB_name)
+            # check if its an unregistered USB
+            f=open("/home/pi/Desktop/usb_names.txt", "r")
+            usb_names = f.read().splitlines()
+            f.close()
+            if not usb_names:
+                print("USB not registered. Abort saving data to CSV/TXT files. Rebooting in 10 seconds...")
+                time.sleep(10)
+                self.reset()
+            else:
+                # usb found, no further action
+                print("Found USB named: "+self.USB_name)
         else:
-            print("USB not mounted! Please insert USB! Rebooting in 10 seconds...")
+            # no usb found, reboot
+            print("USB not mounted. Please insert USB. Rebooting in 10 seconds...")
             time.sleep(10)
             self.reset()
 
