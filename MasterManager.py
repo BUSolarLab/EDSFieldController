@@ -305,7 +305,7 @@ while True:
         current_dt=rtc.datetime
         if current_dt.tm_hour >= 9 and current_dt.tm_hour < 11:
             auto_pass = True
-        elif current_dt.tm_hour >= 14 and current_dt.tm_hour < 17:
+        elif current_dt.tm_hour >= 13 and current_dt.tm_hour < 17:
             auto_pass = True
         else:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
