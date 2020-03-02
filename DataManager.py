@@ -45,7 +45,8 @@ class USBMaster:
             self.USB_name = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
             print("Found USB named: "+self.USB_name)
         else:
-            print("USB not mounted! Please insert USB.")
+            print("USB not mounted! Please insert USB! Rebooting in 10 seconds...")
+            time.sleep(10)
             self.reset()
     
     # check if there is a usb connected or not, if not reboot
