@@ -54,7 +54,8 @@ class USBMaster:
         if "/dev/sda1:" in dir:
             print("Found USB named: "+self.USB_name)
         else:
-            print("USB not mounted! Please insert USB.")
+            print("USB not mounted! Please insert USB! Rebooting in 10 seconds...")
+            time.sleep(10)
             self.reset()
 
     # check if it is a new USB

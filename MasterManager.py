@@ -443,7 +443,7 @@ while True:
                 print_l(curr_dt, "POST EDS Automatic Testing Mode SR for " + panel + ": " + str(sr_post))
                 data[panel]['sr_post'] = sr_post
                 # write data to csv file
-
+                usb_master.check_USB()
                 csv_master.write_testing_data(data[panel])
                 print_l(curr_dt, "Writing Automatic Testing Mode Measurements Results To CSV and TXT Files")
                 # delay before changing to next EDS panel
@@ -541,6 +541,7 @@ while True:
                 man_sr_data = [eds_sr_before, eds_sr_after]
 
                 # write data for EDS tested
+                usb_master.check_USB()
                 csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, man_power_data, man_pr_data, man_sr_data)
                 print_l(rtc.datetime, "Ended Manual Activation Test of EDS" + str(eds_num))
             
