@@ -358,6 +358,8 @@ while True:
         if weather_pass and auto_pass:
             # Initialize pre and post data dictionaries
             data = panel_data
+            # mount the usb for data collection
+            usb_master.setup_usb_mount()
             # Pre EDS Activation Panel Measurements
             for panel in panel_ids:
                 '''Begin Automatic Testing Mode'''
@@ -451,10 +453,13 @@ while True:
                 # 10) turn of green LED to show testing is done
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                 flip_on = True
+            # un-mount the usb drive
+            usb_master.reset_usb_mounts()
         else:
             #print_l(rtc.datetime, "Not within automatic testing mode time window")
             print("Not within automatic testing mode time window")
             time.sleep(30)
+
 
         '''
         END AUTOMATIC TESTING ACTIVATION CODE

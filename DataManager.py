@@ -48,7 +48,82 @@ class USBMaster:
             print("USB not mounted! Please insert USB! Rebooting in 10 seconds...")
             time.sleep(10)
             self.reset()
+
+    # check if it is a new USB
+    def check_new_USB(self):
+        # set label and uuid
+        dir = str(subprocess.check_output("sudo blkid", shell=True))
+        self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
+        self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+        # get the uuid and labels from usb_names.txt
+        f=open("/home/pi/Desktop/usb_names.txt", "r")
+        usb_names = f.read().splitlines()
+        f.close()
+        # if empty list
+        if not usb_names:
+            print("Configurating new USB drive in FTU system!")
+            f = open("/home/pi/Desktop/usb_names.txt", "a+")
+            f.write(str(self.uuid)+" "+str(self.label)+"\n")
+            f.close()
+            self.set_USB_path()
+            #self.setup_usb_mount()
+            #self.update_fstab_file()
+        # non empty list, already existing registered usbs
+        else:
+            # check if current usb is registered
+            uuid_list = []
+            label_list = []
+            for x in usb_names:
+                uuid_list.append(x.split()[0])
+                label_list.append(x.split()[1])
+            # current usb is registered
+            if self.label in label_list:
+                print("USB Already Registered!")
+                self.set_USB_path()
+                #self.setup_usb_mount()
+            # current usb is not registered
+            else:
+                print("Configurating new USB drive in FTU system!")
+                f = open("/home/pi/Desktop/usb_names.txt", "a+")
+                f.write(str(self.uuid)+" "+str(self.label)+"\n")
+                f.close()
+                self.set_USB_path()
+                #self.setup_usb_mount()
+                #self.update_fstab_file()
+
+    # set the USB path for data writing in MasterManager.py
+    def set_USB_path(self):
+        # gets USB file path for saving if USB name found
+        if self.USB_name is not None:
+            self.USB_path = "/media/" + self.label
+
+    def setup_usb_mount(self):
+        print("Mounting USB")
+        # mount the usb
+        subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
+        subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
+        subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
+
+    # un-mount all USBs
+    def reset_usb_mounts(self):
+        subprocess.call("sudo umount /media/"+str(self.label), shell=True)
+
+    def update_fstab_file(self):
+        print("Updating fstab file for new USB")
+        # edit the stab file
+        subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
+        os.chmod("/etc/fstab", 0o777)
+        f=open("/etc/fstab", "a+")
+        f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" vfat auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
+
+    def get_USB_path(self):
+        # outputs USB file path
+        return self.USB_path
     
+    def get_USB_UUID(self):
+        # outputs USB UUID
+        return self.uuid
+
     # check if there is a usb connected or not, if not reboot
     def check_USB(self):
         dir = str(subprocess.check_output("sudo blkid", shell=True))
@@ -71,77 +146,6 @@ class USBMaster:
             print("USB not mounted. Please insert USB. Rebooting in 10 seconds...")
             time.sleep(10)
             self.reset()
-
-    # check if it is a new USB
-    def check_new_USB(self):
-        # set label and uuid
-        dir = str(subprocess.check_output("sudo blkid", shell=True))
-        self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
-        self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
-        # get the uuid and labels from usb_names.txt
-        f=open("/home/pi/Desktop/usb_names.txt", "r")
-        usb_names = f.read().splitlines()
-        f.close()
-        # if empty list
-        if not usb_names:
-            print("Configurating new USB drive in FTU system!")
-            f = open("/home/pi/Desktop/usb_names.txt", "a+")
-            f.write(str(self.uuid)+" "+str(self.label)+"\n")
-            f.close()
-            self.set_USB_path()
-            self.setup_usb_mount()
-            self.update_fstab_file()
-        # non empty list, already existing registered usbs
-        else:
-            # check if current usb is registered
-            uuid_list = []
-            label_list = []
-            for x in usb_names:
-                uuid_list.append(x.split()[0])
-                label_list.append(x.split()[1])
-            # current usb is registered
-            if self.label in label_list:
-                print("USB Already Registered!")
-                self.set_USB_path()
-                self.setup_usb_mount()
-            # current usb is not registered
-            else:
-                print("Configurating new USB drive in FTU system!")
-                f = open("/home/pi/Desktop/usb_names.txt", "a+")
-                f.write(str(self.uuid)+" "+str(self.label)+"\n")
-                f.close()
-                self.set_USB_path()
-                self.setup_usb_mount()
-                self.update_fstab_file()
-
-    # set the USB path for data writing in MasterManager.py
-    def set_USB_path(self):
-        # gets USB file path for saving if USB name found
-        if self.USB_name is not None:
-            self.USB_path = "/media/" + self.label
-
-    def setup_usb_mount(self):
-        print("Mounting USB")
-        # mount the usb
-        subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
-        subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
-        subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
-
-    def update_fstab_file(self):
-        print("Updating fstab file for new USB")
-        # edit the stab file
-        subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
-        os.chmod("/etc/fstab", 0o777)
-        f=open("/etc/fstab", "a+")
-        f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" vfat auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
-
-    def get_USB_path(self):
-        # outputs USB file path
-        return self.USB_path
-    
-    def get_USB_UUID(self):
-        # outputs USB UUID
-        return self.uuid
 
 
 '''
