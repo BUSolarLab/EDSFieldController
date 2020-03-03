@@ -81,7 +81,7 @@ class USBMaster:
         f=open("/home/pi/Desktop/usb_names.txt", "r")
         usb_names = f.read().splitlines()
         f.close()
-        # put them in a seperate list
+        # if empty list
         if not usb_names:
             print("Configurating new USB drive in FTU system!")
             f = open("/home/pi/Desktop/usb_names.txt", "a+")
@@ -89,7 +89,7 @@ class USBMaster:
             f.close()
             self.set_USB_path()
             self.setup_usb_mount()
-            self.update_fstab_file()
+            #self.update_fstab_file()
         else:
             uuid_list = []
             label_list = []
@@ -107,7 +107,7 @@ class USBMaster:
                 f.write(str(self.uuid)+" "+str(self.label)+"\n")
                 f.close()
                 self.set_USB_path()
-                self.update_fstab_file()
+                #self.update_fstab_file()
 
     # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
