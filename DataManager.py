@@ -141,6 +141,7 @@ Functionality:
 class CSVMaster:
     # initialize all file names to write to
     def __init__(self, usb_path):
+        print(usb_path)
         self.location_path = usb_path + '/'
         self.txt_testing_data = self.location_path + 'testing_data.txt'
         self.csv_testing_data = self.location_path + 'testing_data.csv'
