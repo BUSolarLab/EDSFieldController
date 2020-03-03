@@ -443,7 +443,7 @@ while True:
                 print_l(curr_dt, "POST EDS Automatic Testing Mode SR for " + panel + ": " + str(sr_post))
                 data[panel]['sr_post'] = sr_post
                 # write data to csv file
-                usb_master.check_USB()
+                #usb_master.check_USB()
                 csv_master.write_testing_data(data[panel])
                 print_l(curr_dt, "Writing Automatic Testing Mode Measurements Results To CSV and TXT Files")
                 # delay before changing to next EDS panel
