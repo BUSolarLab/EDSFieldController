@@ -358,8 +358,6 @@ while True:
         if weather_pass and auto_pass:
             # Initialize pre and post data dictionaries
             data = panel_data
-            # mount the usb for data collection
-            usb_master.setup_usb_mount()
             # Pre EDS Activation Panel Measurements
             for panel in panel_ids:
                 '''Begin Automatic Testing Mode'''
@@ -444,17 +442,18 @@ while True:
                 sr_post = soil_master.get_sr(scc_post, g_poa)
                 print_l(curr_dt, "POST EDS Automatic Testing Mode SR for " + panel + ": " + str(sr_post))
                 data[panel]['sr_post'] = sr_post
+                # mount the usb for data collection
+                usb_master.setup_usb_mount()
                 # write data to csv file
-                #usb_master.check_USB()
                 csv_master.write_testing_data(data[panel])
                 print_l(curr_dt, "Writing Automatic Testing Mode Measurements Results To CSV and TXT Files")
+                # un-mount the usb drive
+                usb_master.reset_usb_mounts()
                 # delay before changing to next EDS panel
                 time.sleep(10)
                 # 10) turn of green LED to show testing is done
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                 flip_on = True
-            # un-mount the usb drive
-            usb_master.reset_usb_mounts()
         else:
             #print_l(rtc.datetime, "Not within automatic testing mode time window")
             print("Not within automatic testing mode time window")

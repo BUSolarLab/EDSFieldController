@@ -35,6 +35,7 @@ class USBMaster:
 
     # reset function, basically reboots the system through command line
     def reset(self):
+        print("Rebooting in 10 seconds...")
         subprocess.call("sudo reboot", shell=True)
 
     # setting the USB name by its UUID
@@ -45,7 +46,7 @@ class USBMaster:
             self.USB_name = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
             print("Found USB named: "+self.USB_name)
         else:
-            print("USB not mounted! Please insert USB! Rebooting in 10 seconds...")
+            print("USB not mounted! Please insert USB!")
             time.sleep(10)
             self.reset()
 
@@ -66,8 +67,6 @@ class USBMaster:
             f.write(str(self.uuid)+" "+str(self.label)+"\n")
             f.close()
             self.set_USB_path()
-            #self.setup_usb_mount()
-            #self.update_fstab_file()
         # non empty list, already existing registered usbs
         else:
             # check if current usb is registered
@@ -80,7 +79,6 @@ class USBMaster:
             if self.label in label_list:
                 print("USB Already Registered!")
                 self.set_USB_path()
-                #self.setup_usb_mount()
             # current usb is not registered
             else:
                 print("Configurating new USB drive in FTU system!")
@@ -88,8 +86,6 @@ class USBMaster:
                 f.write(str(self.uuid)+" "+str(self.label)+"\n")
                 f.close()
                 self.set_USB_path()
-                #self.setup_usb_mount()
-                #self.update_fstab_file()
 
     # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
@@ -97,6 +93,7 @@ class USBMaster:
         if self.USB_name is not None:
             self.USB_path = "/media/" + self.label
 
+    # mount USB
     def setup_usb_mount(self):
         print("Mounting USB")
         # mount the usb
@@ -106,8 +103,10 @@ class USBMaster:
 
     # un-mount all USBs
     def reset_usb_mounts(self):
+        print("Un-Mounting USB")
         subprocess.call("sudo umount /media/"+str(self.label), shell=True)
 
+    # edit fstab file to auto-mount when boot
     def update_fstab_file(self):
         print("Updating fstab file for new USB")
         # edit the stab file
@@ -116,36 +115,11 @@ class USBMaster:
         f=open("/etc/fstab", "a+")
         f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" vfat auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
 
+    # get the USB path
     def get_USB_path(self):
         # outputs USB file path
         return self.USB_path
     
-    def get_USB_UUID(self):
-        # outputs USB UUID
-        return self.uuid
-
-    # check if there is a usb connected or not, if not reboot
-    def check_USB(self):
-        dir = str(subprocess.check_output("sudo blkid", shell=True))
-        # check if theres a usb
-        if "/dev/sda1:" in dir:
-            # check if its an unregistered USB
-            f=open("/home/pi/Desktop/usb_names.txt", "r")
-            usb_names = f.read().splitlines()
-            f.close()
-            # if empty document FIX
-            if not usb_names:
-                print("USB not registered. Abort saving data to CSV/TXT files. Rebooting in 10 seconds...")
-                time.sleep(10)
-                self.reset()
-            else:
-                # usb found, no further action
-                print("Found USB named: "+self.USB_name)
-        else:
-            # no usb found, reboot
-            print("USB not mounted. Please insert USB. Rebooting in 10 seconds...")
-            time.sleep(10)
-            self.reset()
 
 
 '''
