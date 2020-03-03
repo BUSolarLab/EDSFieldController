@@ -90,7 +90,7 @@ class USBMaster:
             f.close()
             self.set_USB_path()
             self.setup_usb_mount()
-            #self.update_fstab_file()
+            self.update_fstab_file()
         # non empty list, already existing registered usbs
         else:
             # check if current usb is registered
@@ -103,7 +103,7 @@ class USBMaster:
             if self.label in label_list:
                 print("USB Already Registered!")
                 self.set_USB_path()
-                #self.setup_usb_mount()
+                self.setup_usb_mount()
             # current usb is not registered
             else:
                 print("Configurating new USB drive in FTU system!")
@@ -112,7 +112,7 @@ class USBMaster:
                 f.close()
                 self.set_USB_path()
                 self.setup_usb_mount()
-                #self.update_fstab_file()
+                self.update_fstab_file()
 
     # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
