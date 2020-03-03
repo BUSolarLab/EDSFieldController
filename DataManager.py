@@ -36,6 +36,7 @@ class USBMaster:
     # reset function, basically reboots the system through command line
     def reset(self):
         print("Rebooting in 10 seconds...")
+        time.sleep(10)
         subprocess.call("sudo reboot", shell=True)
 
     # setting the USB name by its UUID
@@ -47,7 +48,6 @@ class USBMaster:
             print("Found USB named: "+self.USB_name)
         else:
             print("USB not mounted! Please insert USB!")
-            time.sleep(10)
             self.reset()
 
     # check if it is a new USB
@@ -115,6 +115,15 @@ class USBMaster:
         f=open("/etc/fstab", "a+")
         f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" vfat auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
 
+    # check if there is a usb or not
+    def check_usb(self):
+        # check if USB mounted
+        dir = str(subprocess.check_output("sudo blkid", shell=True))
+        if "/dev/sda1:" in dir:
+            return True
+        else:
+            return False
+    
     # get the USB path
     def get_USB_path(self):
         # outputs USB file path
