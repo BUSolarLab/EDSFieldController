@@ -67,6 +67,8 @@ class USBMaster:
             f.write(str(self.uuid)+" "+str(self.label)+"\n")
             f.close()
             self.set_USB_path()
+            self.update_fstab_file()
+            self.reset()
         # non empty list, already existing registered usbs
         else:
             # check if current usb is registered
@@ -86,6 +88,8 @@ class USBMaster:
                 f.write(str(self.uuid)+" "+str(self.label)+"\n")
                 f.close()
                 self.set_USB_path()
+                self.update_fstab_file()
+                self.reset()
 
     # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
