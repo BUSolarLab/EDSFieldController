@@ -195,7 +195,7 @@ while True:
         #print("solarnoon current time difference: "+str(abs(solar_noon_min - curr_time_min)))
 
         # if within 60 seconds of solar noon, run measurements (20 min right now)
-        if abs(solar_noon_min - curr_time_min) < 20:
+        if abs(solar_noon_min - curr_time_min) < 1:
             '''BEGIN SOLAR NOON MODE'''
             print_l(rtc.datetime, "Initiating Solar Noon Mode")
             # get weather and print values in console
@@ -314,7 +314,7 @@ while True:
             auto_pass = False
         
         # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
-        #auto_pass = False
+        auto_pass = True
         '''
         --------------------------------------------------------------------------
         BEGIN AUTOMATIC TESTING ACTIVATION CODE
