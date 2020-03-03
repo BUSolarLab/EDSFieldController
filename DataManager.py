@@ -58,6 +58,7 @@ class USBMaster:
             f=open("/home/pi/Desktop/usb_names.txt", "r")
             usb_names = f.read().splitlines()
             f.close()
+            # if empty document FIX
             if not usb_names:
                 print("USB not registered. Abort saving data to CSV/TXT files. Rebooting in 10 seconds...")
                 time.sleep(10)
@@ -120,7 +121,7 @@ class USBMaster:
         # mount the usb
         subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
         subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
-        subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
+        subprocess.call("sudo mount -t ntfs-3g -o /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
 
     def update_fstab_file(self):
         print("Updating fstab file for new USB")

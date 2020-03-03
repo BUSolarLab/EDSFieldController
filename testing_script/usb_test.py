@@ -10,6 +10,7 @@ class USBMaster:
         self.USB_name = None
         self.USB_path = None
         self.uuid = None
+        self.label = ""
         self.set_USB_name()
         self.set_USB_path()
 
@@ -52,10 +53,10 @@ class USBMaster:
             except:
                 # get associated variables
                 dir = str(subprocess.check_output("sudo blkid", shell=True))
-                label = dir.split('/dev/sda1:')[1].split('LABEL_FATBOOT=')[1].split('"')[1]
-                uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+                self.label = dir.split('/dev/sda1:')[1].split('LABEL_FATBOOT=')[1].split('"')[1]
+                self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
                 f = open("/home/pi/Desktop/EDSFieldController/testing_script/usb_names.txt", "a+")
-                f.write(str(uuid)+" "+str(label)+"\n")
+                f.write(str(self.uuid)+" "+str(self.label)+"\n")
                 f.close()
                 self.set_mounting_port()
 
