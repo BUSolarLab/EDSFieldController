@@ -93,16 +93,18 @@ class USBMaster:
             #self.update_fstab_file()
         # non empty list, already existing registered usbs
         else:
+            # check if current usb is registered
             uuid_list = []
             label_list = []
             for x in usb_names:
                 uuid_list.append(x.split()[0])
                 label_list.append(x.split()[1])
-            # cross check label and uuid with usb_names.txt
+            # current usb is registered
             if self.label in label_list:
                 print("USB Already Registered!")
                 self.set_USB_path()
-                self.setup_usb_mount()
+                #self.setup_usb_mount()
+            # current usb is not registered
             else:
                 print("Configurating new USB drive in FTU system!")
                 f = open("/home/pi/Desktop/usb_names.txt", "a+")

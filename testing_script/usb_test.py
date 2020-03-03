@@ -145,6 +145,7 @@ f.write("UUID=18A9-9943 /media/usb vfat auto,nofail,noatime,users,rw,uid=pi,gid=
 #sudo apt-get install usbmount
 
 #USB Format = FAT32
+#Tutorial link = https://www.raspberrypi-spy.co.uk/2014/05/how-to-mount-a-usb-flash-disk-on-the-raspberry-pi/
 
 
 
