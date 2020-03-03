@@ -30,7 +30,7 @@ class USBMaster:
         self.USB_path = None
         self.uuid = None
         self.label = None
-        self.set_USB_path()
+        self.set_USB_name()
         self.check_new_USB()
 
     # reset function, basically reboots the system through command line
