@@ -121,7 +121,7 @@ class USBMaster:
         # mount the usb
         subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
         subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
-        subprocess.call("sudo mount -t ntfs-3g -o /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
+        subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
 
     def update_fstab_file(self):
         print("Updating fstab file for new USB")
