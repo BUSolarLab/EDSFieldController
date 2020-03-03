@@ -23,24 +23,25 @@ from math import floor, ceil
 # read config, get constants, etc
 print("Initializing...")
 static_master = SM.StaticMaster()
-usb_master = DM.USBMaster()
 test_master = TM.TestingMaster(static_master.get_config())
+usb_master = DM.USBMaster()
 print(usb_master.get_USB_path())
+# sensors
+# weather sensor setup
+weather = AM2315.AM2315()
+# RTC setup
+i2c_bus = busio.I2C(SCL, SDA)
+rtc = adafruit_pcf8523.PCF8523(i2c_bus)
+# creating files to usb
+usb.master.setup_usb_mount()
 csv_master = DM.CSVMaster(usb_master.get_USB_path())
+log_master = DM.LogMaster(usb_master.get_USB_path(), rtc.datetime)
+usb_master.reset_usb_mounts()
+# measurements
 adc_master = TM.ADCMaster()
 pow_master = TM.PowerMaster()
 pr_master = TM.PerformanceRatio()
 soil_master = TM.Soiling()
-
-# weather sensor setup
-weather = AM2315.AM2315()
-
-# RTC setup
-i2c_bus = busio.I2C(SCL, SDA)
-rtc = adafruit_pcf8523.PCF8523(i2c_bus)
-
-# set up log file
-log_master = DM.LogMaster(usb_master.get_USB_path(), rtc.datetime)
 
 # time display functions
 def print_time(dt):
