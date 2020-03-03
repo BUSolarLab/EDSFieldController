@@ -30,6 +30,7 @@ class USBMaster:
         self.USB_path = None
         self.uuid = None
         self.label = None
+        self.set_USB_path()
         self.check_new_USB()
 
     # reset function, basically reboots the system through command line
@@ -141,7 +142,6 @@ Functionality:
 class CSVMaster:
     # initialize all file names to write to
     def __init__(self, usb_path):
-        print(usb_path)
         self.location_path = usb_path + '/'
         self.txt_testing_data = self.location_path + 'testing_data.txt'
         self.csv_testing_data = self.location_path + 'testing_data.csv'
