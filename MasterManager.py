@@ -195,8 +195,8 @@ while True:
         
         #print("solarnoon current time difference: "+str(abs(solar_noon_min - curr_time_min)))
 
-        # if within 60 seconds of solar noon, run measurements (1 min right now) 
-        if abs(solar_noon_min - curr_time_min) < 1:
+        # if within 60 seconds of solar noon, run measurements (20 min right now) 
+        if abs(solar_noon_min - curr_time_min) < 20:
             '''BEGIN SOLAR NOON MODE'''
             print_l(rtc.datetime, "Initiating Solar Noon Mode")
             # get weather and print values in console
@@ -209,8 +209,18 @@ while True:
                     error_list.remove("Sensor-Weather-1")
             except:
                 add_error("Sensor-Weather-1")
+            # turn on red and green LEDs, indicating it is measuring time
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
             # Initialize pre and post data dictionaries
             data = panel_data
+            # mount the usb for data collection
+            if usb_master.check_usb() == True:
+                # mounts the usb
+                usb_master.setup_usb_mount()
+            else:
+                print_l(rtc.datetime, "No USB Detected!")
+                usb_master.reset()
             # Pre EDS Activation Panel Measurements
             for panel in panel_ids:
                 # check the eds_number
@@ -295,6 +305,14 @@ while True:
                 print_l(curr_dt, "Writing Noon Mode Measurements Results To CSV and TXT Files")
                 # delay before changing to next EDS panel
                 time.sleep(10)
+            # un-mount the usb drive
+            usb_master.reset_usb_mounts()
+            # turn of RED LED, indicating USB can be swapped
+            GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+            # time to swap USB if desired
+            print("Finished measuring all panels. Resuming loop in 10 sec")
+            time.sleep(10)
 
         '''
         END SOLAR NOON DATA ACQUISITION CODE
@@ -363,10 +381,6 @@ while True:
             if usb_master.check_usb() == True:
                 # mounts the usb
                 usb_master.setup_usb_mount()
-                # writes header if usb is empty
-                csv_master.check_empty_usb()
-                # update csv path location if usb wa swapped
-                csv_master.update_csv_path(usb_master.get_USB_path())
             else:
                 print_l(rtc.datetime, "No USB Detected!")
                 usb_master.reset()
