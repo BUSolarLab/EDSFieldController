@@ -46,7 +46,7 @@ class USBMaster:
         if "/dev/sda1:" in dir:
             self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
             self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
-            print("Found USB named: "+self.uui)
+            print("Found USB named: "+self.uuid)
         else:
             print("USB not mounted! Please insert USB!")
             self.reset()
