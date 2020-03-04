@@ -108,6 +108,7 @@ class USBMaster:
         # check if it is the same usb or not
         if self.label != cur_label:
             # reboot to reinitialize the usb, csv, and log classes
+            print("Different USB Detected")
             self.reset()
         # mount the usb
         if not os.path.exists("/media/"+str(self.label)):
