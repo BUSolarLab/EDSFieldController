@@ -365,6 +365,8 @@ while True:
                 usb_master.setup_usb_mount()
                 # writes header if usb is empty
                 csv_master.check_empty_usb()
+                # update csv path location if usb wa swapped
+                csv_master.update_csv_path(usb_master.get_USB_path())
             else:
                 print_l(rtc.datetime, "No USB Detected!")
                 usb_master.reset()
