@@ -100,6 +100,14 @@ class USBMaster:
     # mount USB
     def setup_usb_mount(self):
         print("Mounting USB")
+        # get current usb label
+        dir = str(subprocess.check_output("sudo blkid", shell=True))
+        cur_label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
+        cur_uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+        # check if it is the same usb or not
+        if self.label != cur_label:
+            self.label = cur_label
+            self.uuid = cur_uuid
         # mount the usb
         if not os.path.exists("/media/"+str(self.label)):
             subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)

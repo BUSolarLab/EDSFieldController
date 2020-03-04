@@ -26,18 +26,18 @@ static_master = SM.StaticMaster()
 test_master = TM.TestingMaster(static_master.get_config())
 usb_master = DM.USBMaster()
 print(usb_master.get_USB_path())
-# sensors
 # weather sensor setup
 weather = AM2315.AM2315()
-# RTC setup
+# RTC sensor setup
 i2c_bus = busio.I2C(SCL, SDA)
 rtc = adafruit_pcf8523.PCF8523(i2c_bus)
 # creating files to usb
+print("Setting up initial CSV and TXT files in USB if not exist yet")
 usb_master.setup_usb_mount()
 csv_master = DM.CSVMaster(usb_master.get_USB_path())
 log_master = DM.LogMaster(usb_master.get_USB_path(), rtc.datetime)
 usb_master.reset_usb_mounts()
-# measurements
+# initialize measurement classes
 adc_master = TM.ADCMaster()
 pow_master = TM.PowerMaster()
 pr_master = TM.PerformanceRatio()
@@ -195,8 +195,8 @@ while True:
         
         #print("solarnoon current time difference: "+str(abs(solar_noon_min - curr_time_min)))
 
-        # if within 60 seconds of solar noon, run measurements (20 min right now)
-        if abs(solar_noon_min - curr_time_min) < 20:
+        # if within 60 seconds of solar noon, run measurements (1 min right now) 
+        if abs(solar_noon_min - curr_time_min) < 1:
             '''BEGIN SOLAR NOON MODE'''
             print_l(rtc.datetime, "Initiating Solar Noon Mode")
             # get weather and print values in console
@@ -302,7 +302,7 @@ while True:
         '''
         '''
         --------------------------------------------------------------------------
-        Checking the operational time for automatic testing mode 9AM-14PM
+        Checking the operational time for automatic testing mode
         '''
         current_dt=rtc.datetime
         if current_dt.tm_hour >= 9 and current_dt.tm_hour < 11:
@@ -311,7 +311,7 @@ while True:
             auto_pass = True
         else:
             GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
-            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
+            #GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
             auto_pass = False
         
         # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
@@ -361,7 +361,10 @@ while True:
             data = panel_data
             # mount the usb for data collection
             if usb_master.check_usb() == True:
+                # mounts the usb
                 usb_master.setup_usb_mount()
+                # writes header if usb is empty
+                csv_master.check_empty_usb()
             else:
                 print_l(rtc.datetime, "No USB Detected!")
                 usb_master.reset()
@@ -370,7 +373,8 @@ while True:
                 '''Begin Automatic Testing Mode'''
                 # start the measurement process
                 print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for " + panel + " panel")
-                # turn green LED on to show automatic testing is operating
+                # turn green and red LED on to show automatic testing is operating
+                GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
                 flip_on = False
                 # check the eds_number
@@ -415,8 +419,6 @@ while True:
                 print_l(rtc.datetime, "PRE EDS Automatic Testing Mode SR for " + panel + ": " + str(sr_pre))
                 data[panel]['sr_pre'] = sr_pre
                 '''EDS ACTIVATION'''
-                # turn on GREEN LED for duration of EDS activation
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
                 # activate the EDS film if it is an eds panel
                 if panel_type == 'eds':
                     test_master.run_test(panel_num)
@@ -459,6 +461,8 @@ while True:
                 flip_on = True
             # un-mount the usb drive
             usb_master.reset_usb_mounts()
+            # turn of RED LED, indicating USB can be swapped
+            GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
             # time to swap USB if desired
             print("Finished measuring all panels. Resuming loop in 10 sec")
             time.sleep(10)
