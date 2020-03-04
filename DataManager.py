@@ -44,8 +44,9 @@ class USBMaster:
         # check if USB mounted
         dir = str(subprocess.check_output("sudo blkid", shell=True))
         if "/dev/sda1:" in dir:
-            self.USB_name = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
-            print("Found USB named: "+self.USB_name)
+            self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
+            self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+            print("Found USB named: "+self.uui)
         else:
             print("USB not mounted! Please insert USB!")
             self.reset()
@@ -53,9 +54,9 @@ class USBMaster:
     # check if it is a new USB
     def check_new_USB(self):
         # set label and uuid
-        dir = str(subprocess.check_output("sudo blkid", shell=True))
-        self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
-        self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+        #dir = str(subprocess.check_output("sudo blkid", shell=True))
+        #self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
+        #self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
         # get the uuid and labels from usb_names.txt
         f=open("/home/pi/Desktop/usb_names.txt", "r")
         usb_names = f.read().splitlines()
@@ -94,7 +95,7 @@ class USBMaster:
     # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
-        if self.USB_name is not None:
+        if self.uuid is not None:
             self.USB_path = "/media/" + self.label
 
     # mount USB
@@ -108,8 +109,8 @@ class USBMaster:
         if self.label != cur_label:
             self.label = cur_label
             self.uuid = cur_uuid
+            set_USB_path()
         # mount the usb
-        print(self.label, cur_label)
         if not os.path.exists("/media/"+str(self.label)):
             subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
         subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
