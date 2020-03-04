@@ -107,9 +107,8 @@ class USBMaster:
         cur_uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
         # check if it is the same usb or not
         if self.label != cur_label:
-            self.label = cur_label
-            self.uuid = cur_uuid
-            self.set_USB_path()
+            # reboot to reinitialize the usb, csv, and log classes
+            self.reset()
         # mount the usb
         if not os.path.exists("/media/"+str(self.label)):
             subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
