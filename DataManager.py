@@ -166,6 +166,11 @@ class CSVMaster:
         # set up base csv and txt files if they don't exist
         self.check_empty_usb()
 
+    # update the  location path if swapping usbs
+    def update_csv_path(self, cur_usb_path):
+        if self.location_path != cur_usb_path + '/':
+            self.location_path = cur_usb_path + '/'
+    
     # set up all initial csv and txt files if they don't exist
     def check_empty_usb(self):
         self.check_for_txt_file(self.txt_testing_data)
