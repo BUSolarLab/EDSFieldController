@@ -315,7 +315,7 @@ while True:
             auto_pass = False
         
         # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
-        #auto_pass = True
+        auto_pass = True
         '''
         --------------------------------------------------------------------------
         BEGIN AUTOMATIC TESTING ACTIVATION CODE
@@ -459,6 +459,9 @@ while True:
                 flip_on = True
             # un-mount the usb drive
             usb_master.reset_usb_mounts()
+            # time to swap USB if desired
+            print("Finished measuring all panels. Resuming loop in 10 sec")
+            time.sleep(10)
         else:
             #print_l(rtc.datetime, "Not within automatic testing mode time window")
             print("Not within automatic testing mode time window")

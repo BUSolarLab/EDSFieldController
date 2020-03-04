@@ -155,13 +155,17 @@ class CSVMaster:
         self.csv_manual_data = self.location_path + 'manual_data.csv'
 
         # set up base csv and txt files if they don't exist
+        self.check_empty_usb()
+
+    # set up all initial csv and txt files if they don't exist
+    def check_empty_usb(self):
         self.check_for_txt_file(self.txt_testing_data)
         self.check_for_txt_file(self.txt_noon_data)
         self.check_for_txt_file(self.txt_manual_data)
         self.check_for_csv_file(self.csv_testing_data)
         self.check_for_csv_file(self.csv_noon_data)
         self.check_for_csv_file(self.csv_manual_data)
-
+    
     # checks for existing data file, and creates it if none exist
     def check_for_txt_file(self, name):
         if not os.path.isfile(name):
