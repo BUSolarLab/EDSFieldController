@@ -109,6 +109,7 @@ class USBMaster:
             self.label = cur_label
             self.uuid = cur_uuid
         # mount the usb
+        print(self.label, cur_label)
         if not os.path.exists("/media/"+str(self.label)):
             subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
         subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
