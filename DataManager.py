@@ -109,7 +109,7 @@ class USBMaster:
         if self.label != cur_label:
             self.label = cur_label
             self.uuid = cur_uuid
-            set_USB_path()
+            self.set_USB_path()
         # mount the usb
         if not os.path.exists("/media/"+str(self.label)):
             subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
