@@ -5,7 +5,7 @@ import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 import RPi.GPIO as GPIO
 import time
-
+'''Normally Open (relay LED off) is when GPIO.IN, normally closed (relay LED on) is when GPIO.OUT'''
 #This script shows the accuracy of the motherboard's circuit for voc and isc measurements
 actual_voc = 3
 actual_isc = 0.3

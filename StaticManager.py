@@ -11,13 +11,14 @@ Config file parameters list (ADD NEW PARAMETERS AS DICTIONARY ENTRIES)
 '''
 
 DEFAULT_CONFIG_PARAM = {
-    # EDS default testing
+    # EDS Panels for power supply activation
     'EDS1': 4,
     'EDS2': 17,
     'EDS3': 6,
     'EDS4': 19,
     'EDS5': 26,
     'EDS6': 27,
+    # EDS nd CTRL Panels measurement
     'EDS1PV': 7,
     'EDS2PV': 8,
     'EDS3PV': 12,
@@ -28,6 +29,7 @@ DEFAULT_CONFIG_PARAM = {
     'CTRL1PV': 15,
     'CTRL2PV': 23,
     'CTRLIDS': [1, 2],
+    # For measurement loop
     'PANELIDS':['eds1','eds2','eds3','eds4','eds5','ctrl1','ctrl2'],
     
     # testing requirements
@@ -42,7 +44,7 @@ DEFAULT_CONFIG_PARAM = {
     'outPinLEDGreen': 5,
     'outPinLEDRed': 13,
     'inPinManualActivate': 22,
-    'manualEDSNumber': 5, #EDS 3
+    'manualEDSNumber': 5, #EDS 5
     'ADC': 25,
     'solarChargerEDSNumber': 6,
     # location data

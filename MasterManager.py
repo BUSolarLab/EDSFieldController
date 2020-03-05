@@ -64,6 +64,8 @@ GPIO.setmode(GPIO.BCM)
 # LED port setup
 GPIO.setup(test_master.get_pin('outPinLEDGreen'), GPIO.OUT)
 GPIO.setup(test_master.get_pin('outPinLEDRed'), GPIO.OUT)
+GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
+GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
 
 # manual button port setup
 GPIO.setup(test_master.get_pin('inPinManualActivate'), GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -118,10 +120,6 @@ This loop governs the overall code for the long term remote testing of the field
 '''
 
 while True:
-    # set all flags to False
-    temp_pass = False
-    humid_pass = False
-    weather_pass = False
     
     # MASTER TRY-EXCEPT -> will still allow RED LED to blink if fatal error occurs in loop
     try:
@@ -209,9 +207,6 @@ while True:
                     error_list.remove("Sensor-Weather-1")
             except:
                 add_error("Sensor-Weather-1")
-            # turn on red and green LEDs, indicating it is measuring time
-            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
-            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
             # Initialize pre and post data dictionaries
             data = panel_data
             # mount the usb for data collection
@@ -221,6 +216,9 @@ while True:
             else:
                 print_l(rtc.datetime, "No USB Detected!")
                 usb_master.reset()
+            # turn on red and green LEDs, indicating it is measuring time
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
             # Pre EDS Activation Panel Measurements
             for panel in panel_ids:
                 # check the eds_number
@@ -265,16 +263,12 @@ while True:
                 print_l(curr_dt, "PRE EDS Solar Noon SR for " + panel + ": " + str(sr_pre))
                 data[panel]['sr_pre'] = sr_pre
                 '''EDS ACTIVATION'''
-                # turn on GREEN LED for duration of EDS activation
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
                 # activate the EDS film if it is an eds panel
                 if panel_type == 'eds':
                     test_master.run_test(panel_num)
                     print_l(curr_dt, "Activating EDS for " + panel + " panel")
                 elif panel_type == 'ctrl':
                     print_l(curr_dt, "Not Activating EDS for " + panel + " panel")
-                # turn off GREEN LED after test
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                 '''POST EDS ACTIVATION MEASUREMENT'''
                 # measure POST EDS activation ocv and scc
                 ocv_post = 0
@@ -328,7 +322,7 @@ while True:
         elif current_dt.tm_hour >= 13 and current_dt.tm_hour < 17:
             auto_pass = True
         else:
-            GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+            #GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
             #GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
             auto_pass = False
         
@@ -384,15 +378,14 @@ while True:
             else:
                 print_l(rtc.datetime, "No USB Detected!")
                 usb_master.reset()
+            # turn green and red LED on to show automatic testing is operating
+            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
             # Pre EDS Activation Panel Measurements
             for panel in panel_ids:
                 '''Begin Automatic Testing Mode'''
                 # start the measurement process
                 print_l(rtc.datetime, "Time and weather checks passed. Initiating testing procedure for " + panel + " panel")
-                # turn green and red LED on to show automatic testing is operating
-                GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
-                flip_on = False
                 # check the eds_number
                 panel_num = data[panel]['num']
                 # check panel type eds/ctrl
@@ -441,8 +434,6 @@ while True:
                     print_l(rtc.datetime, "Activating EDS for " + panel + " panel")
                 elif panel_type == 'ctrl':
                     print_l(rtc.datetime, "Not Activating EDS for " + panel + " panel")
-                # turn off GREEN LED after test
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                 '''POST EDS ACTIVATION MEASUREMENT'''
                 # measure POST EDS activation ocv and scc
                 ocv_post = 0
@@ -472,13 +463,11 @@ while True:
                 print_l(curr_dt, "Writing Automatic Testing Mode Measurements Results To CSV and TXT Files")
                 # delay before changing to next EDS panel
                 time.sleep(10)
-                # 10) turn of green LED to show testing is done
-                GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
-                flip_on = True
             # un-mount the usb drive
             usb_master.reset_usb_mounts()
             # turn of RED LED, indicating USB can be swapped
             GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
             # time to swap USB if desired
             print("Finished measuring all panels. Resuming loop in 10 sec")
             time.sleep(10)
