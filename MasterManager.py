@@ -470,11 +470,6 @@ while True:
             # time to swap USB if desired
             print("Finished measuring all panels. Resuming loop in 10 sec")
             time.sleep(10)
-        else:
-            #print_l(rtc.datetime, "Not within automatic testing mode time window")
-            print("Not within automatic testing mode time window")
-            time.sleep(30)
-
 
         '''
         END AUTOMATIC TESTING ACTIVATION CODE
@@ -494,13 +489,21 @@ while True:
         6) Check SCC on EDS for [after] measurement
         '''
         if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
+            # mount the usb for data collection
+            if usb_master.check_usb() == True:
+                # mounts the usb
+                usb_master.setup_usb_mount()
+            else:
+                print_l(rtc.datetime, "No USB Detected!")
+                usb_master.reset()
+            # turn green and red LED on to show measuring time
+            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
+            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
             # run EDS test on selected manual EDS
             eds_num = test_master.get_pin('manualEDSNumber')
-            
             # get weather and time for data logging
             curr_dt = rtc.datetime
             w_read = weather.read_humidity_temperature()
-            
             # solid GREEN for duration of manual test
             GPIO.output(test_master.get_pin('outPinLEDGreen'), GPIO.HIGH)
             print_l(rtc.datetime, "FORCED. Running EDS" + str(eds_num) + " testing sequence. FLIP SWITCH OFF TO STOP.")
@@ -557,8 +560,6 @@ while True:
                 print_l(rtc.datetime, "Error with manual testing sequence. Please check.")
                 add_error("Test-Manual")
 
-            # either way, turn off GREEN LED indicator
-            GPIO.output(test_master.get_pin('outPinLEDGreen'),GPIO.LOW)
         '''
         END MANUAL ACTIVATION CODE
         --------------------------------------------------------------------------
@@ -580,7 +581,7 @@ while True:
             e_phrase += " [" + err + "]"
         print_l(rtc.datetime, e_phrase)
         
-    # flip indicator RED LED if error flag raised
+    # blinking RED LED if error is raised
     if error_flag:
         if flip_on:
             GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
