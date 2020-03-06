@@ -326,7 +326,7 @@ while True:
             auto_pass = False
         
         # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
-        #auto_pass = True
+        auto_pass = True
         '''
         --------------------------------------------------------------------------
         BEGIN AUTOMATIC TESTING ACTIVATION CODE
