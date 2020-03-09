@@ -45,7 +45,7 @@ def check_frequency(dt):
         else:
             return False
 
-def check_leap_year (dt):
+def check_leap_year(dt):
     year = dt.tm_year
     if (year % 4) == 0:
         if (year % 100) == 0:
