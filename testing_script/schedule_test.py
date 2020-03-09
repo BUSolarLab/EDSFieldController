@@ -22,6 +22,7 @@ def time_record(dt):
     with open('./record.json', 'w') as file:
         json.dump(eds, file)
     return True
+
 def check_leap_year(dt):
     year = dt.tm_year
     if (year % 4) == 0:
@@ -53,7 +54,7 @@ def check_frequency(dt):
             json_file = json.load(file)
         
         current_day = day_of_year(dt)
-        activation_day = day_of_year(json_file['record'])
+        activation_day = day_of_year(time.struct_time(tuple(json_file['record'])))
         #already met desired frequency for activation
         if current_day - activation_day == self.frequency:
             json_file.update({
