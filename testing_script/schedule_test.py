@@ -23,7 +23,7 @@ def time_record(dt):
         json.dump(eds, file)
     return True
 
-def check_frequency(dt)
+def check_frequency(dt):
     file_name = "./record.json"
     date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
     with open(file_name, 'r') as file:
