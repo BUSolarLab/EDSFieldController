@@ -56,7 +56,7 @@ def check_frequency(dt):
         current_day = day_of_year(dt)
         activation_day = day_of_year(time.struct_time(tuple(json_file['record'])))
         #already met desired frequency for activation
-        if current_day - activation_day == self.frequency:
+        if current_day - activation_day == frequency:
             json_file.update({
                 'record':dt
             })
