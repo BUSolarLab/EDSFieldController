@@ -22,6 +22,26 @@ def time_record(dt):
     with open('./record.json', 'w') as file:
         json.dump(eds, file)
     return True
+def check_leap_year(dt):
+    year = dt.tm_year
+    if (year % 4) == 0:
+        if (year % 100) == 0:
+            if (year % 400) == 0:
+                return True
+            else:
+                return False
+        else:
+            return True
+    else:
+        return False
+
+def day_of_year(dt):
+    if check_leap_year(dt) == True:
+        month_days = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
+    else:
+        month_days = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
+    
+    return month_days[dt.tm_mon-1] + dt.tm_mday
 
 def check_frequency(dt):
     if not path.exists("./record.json"):
@@ -44,27 +64,6 @@ def check_frequency(dt):
             return True
         else:
             return False
-
-def check_leap_year(dt):
-    year = dt.tm_year
-    if (year % 4) == 0:
-        if (year % 100) == 0:
-            if (year % 400) == 0:
-                return True
-            else:
-                return False
-        else:
-            return True
-    else:
-        return False
-
-def day_of_year(dt):
-    if check_leap_year(dt) == True:
-        month_days = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
-    else:
-        month_days = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
-    
-    return month_days[dt.tm_mon-1] + dt.tm_mday
 
 # run the test
 while True:
