@@ -24,25 +24,26 @@ def time_record(dt):
     return True
 
 def check_frequency(dt):
-    file_name = "./record.json"
-    date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
-    with open(file_name, 'r') as file:
-        json_file = json.load(file)
-    
-    current_day = day_of_year(dt)
-    activation_day = day_of_year(json_file['record'])
-    #already met desired frequency for activation
     if not path.exists("./record.json"):
         return True
-    elif current_day - activation_day == self.frequency:
-        json_file.update({
-            'record':dt
-        })
-        with open('./record.json', 'w') as file:
-            json.dump(json_file, file)
-        return True
     else:
-        return False
+        file_name = "./record.json"
+        date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
+        with open(file_name, 'r') as file:
+            json_file = json.load(file)
+        
+        current_day = day_of_year(dt)
+        activation_day = day_of_year(json_file['record'])
+        #already met desired frequency for activation
+        if current_day - activation_day == self.frequency:
+            json_file.update({
+                'record':dt
+            })
+            with open('./record.json', 'w') as file:
+                json.dump(json_file, file)
+            return True
+        else:
+            return False
 
 def check_leap_year (dt):
     year = dt.tm_year
