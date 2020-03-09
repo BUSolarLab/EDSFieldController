@@ -3,7 +3,7 @@ import adafruit_pcf8523
 import time
 from board import *
 import json
-import path
+from os import path
 
 # declare RTC
 i2c_bus = busio.I2C(SCL, SDA)
