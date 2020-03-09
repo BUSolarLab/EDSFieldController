@@ -75,4 +75,5 @@ while True:
         print("Recorded Time")
     else:
         # pause 10 minutes ish
+        print("Not Within Time Window")
         time.sleep(1000)
