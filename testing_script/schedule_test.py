@@ -8,7 +8,7 @@ from os import path
 # declare RTC
 i2c_bus = busio.I2C(SCL, SDA)
 rtc = adafruit_pcf8523.PCF8523(i2c_bus)
-time = rtc.datetime
+t = rtc.datetime
 
 # declare frequency
 frequency = 2
@@ -69,7 +69,7 @@ def check_frequency(dt):
 # run the test
 while True:
     print("Start Testing, Recording Frequency: " + str(frequency) + " days")
-    time = rtc.datetime
-    if check_frequency(time) == True:
-        time_record(time)
+    t = rtc.datetime
+    if check_frequency(t) == True:
+        time_record(t)
         print("Recorded Time")
