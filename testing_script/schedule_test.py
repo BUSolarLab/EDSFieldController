@@ -73,3 +73,6 @@ while True:
     if check_frequency(t) == True:
         time_record(t)
         print("Recorded Time")
+    else:
+        # pause 10 minutes ish
+        time.sleep(1000)
