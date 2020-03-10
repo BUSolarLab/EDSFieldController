@@ -217,7 +217,7 @@ Panel class
 Functionality:
 1) Check activation/measurement frequency
 2) Check with scheduled time for activation/measurement
-3) Stores this information in json file in Desktop of RasPi.
+3) Stores this information in json file in Desktop of RasPi
 '''
 class Panel:
     def __init__(self, name, frequency, m_time, a_time):
@@ -254,7 +254,7 @@ class Panel:
             json.dump(eds, file)
         return False
     
-    def check_frequency(self, mode, dt)
+    def check_frequency(self, mode, dt):
         file_name = mode + "_record.json"
         date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
         with open(file_name, 'r') as file:
