@@ -29,9 +29,8 @@ DEFAULT_CONFIG_PARAM = {
     'CTRL1PV': 15,
     'CTRL2PV': 23,
     'CTRLIDS': [1, 2],
-    # For measurement loop
+    # for measurement loop
     'PANELIDS':['eds1','eds2','eds3','eds4','eds5','ctrl1','ctrl2'],
-    
     # testing requirements
     'maxTemperatureCelsius': 40,
     'minTemperatureCelsius': 10,
@@ -39,7 +38,6 @@ DEFAULT_CONFIG_PARAM = {
     'minRelativeHumidity': 5,
     'testDurationSeconds': 60, # 1 minute
     'testWindowSeconds': 2700,
-    
     # indicators/switches
     'outPinLEDGreen': 5,
     'outPinLEDRed': 13,
@@ -59,6 +57,9 @@ PANEL_DATA = {
         'num':1,
         'type':'eds',
         'date_time':'',
+        'act_time': 0, #in minutes
+        'meas_time':0, #in minutes
+        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -78,6 +79,9 @@ PANEL_DATA = {
         'num':2,
         'type':'eds',
         'date_time':'',
+        'act_time': 0, #in minutes
+        'meas_time':0, #in minutes
+        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -97,6 +101,9 @@ PANEL_DATA = {
         'num':3,
         'type':'eds',
         'date_time':'',
+        'act_time': 0, #in minutes
+        'meas_time':0, #in minutes
+        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -116,6 +123,9 @@ PANEL_DATA = {
         'num':4,
         'type':'eds',
         'date_time':'',
+        'act_time': 0, #in minutes
+        'meas_time':0, #in minutes
+        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -135,6 +145,9 @@ PANEL_DATA = {
         'num':5,
         'type':'eds',
         'date_time':'',
+        'act_time': 0, #in minutes
+        'meas_time':0, #in minutes
+        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -154,6 +167,9 @@ PANEL_DATA = {
         'num':1,
         'type':'ctrl',
         'date_time':'',
+        'act_time': 0, #in minutes
+        'meas_time':0, #in minutes
+        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -173,6 +189,9 @@ PANEL_DATA = {
         'num':2,
         'type':'ctrl',
         'date_time':'',
+        'act_time': 0, #in minutes
+        'meas_time':0, #in minutes
+        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
