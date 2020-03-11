@@ -6,7 +6,8 @@ Started: September 2018
 =============================
 '''
 from os import path
-import math
+from math import cos, sin
+from numpy import deg2rad
 
 DEFAULT_CONFIG_PARAM = {
     # EDS Panels for power supply activation
@@ -305,7 +306,7 @@ class ScheduleMaster:
 
     def check_time(self, dt):
         # current time in minutes
-        current_time = minute_of_day(dt)
+        current_time = self.minute_of_day(dt)
         # go through the scheduled times list
         for schedule in self.schedule_time:
             # check if schedule is solar noon
@@ -337,7 +338,7 @@ class ScheduleMaster:
             return False
     
     def day_of_year(self, dt):
-        if check_leap_year(dt) == True:
+        if self.check_leap_year(dt) == True:
             month_days = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
         else:
             month_days = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
