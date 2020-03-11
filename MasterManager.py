@@ -391,6 +391,7 @@ while True:
 
         # if within 60 seconds of solar noon, run measurements (20 min right now) 
         solar_noon_min = 720 + solar_offset
+        curr_dt = rtc.datetime
         curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
         if abs(solar_noon_min - curr_time_min) < 20:
             '''BEGIN SOLAR NOON MODE'''
