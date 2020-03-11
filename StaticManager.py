@@ -5,10 +5,7 @@ Author: Benjamin Considine, Brian Mahabir, Aditya Wikara
 Started: September 2018
 =============================
 '''
-
-'''
-Config file parameters list (ADD NEW PARAMETERS AS DICTIONARY ENTRIES)
-'''
+from os import path
 
 DEFAULT_CONFIG_PARAM = {
     # EDS Panels for power supply activation
@@ -25,12 +22,13 @@ DEFAULT_CONFIG_PARAM = {
     'EDS4PV': 16,
     'EDS5PV': 20,
     'EDS6PV': 21,
-    'EDSIDS': [1, 2, 3, 4, 5],
     'CTRL1PV': 15,
     'CTRL2PV': 23,
     'CTRLIDS': [1, 2],
     # for measurement loop
     'PANELIDS':['eds1','eds2','eds3','eds4','eds5','ctrl1','ctrl2'],
+    'EDSIDS': ['eds1','eds2','eds3','eds4','eds5'],
+    'CTRLIDS': ['ctrl1','ctrl2'],
     # testing requirements
     'maxTemperatureCelsius': 40,
     'minTemperatureCelsius': 10,
@@ -57,9 +55,6 @@ PANEL_DATA = {
         'num':1,
         'type':'eds',
         'date_time':'',
-        'act_time': 0, #in minutes
-        'meas_time':0, #in minutes
-        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -72,16 +67,15 @@ PANEL_DATA = {
         'pr_pre':0,
         'pr_post':0,
         'sr_pre':0,
-        'sr_post':0
+        'sr_post':0,
+        'frequency':1,
+        'schedule':['SR'] #in minutes
     },
     'eds2':{
         'name':'EDS2',
         'num':2,
         'type':'eds',
         'date_time':'',
-        'act_time': 0, #in minutes
-        'meas_time':0, #in minutes
-        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -94,16 +88,15 @@ PANEL_DATA = {
         'pr_pre':0,
         'pr_post':0,
         'sr_pre':0,
-        'sr_post':0
+        'sr_post':0,
+        'frequency':1,
+        'schedule':[1020] #in minutes
     },
     'eds3':{
         'name':'EDS3',
         'num':3,
         'type':'eds',
         'date_time':'',
-        'act_time': 0, #in minutes
-        'meas_time':0, #in minutes
-        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -116,16 +109,15 @@ PANEL_DATA = {
         'pr_pre':0,
         'pr_post':0,
         'sr_pre':0,
-        'sr_post':0
+        'sr_post':0,
+        'frequency':1,
+        'schedule':[1050] #in minutes
     },
     'eds4':{
         'name':'EDS4',
         'num':4,
         'type':'eds',
         'date_time':'',
-        'act_time': 0, #in minutes
-        'meas_time':0, #in minutes
-        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -138,16 +130,15 @@ PANEL_DATA = {
         'pr_pre':0,
         'pr_post':0,
         'sr_pre':0,
-        'sr_post':0
+        'sr_post':0,
+        'frequency':1,
+        'schedule':[1030] #in minutes
     },
     'eds5':{
         'name':'EDS5',
         'num':5,
         'type':'eds',
         'date_time':'',
-        'act_time': 0, #in minutes
-        'meas_time':0, #in minutes
-        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
@@ -160,51 +151,51 @@ PANEL_DATA = {
         'pr_pre':0,
         'pr_post':0,
         'sr_pre':0,
-        'sr_post':0
+        'sr_post':0,
+        'frequency':1,
+        'schedule':[1020] #in minutes
     },
     'ctrl1':{
         'name':'CTRL1',
         'num':1,
         'type':'ctrl',
         'date_time':'',
-        'act_time': 0, #in minutes
-        'meas_time':0, #in minutes
-        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
         'ocv_pre':0,
-        'ocv_post':0,
+        'ocv_post':'N/A',
         'scc_pre':0,
-        'scc_post':0,
+        'scc_post':'N/A',
         'pwr_pre':0,
-        'pwr_post':0,
+        'pwr_post':'N/A',
         'pr_pre':0,
-        'pr_post':0,
+        'pr_post':'N/A',
         'sr_pre':0,
-        'sr_post':0
+        'sr_post':'N/A',
+        'frequency':1,
+        'schedule':[] #in minutes
     },
     'ctrl2':{
         'name':'CTRL2',
         'num':2,
         'type':'ctrl',
         'date_time':'',
-        'act_time': 0, #in minutes
-        'meas_time':0, #in minutes
-        'frequency':1,
         'temp':0,
         'humid':0,
         'gpoa':0,
         'ocv_pre':0,
-        'ocv_post':0,
+        'ocv_post':'N/A',
         'scc_pre':0,
-        'scc_post':0,
+        'scc_post':'N/A',
         'pwr_pre':0,
-        'pwr_post':0,
+        'pwr_post':'N/A',
         'pr_pre':0,
-        'pr_post':0,
+        'pr_post':'N/A',
         'sr_pre':0,
-        'sr_post':0
+        'sr_post':'N/A',
+        'frequency':1,
+        'schedule':[] #in minutes
     }
 }
 
@@ -232,71 +223,105 @@ class StaticMaster:
 
 
 '''
-Panel class
+Schedule class
 Functionality:
 1) Check activation/measurement frequency
 2) Check with scheduled time for activation/measurement
 3) Stores this information in json file in Desktop of RasPi
 '''
-class Panel:
-    def __init__(self, name, frequency, m_time, a_time):
+class ScheduleMaster:
+    def __init__(self, name, frequency, schedule, longitude, gmt_off):
         self.panel_type = name
         self.frequency = frequency # how many activations per day/2 days
-        self.measurement_time = m_time # in minutes
-        self.activation_time = a_time # in minutes
-        self.is_activated = False
+        self.schedule_time = schedule # in minutes
 
-    def reset_json_files(self):
-        pass
+        # for calculating solar noon
+        self.longitude = longitude
+        self.gmt_off = gmt_off
+
+    def check_json_file(self):
+        if not path.exists('/home/pi/Desktop/eds.json'):
+            eds = {
+                'eds1':{
+                    'is_activated':False,
+                    'record_dt': ''
+                },
+                'eds2':{
+                    'is_activated':False,
+                    'record_dt': ''
+                },
+                'eds3':{
+                    'is_activated':False,
+                    'record_dt': ''
+                },
+                'eds4':{
+                    'is_activated':False,
+                    'record_dt': ''
+                },
+                'eds5':{
+                    'is_activated':False,
+                    'record_dt': ''
+                }
+            }
+            with open('/home/pi/Desktop/eds.json', 'w+') as file:
+                json.dump(eds, file)
     
     def activation_record(self, dt):
-        date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
         eds = {
-            'panel':self.panel_type,
             'is_activated':True,
-            'activation_time':a_time,
-            'activation_dt':dt,
+            'record_dt':dt
         }
-        with open('activation_record.json', 'w') as file:
+        with open('eds.json', 'a') as file:
             json.dump(eds, file)
-        return True
     
-    def measurement_record(self, dt):
-        date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
-        eds = {
-            'panel':self.panel_type,
-            'is_activated':True,
-            'activation_time':m_time,
-            'activation_date':date
-        }
-        with open('measurement_record.json', 'w') as file:
-            json.dump(eds, file)
-        return False
-    
-    def check_frequency(self, mode, dt):
-        file_name = mode + "_record.json"
-        date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
+    def check_frequency(self, dt):
+        # check if json file exists
+        self.check_json_file()
+        # load the json file
+        file_name = "eds.json"
         with open(file_name, 'r') as file:
             json_file = json.load(file)
-        
+        # check for frequency confirmation
         current_day = day_of_year(dt)
-        activation_day = day_of_year(json_file['activation_dt'])
+        activation_day = day_of_year(time.struct_time(tuple(json_file['record_dt'])))
         #already met desired frequency for activation
         if current_day - activation_day == self.frequency:
             json_file.update({
-                'activation_dt':dt
+                'is_activated':True,
+                'record_dt':dt,
             })
-            with open('activation_record.json', 'w') as file:
+            with open('/home/pi/Desktop/eds.json', 'w') as file:
                 json.dump(json_file, file)
             return True
         else:
             json_file.update({
-                'is_activated':False
+                'is_activated':False,
+                'record_dt':dt,
             })
-            with open('activation_record.json', 'w') as file:
+            with open('/home/pi/Desktop/eds.json', 'w') as file:
                 json.dump(json_file, file)
             return False
 
+    def check_time(self, dt):
+        # current time in minutes
+        current_time = minute_of_day(dt)
+        # go through the scheduled times list
+        for schedule in self.schedule_time:
+            # check if schedule is solar noon
+            if schedule.lower() == 'sn':
+                # check whether current time is within 3 min of solar noon
+                solar_noon_min = self.get_solar_time(dt)
+                if abs(solar_noon_min - current_time) < 3:
+                    return True
+                else:
+                    return False
+            else:
+                # check whether current time is within 3 min of schedule time
+                if abs(schedule - current_time) < 3:
+                    return True
+                else:
+                    return False
+    
     def check_leap_year (self, dt):
         year = dt.tm_year
         if (year % 4) == 0:
@@ -317,3 +342,20 @@ class Panel:
             month_days = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
         
         return month_days[dt.tm_mon-1] + dt.tm_mday
+    
+    def minute_of_day(self, dt):
+        hour = dt.tm_hour
+        minute = dt.tm_min
+        min_day = (hour*60) + minute
+        return min_day
+    
+    # function to calculate solar noon time in minutes
+    def get_solar_time(self, dt):
+        # implementation adapted from https://sciencing.com/calculate-solar-time-8612288.html
+        A = 15 * self.gmt_off
+        B = (dt.tm_yday - 81) * 360 / 365
+        C = 9.87 * sin(deg2rad(2 * B)) - 7.53 * cos(deg2rad(B)) - 1.58 * sin(deg2rad(B))
+        D = 4 * (A - self.longitude) + C
+        # return solar time offset in minutes based on 12pm
+        return D + 720
+    

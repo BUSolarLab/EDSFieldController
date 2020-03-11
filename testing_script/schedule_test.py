@@ -52,6 +52,7 @@ def check_frequency(dt):
         date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
         with open(file_name, 'r') as file:
             json_file = json.load(file)
+            #json_file will be [year, month, day, hour, min, seconds, weekday, yday, isdst]
         
         current_day = day_of_year(dt)
         activation_day = day_of_year(time.struct_time(tuple(json_file['record'])))
@@ -65,6 +66,10 @@ def check_frequency(dt):
             return True
         else:
             return False
+
+def check_time(self, dt):
+    # do something
+
 
 # run the test
 while True:
