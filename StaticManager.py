@@ -281,8 +281,7 @@ class ScheduleMaster:
         # check if json file exists
         self.check_json_file()
         # load the json file
-        file_name = "eds.json"
-        with open(file_name, 'r') as file:
+        with open('/home/pi/Desktop/eds.json', 'r') as file:
             json_file = json.load(file)
         # check for frequency confirmation
         current_day = day_of_year(dt)
