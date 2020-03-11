@@ -94,7 +94,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':[1020] #in minutes
+        'schedule':['1020'] #in minutes
     },
     'eds3':{
         'name':'EDS3',
@@ -115,7 +115,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':[1050] #in minutes
+        'schedule':['1050'] #in minutes
     },
     'eds4':{
         'name':'EDS4',
@@ -136,7 +136,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':[1030] #in minutes
+        'schedule':['1030'] #in minutes
     },
     'eds5':{
         'name':'EDS5',
@@ -157,7 +157,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':[1020] #in minutes
+        'schedule':['1020'] #in minutes
     },
     'ctrl1':{
         'name':'CTRL1',
@@ -333,7 +333,7 @@ class ScheduleMaster:
                     return False
             else:
                 # check whether current time is within 3 min of schedule time
-                if abs(schedule - current_time) < 3:
+                if abs(int(schedule) - current_time) < 3:
                     return True
                 else:
                     return False
