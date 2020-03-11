@@ -72,7 +72,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['SR'] #in minutes
+        'schedule':['SN'] #in minutes
     },
     'eds2':{
         'name':'EDS2',
