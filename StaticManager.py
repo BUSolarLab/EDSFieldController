@@ -284,8 +284,8 @@ class ScheduleMaster:
         with open('/home/pi/Desktop/eds.json', 'r') as file:
             json_file = json.load(file)
         # check for frequency confirmation
-        current_day = day_of_year(dt)
-        activation_day = day_of_year(time.struct_time(tuple(json_file['record_dt'])))
+        current_day = self.day_of_year(dt)
+        activation_day = self.day_of_year(time.struct_time(tuple(json_file['record_dt'])))
         #already met desired frequency for activation
         if current_day - activation_day == self.frequency:
             json_file.update({
