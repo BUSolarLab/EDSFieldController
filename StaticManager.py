@@ -269,6 +269,8 @@ class ScheduleMaster:
             }
             with open('/home/pi/Desktop/eds.json', 'w+') as file:
                 json.dump(eds, file)
+            
+            return True
     
     def activation_record(self, dt):
         eds = {
@@ -279,8 +281,19 @@ class ScheduleMaster:
             json.dump(eds, file)
     
     def check_frequency(self, dt):
-        # check if json file exists
-        self.check_json_file()
+        # check if json file exists, if it doesnt, then return True to run sequence
+        if self.check_json_file():
+            # load the json file
+            with open('/home/pi/Desktop/eds.json', 'r') as file:
+                json_file = json.load(file)
+            
+            json_file.update({
+                'is_activated':True,
+                'record_dt':dt,
+            })
+            with open('/home/pi/Desktop/eds.json', 'w') as file:
+                json.dump(json_file, file)
+            return True
         # load the json file
         with open('/home/pi/Desktop/eds.json', 'r') as file:
             json_file = json.load(file)
