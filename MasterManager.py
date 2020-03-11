@@ -222,7 +222,7 @@ while True:
                 eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
                 schedule_pass = eds_panel.check_time(rtc.datetime)
                 # check for frequency check
-                frequency_pass = eds_panel.check_frequency(rtc.datetime)
+                frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
                 '''PASS ALL CHECKS'''
                 if schedule_pass and frequency_pass:
                     # mount the usb for data collection
@@ -358,7 +358,7 @@ while True:
                     GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
                     GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
                     # time to swap USB if desired
-                    print("Finished measuring panel "+ eds +". Resuming loop in 10 sec")
+                    #print("Finished measuring panel "+ eds +". Resuming loop in 10 sec")
                     time.sleep(10)
                 else:
                     print("Did not pass schedule and frequency checks. Sleeping for 1 minute")
