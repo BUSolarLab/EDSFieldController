@@ -94,7 +94,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['1070'] #in minutes
+        'schedule':['1082'] #in minutes
     },
     'eds3':{
         'name':'EDS3',
@@ -115,7 +115,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['1080'] #in minutes
+        'schedule':['1082'] #in minutes
     },
     'eds4':{
         'name':'EDS4',
@@ -136,7 +136,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['1090'] #in minutes
+        'schedule':['1081'] #in minutes
     },
     'eds5':{
         'name':'EDS5',
@@ -157,7 +157,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['1075'] #in minutes
+        'schedule':['1085'] #in minutes
     },
     'ctrl1':{
         'name':'CTRL1',
@@ -297,29 +297,30 @@ class ScheduleMaster:
                 json.dump(json_file, new_file)
             print(json_file)
             return True
-        # load the json file
-        with open('/home/pi/Desktop/eds.json', 'r') as file:
-            json_file = json.load(file)
-        # check for frequency confirmation
-        current_day = self.day_of_year(dt)
-        activation_day = self.day_of_year(time.struct_time(tuple(json_file['record_dt'])))
-        #already met desired frequency for activation
-        if current_day - activation_day == self.frequency:
-            json_file.update({
-                'is_activated':True,
-                'record_dt':dt,
-            })
-            with open('/home/pi/Desktop/eds.json', 'w') as file:
-                json.dump(json_file, file)
-            return True
         else:
-            json_file.update({
-                'is_activated':False,
-                'record_dt':dt,
-            })
-            with open('/home/pi/Desktop/eds.json', 'w') as file:
-                json.dump(json_file, file)
-            return False
+            # load the json file
+            with open('/home/pi/Desktop/eds.json', 'r') as file:
+                json_file = json.load(file)
+            # check for frequency confirmation
+            current_day = self.day_of_year(dt)
+            activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
+            #already met desired frequency for activation
+            if current_day - activation_day == self.frequency:
+                json_file.update({
+                    'is_activated':True,
+                    'record_dt':dt,
+                })
+                with open('/home/pi/Desktop/eds.json', 'w') as file:
+                    json.dump(json_file, file)
+                return True
+            else:
+                json_file.update({
+                    'is_activated':False,
+                    'record_dt':dt,
+                })
+                with open('/home/pi/Desktop/eds.json', 'w') as file:
+                    json.dump(json_file, file)
+                return False
 
     def check_time(self, dt):
         # current time in minutes
