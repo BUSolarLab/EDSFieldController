@@ -149,7 +149,7 @@ while True:
         '''
         try:
             current_time = rtc.datetime
-            #solar_offset = ceil(DM.get_solar_time(gmt_offset, current_time, longitude, latitude) * 100)/100
+            solar_offset = ceil(DM.get_solar_time(gmt_offset, current_time, longitude, latitude) * 100)/100
             
             # remove error if corrected
             if "Sensor-RTC-1" in error_list:
