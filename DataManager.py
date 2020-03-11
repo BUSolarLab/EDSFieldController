@@ -380,7 +380,7 @@ The following function calculates precise solar noon time dependent on given tim
 This will allow testing schedules to coordinate around local solar noon.
 '''
    
-def get_solar_time(gmt_off, dt):
+def get_solar_time(gmt_off, longitude, dt):
     # implementation adapted from https://sciencing.com/calculate-solar-time-8612288.html
     A = 15 * gmt_off
     B = (dt.tm_yday - 81) * 360 / 365
