@@ -293,6 +293,7 @@ class ScheduleMaster:
             })
             with open('/home/pi/Desktop/eds.json', 'w') as file:
                 json.dump(json_file, file)
+            print("HERE")
             return True
         # load the json file
         with open('/home/pi/Desktop/eds.json', 'r') as file:
