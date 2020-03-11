@@ -158,7 +158,7 @@ PANEL_DATA = {
         'sr_post':0,
         'frequency':1,
         'schedule':['1045'] #in minutes
-    }
+    },
     'ctrl1':{
         'name':'CTRL1',
         'num':1,
