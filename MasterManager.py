@@ -211,16 +211,6 @@ while True:
         if weather_pass:
             # Initialize pre and post data dictionaries
             data = panel_data
-            # mount the usb for data collection
-            if usb_master.check_usb() == True:
-                # mounts the usb
-                usb_master.setup_usb_mount()
-            else:
-                print_l(rtc.datetime, "No USB Detected!")
-                usb_master.reset()
-            # turn green and red LED on to show automatic testing is operating
-            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
-            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
             # Pre EDS Activation Panel Measurements
             for eds in eds_ids:
                 '''EDS PANEL MEASUREMENT'''
@@ -233,7 +223,18 @@ while True:
                 schedule_pass = eds_panel.check_time(rtc.datetime)
                 # check for frequency check
                 frequency_pass = eds_panel.check_frequency(rtc.datetime)
+                '''PASS ALL CHECKS'''
                 if schedule_pass and frequency_pass:
+                    # mount the usb for data collection
+                    if usb_master.check_usb() == True:
+                        # mounts the usb
+                        usb_master.setup_usb_mount()
+                    else:
+                        print_l(rtc.datetime, "No USB Detected!")
+                        usb_master.reset()
+                    # turn green and red LED on to show automatic testing is operating
+                    GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
+                    GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
                     # start the measurement process
                     print_l(rtc.datetime, "Weather, schedule, and frequency checks passed. Initiating testing procedure for " + eds + " panel")
                     # check the eds_number
@@ -350,7 +351,9 @@ while True:
                         print_l(rtc.datetime, "Writing Results To CSV and TXT Files")
                         # delay before changing to next EDS panel
                         time.sleep(10)
-
+                else:
+                    print("Did not pass schedule and frequency checks. Sleeping for 1 minute")
+                    #time.sleep(60)
             # un-mount the usb drive
             usb_master.reset_usb_mounts()
             # turn of RED LED, indicating USB can be swapped
