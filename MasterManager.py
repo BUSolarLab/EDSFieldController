@@ -185,10 +185,10 @@ while True:
 
         # check temp and humidity until they fall within parameter range or max window reached
         window = 0
-        w_read = weather.read_humidity_temperature()
-        temp_pass = test_master.check_temp(w_read[1])
-        humid_pass = test_master.check_humid(w_read[0])
-        weather_pass = temp_pass and humid_pass
+        #w_read = weather.read_humidity_temperature()
+        #temp_pass = test_master.check_temp(w_read[1])
+        #humid_pass = test_master.check_humid(w_read[0])
+        #weather_pass = temp_pass and humid_pass
         
         while window < test_master.get_param('testWindowSeconds') and not weather_pass:
             # increment window by 1 sec
