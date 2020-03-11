@@ -23,7 +23,6 @@ from math import floor, ceil
 # read config, get constants, etc
 print("Initializing...")
 static_master = SM.StaticMaster()
-schedule_master = SM.ScheduleMaster()
 test_master = TM.TestingMaster(static_master.get_config())
 usb_master = DM.USBMaster()
 print(usb_master.get_USB_path())
@@ -229,7 +228,7 @@ while True:
                 # check for the schedule
                 freq = data[panel]['frequency']
                 sched = data[panel]['schedule']
-                eds_panel = schedule_master(eds, freq, sched, longitude, gmt_offset)
+                eds_panel = SM.ScheduleMaster()(eds, freq, sched, longitude, gmt_offset)
                 schedule_pass = eds_panel.check_time(rtc.datetime)
                 # check for frequency check
                 frequency_pass = eds_panel.check_frequency(rtc.datetime)
