@@ -351,17 +351,19 @@ while True:
                         print_l(rtc.datetime, "Writing Results To CSV and TXT Files")
                         # delay before changing to next EDS panel
                         time.sleep(10)
+                    
+                    # un-mount the usb drive
+                    usb_master.reset_usb_mounts()
+                    # turn of RED LED, indicating USB can be swapped
+                    GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
+                    GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+                    # time to swap USB if desired
+                    print("Finished measuring panel "+ eds +". Resuming loop in 10 sec")
+                    time.sleep(10)
                 else:
                     print("Did not pass schedule and frequency checks. Sleeping for 1 minute")
-                    #time.sleep(60)
-            # un-mount the usb drive
-            usb_master.reset_usb_mounts()
-            # turn of RED LED, indicating USB can be swapped
-            GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
-            GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
-            # time to swap USB if desired
             print("Finished measuring all panels. Resuming loop in 10 sec")
-            time.sleep(10)
+            #time.sleep(10)
 
 
         '''
