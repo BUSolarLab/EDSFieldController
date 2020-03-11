@@ -16,15 +16,6 @@ from numpy import deg2rad
 HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "Voc_Before(V)", "Voc_After(V)", "Isc_Before(A)", "Isc_After(A)", "Pout_Before(W)","Pout_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
 HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) Voc_Before(V) Voc_After(V) Isc_Before(A) Isc_After(A) Pout_Before(W) Pout_After(W) PR_Before PR_After SR_Before SR_After"
 
-#DATA_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "Voc_Before(V)", "Voc_After(V)", "Isc_Before(A)", "Isc_After(A)", "Pout_Before(W)","Pout_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
-#DATA_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) Voc_Before(V) Voc_After(V) Isc_Before(A) Isc_After(A) Pout_Before(W) Pout_After(W) PR_Before PR_After SR_Before SR_After"
-
-#NOON_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "Voc_Before(V)", "Voc_After(V)", "Isc_Before(A)", "Isc_After(A)", "Pout_Before(W)","Pout_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
-#NOON_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) Voc_Before(V) Voc_After(V) Isc_Before(A) Isc_After(A) Pout_Before(W) Pout_After(W) PR_Before PR_After SR_Before SR_After"
-
-#MANUAL_HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "Voc_Before(V)", "Voc_After(V)", "Isc_Before(A)", "Isc_After(A)", "Pout_Before(W)","Pout_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
-#MANUAL_HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) Voc_Before(V) Voc_After(V) Isc_Before(A) Isc_After(A) Pout_Before(W) Pout_After(W) PR_Before PR_After SR_Before SR_After"
-
 '''
 USB Master Class:
 Functionality:
@@ -44,53 +35,50 @@ class USBMaster:
 
     # reset function, basically reboots the system through command line
     def reset(self):
+        print("Rebooting in 10 seconds...")
+        time.sleep(10)
         subprocess.call("sudo reboot", shell=True)
 
     # setting the USB name by its UUID
     def set_USB_name(self):
         # check if USB mounted
-        try:
-            dir = str(subprocess.check_output("sudo blkid", shell=True))
-            if "/dev/sda1:" in dir:
-                self.USB_name = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
-                print("Found USB named: "+self.USB_name)
-            else:
-                self.reset()
-                print("USB not mounted! Please insert USB.")
-        except:
+        dir = str(subprocess.check_output("sudo blkid", shell=True))
+        if "/dev/sda1:" in dir:
+            self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
+            self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+            print("Found USB named: "+self.uuid)
+        else:
+            print("USB not mounted! Please insert USB!")
             self.reset()
-            print("ERROR: Shell process malfunction!")
-    
+
     # check if it is a new USB
     def check_new_USB(self):
-        # set label and uuid
-        dir = str(subprocess.check_output("sudo blkid", shell=True))
-        self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
-        self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
         # get the uuid and labels from usb_names.txt
         f=open("/home/pi/Desktop/usb_names.txt", "r")
         usb_names = f.read().splitlines()
         f.close()
-        # put them in a seperate list
+        # if empty list
         if not usb_names:
             print("Configurating new USB drive in FTU system!")
             f = open("/home/pi/Desktop/usb_names.txt", "a+")
             f.write(str(self.uuid)+" "+str(self.label)+"\n")
             f.close()
             self.set_USB_path()
-            self.setup_usb_mount()
             self.update_fstab_file()
+            self.reset()
+        # non empty list, already existing registered usbs
         else:
+            # check if current usb is registered
             uuid_list = []
             label_list = []
             for x in usb_names:
                 uuid_list.append(x.split()[0])
                 label_list.append(x.split()[1])
-            # cross check label and uuid with usb_names.txt
+            # current usb is registered
             if self.label in label_list:
                 print("USB Already Registered!")
                 self.set_USB_path()
-                self.setup_usb_mount()
+            # current usb is not registered
             else:
                 print("Configurating new USB drive in FTU system!")
                 f = open("/home/pi/Desktop/usb_names.txt", "a+")
@@ -98,20 +86,38 @@ class USBMaster:
                 f.close()
                 self.set_USB_path()
                 self.update_fstab_file()
+                self.reset()
 
     # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
-        if self.USB_name is not None:
+        if self.uuid is not None:
             self.USB_path = "/media/" + self.label
 
+    # mount USB
     def setup_usb_mount(self):
         print("Mounting USB")
+        # get current usb label
+        dir = str(subprocess.check_output("sudo blkid", shell=True))
+        cur_label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
+        cur_uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+        # check if it is the same usb or not
+        if self.label != cur_label:
+            # reboot to reinitialize the usb, csv, and log classes
+            print("Different USB Detected")
+            self.reset()
         # mount the usb
-        subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
+        if not os.path.exists("/media/"+str(self.label)):
+            subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
         subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
         subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
 
+    # un-mount all USBs
+    def reset_usb_mounts(self):
+        print("Un-Mounting USB")
+        subprocess.call("sudo umount /media/"+str(self.label), shell=True)
+
+    # edit fstab file to auto-mount when boot
     def update_fstab_file(self):
         print("Updating fstab file for new USB")
         # edit the stab file
@@ -120,13 +126,20 @@ class USBMaster:
         f=open("/etc/fstab", "a+")
         f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" vfat auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
 
+    # check if there is a usb or not
+    def check_usb(self):
+        # check if USB mounted
+        dir = str(subprocess.check_output("sudo blkid", shell=True))
+        if "/dev/sda1:" in dir:
+            return True
+        else:
+            return False
+    
+    # get the USB path
     def get_USB_path(self):
         # outputs USB file path
         return self.USB_path
     
-    def get_USB_UUID(self):
-        # outputs USB UUID
-        return self.uuid
 
 
 '''
@@ -148,13 +161,22 @@ class CSVMaster:
         self.csv_manual_data = self.location_path + 'manual_data.csv'
 
         # set up base csv and txt files if they don't exist
+        self.check_empty_usb()
+
+    # update the  location path if swapping usbs
+    def update_csv_path(self, cur_usb_path):
+        if self.location_path != cur_usb_path + '/':
+            self.location_path = cur_usb_path + '/'
+    
+    # set up all initial csv and txt files if they don't exist
+    def check_empty_usb(self):
         self.check_for_txt_file(self.txt_testing_data)
         self.check_for_txt_file(self.txt_noon_data)
         self.check_for_txt_file(self.txt_manual_data)
         self.check_for_csv_file(self.csv_testing_data)
         self.check_for_csv_file(self.csv_noon_data)
         self.check_for_csv_file(self.csv_manual_data)
-
+    
     # checks for existing data file, and creates it if none exist
     def check_for_txt_file(self, name):
         if not os.path.isfile(name):
@@ -332,7 +354,6 @@ class LogMaster:
         # set up base csv and txt files if they don't exist
         self.check_for_log_file(self.date_created)
         
-    
     # checks for existing log file, and creates it if none exist
     def check_for_log_file(self, dt):
         if not os.path.isfile(self.log_file):
@@ -343,7 +364,6 @@ class LogMaster:
             except:
                 print("Error creating log file! Please check.")
                 
-    
     # write phrase to log file
     def write_log(self, dt, phrase):
         try:
@@ -360,7 +380,7 @@ The following function calculates precise solar noon time dependent on given tim
 This will allow testing schedules to coordinate around local solar noon.
 '''
    
-def calc_solar_time(gmt_off, dt, longitude, latitude):
+def get_solar_time(gmt_off, dt):
     # implementation adapted from https://sciencing.com/calculate-solar-time-8612288.html
     A = 15 * gmt_off
     B = (dt.tm_yday - 81) * 360 / 365
@@ -368,4 +388,3 @@ def calc_solar_time(gmt_off, dt, longitude, latitude):
     D = 4 * (A - longitude) + C
     # return solar time offset in minutes
     return D
-
