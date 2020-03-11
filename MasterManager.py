@@ -228,7 +228,7 @@ while True:
                 # check for the schedule
                 freq = data[eds]['frequency']
                 sched = data[eds]['schedule']
-                eds_panel = SM.ScheduleMaster()(eds, freq, sched, longitude, gmt_offset)
+                eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
                 schedule_pass = eds_panel.check_time(rtc.datetime)
                 # check for frequency check
                 frequency_pass = eds_panel.check_frequency(rtc.datetime)
