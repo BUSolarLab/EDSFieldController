@@ -8,6 +8,7 @@ Started: September 2018
 from os import path
 from math import cos, sin
 from numpy import deg2rad
+import json
 
 DEFAULT_CONFIG_PARAM = {
     # EDS Panels for power supply activation
