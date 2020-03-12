@@ -94,7 +94,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['1082'] #in minutes
+        'schedule':['690'] #in minutes
     },
     'eds3':{
         'name':'EDS3',
@@ -115,7 +115,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['1082'] #in minutes
+        'schedule':['720'] #in minutes
     },
     'eds4':{
         'name':'EDS4',
@@ -136,7 +136,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['1081'] #in minutes
+        'schedule':['700'] #in minutes
     },
     'eds5':{
         'name':'EDS5',
@@ -157,7 +157,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['1085'] #in minutes
+        'schedule':['705'] #in minutes
     },
     'ctrl1':{
         'name':'CTRL1',
@@ -282,6 +282,10 @@ class ScheduleMaster:
     
     def check_frequency(self,name,dt):
         # check if json file exists, if it doesnt, then return True to run sequence
+        '''
+        TO EDIT: IF record_dt is '', then return True
+        '''
+
         if self.check_json_file():
             # load the json file
             with open('/home/pi/Desktop/eds.json', 'r') as file:
