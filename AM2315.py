@@ -100,10 +100,10 @@ class AM2315:
             c = self.verify_crc(t)
 
             if (AM2315DEBUG == True):
-            print ("AM2315temperature=",self.temperature)
-            print ("AM2315humdity=",self.humidity)
-            print ("AM2315crc=",self.crc)
-            print ("AM2315c=",c)
+                print("AM2315temperature=",self.temperature)
+                print("AM2315humdity=",self.humidity)
+                print("AM2315crc=",self.crc)
+                print("AM2315c=",c)
 
             if self.crc != c:
                 if (AM2315DEBUG == True):
