@@ -72,7 +72,7 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':1,
+        'frequency':0,
         'schedule':['SN'] #in minutes
     },
     'eds2':{
@@ -309,7 +309,7 @@ class ScheduleMaster:
             try:
                 current_day = self.day_of_year(dt)
                 activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
-                print("WORKS")
+                primt
                 #already met desired frequency for activation
                 if current_day - activation_day == self.frequency:
                     json_file.update({
@@ -332,7 +332,6 @@ class ScheduleMaster:
                         json.dump(json_file, file)
                     return False
             except TypeError:
-                print("HERE")
                 json_file.update({
                     name:{
                     'is_activated':True,
