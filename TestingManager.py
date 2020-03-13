@@ -94,24 +94,34 @@ class TestingMaster:
 
     # check weather against parameters
     def check_temp(self, t_curr):
-        t_low = self.get_param('minTemperatureCelsius')
-        t_high = self.get_param('maxTemperatureCelsius')
-        # check temperature against needed conditions
-        if ((1 - T_TOL) * t_low) <= t_curr <= (t_high * (1 + T_TOL)): # tolerance allows a bit outside range
+        # check if the sensor is working
+        if t_curr == 'N/A':
+            print("Temperature Sensor is not working, resume measurement without temperature values")
             return True
         else:
-            print("Temperature (", t_curr, " C) not within testing parameters. Will check again shortly.")
-            return False
+            t_low = self.get_param('minTemperatureCelsius')
+            t_high = self.get_param('maxTemperatureCelsius')
+            # check temperature against needed conditions
+            if ((1 - T_TOL) * t_low) <= t_curr <= (t_high * (1 + T_TOL)): # tolerance allows a bit outside range
+                return True
+            else:
+                print("Temperature (", t_curr, " C) not within testing parameters. Will check again shortly.")
+                return False
         
     def check_humid(self, h_curr):
-        h_low = self.get_param('minRelativeHumidity')
-        h_high = self.get_param('maxRelativeHumidity')
-        # check humidity against needed conditions
-        if ((1 - H_TOL) * h_low) <= h_curr <= (h_high * (1 + H_TOL)): # tolerance allows a bit outside range
+        # check if humidity sensor is working
+        if h_curr == 'N/A':
+            print("Humidity Sensor is not working, resume measurement without humidity values")
             return True
         else:
-            print("Humidity (", h_curr, " %) not within testing parameters. Will check again shortly.")
-            return False
+            h_low = self.get_param('minRelativeHumidity')
+            h_high = self.get_param('maxRelativeHumidity')
+            # check humidity against needed conditions
+            if ((1 - H_TOL) * h_low) <= h_curr <= (h_high * (1 + H_TOL)): # tolerance allows a bit outside range
+                return True
+            else:
+                print("Humidity (", h_curr, " %) not within testing parameters. Will check again shortly.")
+                return False
 
     # Activating all EDS panels during noon time
     def activate_eds(self, eds_ids):
