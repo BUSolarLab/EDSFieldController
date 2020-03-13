@@ -356,7 +356,7 @@ while True:
                     #print("Finished measuring panel "+ eds +". Resuming loop in 10 sec")
                     time.sleep(10)
                 else:
-                    print("Did not pass schedule and frequency checks)
+                    print("Did not pass schedule and frequency checks")
             #print("Finished measuring all panels. Resuming loop in 10 sec")
 
         '''
