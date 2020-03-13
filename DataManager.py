@@ -160,13 +160,12 @@ class CSVMaster:
         self.txt_manual_data = self.location_path + 'manual_data.txt'
         self.csv_manual_data = self.location_path + 'manual_data.csv'
 
+        # new schedule locations
+        self.csv_location = ''
+        self.txt_location = ''
+
         # set up base csv and txt files if they don't exist
         self.check_empty_usb()
-
-    # update the  location path if swapping usbs
-    def update_csv_path(self, cur_usb_path):
-        if self.location_path != cur_usb_path + '/':
-            self.location_path = cur_usb_path + '/'
     
     # set up all initial csv and txt files if they don't exist
     def check_empty_usb(self):
@@ -194,6 +193,9 @@ class CSVMaster:
                     writer.writerow(HEADER_CSV)
             except:
                 print("Error creating csv file! Please check.")
+    
+    # initialize folders and csv txt files for new schedule mode
+    
     
     # construct object of data to be inserted in csv/txt file
     def data_row(self, data):
@@ -331,6 +333,14 @@ class CSVMaster:
     def write_noon_data(self, data):
         self.write_txt_noon_data(data)
         self.write_csv_noon_data(data)
+
+    # write data to designated panel folder
+    def write_data(self, data):
+        # find to save the data
+        self.csv_location = self.location_path + data['name'] + '/' + data['name'] + '.csv'
+        self.txt_location = self.location_path + data['name'] + '/' + data['name'] + '.txt'
+        # write to the data
+
     
     # write to manual data files
     def write_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
