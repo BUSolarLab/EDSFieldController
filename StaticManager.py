@@ -309,7 +309,7 @@ class ScheduleMaster:
             try:
                 current_day = self.day_of_year(dt)
                 activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
-                primt
+
                 #already met desired frequency for activation
                 if current_day - activation_day == self.frequency:
                     json_file.update({
