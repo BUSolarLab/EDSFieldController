@@ -285,7 +285,7 @@ class ScheduleMaster:
         '''
         TO EDIT: IF record_dt is '', then return True
         '''
-
+        # check if no json file in the desktop directory
         if self.check_json_file():
             # load the json file
             with open('/home/pi/Desktop/eds.json', 'r') as file:
@@ -332,6 +332,7 @@ class ScheduleMaster:
                         json.dump(json_file, file)
                     return False
             except TypeError:
+                print("HERE")
                 json_file.update({
                     name:{
                     'is_activated':True,
