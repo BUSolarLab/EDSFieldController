@@ -210,7 +210,7 @@ while True:
             for eds in eds_ids:
                 '''EDS PANEL MEASUREMENT'''
                 # start the measurement process
-                print_l(rtc.datetime, "Weather check passed. Now proceeding for time check for " + eds + " panel")
+                print("Weather check passed. Now proceeding for time check for " + eds + " panel")
                 # check for the schedule
                 freq = data[eds]['frequency']
                 sched = data[eds]['schedule']
@@ -339,10 +339,10 @@ while True:
                         print_l(rtc.datetime, "PRE EDS SR for " + ctrl + ": " + str(sr_pre))
                         data[ctrl]['sr_pre'] = sr_pre
                         '''NO EDS ACTIVATION'''
-                        print_l(rtc.datetime, "Not Activating EDS for " + panel + " panel")
+                        print_l(rtc.datetime, "Not Activating EDS for " + ctrl + " panel")
                         '''NO NEED POST EDS ACTIVATION MEASUREMENT'''
                         # write data to csv file
-                        csv_master.write_testing_data(data[panel])
+                        csv_master.write_testing_data(data[ctrl])
                         print_l(rtc.datetime, "Writing Results To CSV and TXT Files")
                         # delay before changing to next EDS panel
                         time.sleep(10)
