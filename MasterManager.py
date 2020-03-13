@@ -122,7 +122,7 @@ This loop governs the overall code for the long term remote testing of the field
 4) Writes data to log files
 5) Alerts in the case of an error
 '''
-solar_offset = ceil(DM.get_solar_time(gmt_offset, rtc.datetime, longitude) * 100)/100
+solar_offset = ceil(DM.get_solar_time(gmt_offset, longitude, rtc.datetime) * 100)/100
 while True:
     
     # MASTER TRY-EXCEPT -> will still allow RED LED to blink if fatal error occurs in loop
