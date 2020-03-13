@@ -308,8 +308,8 @@ class ScheduleMaster:
             # check for frequency confirmation
             current_day = self.day_of_year(dt)
             activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
-            #already met desired frequency for activation
-            if current_day - activation_day == self.frequency:
+            # check if it is the first activation, meaning the record in json file will be blank, if yes then activate sequence
+            if activation_day == '':
                 json_file.update({
                     'is_activated':True,
                     'record_dt':dt,
@@ -318,13 +318,24 @@ class ScheduleMaster:
                     json.dump(json_file, file)
                 return True
             else:
-                json_file.update({
-                    'is_activated':False,
-                    'record_dt':dt,
-                })
-                with open('/home/pi/Desktop/eds.json', 'w') as file:
-                    json.dump(json_file, file)
-                return False
+                # check if it is within frequency, then activate sequence
+                if current_day - activation_day == self.frequency:
+                    json_file.update({
+                        'is_activated':True,
+                        'record_dt':dt,
+                    })
+                    with open('/home/pi/Desktop/eds.json', 'w') as file:
+                        json.dump(json_file, file)
+                    return True
+                # do not activate sequence
+                else:
+                    json_file.update({
+                        'is_activated':False,
+                        'record_dt':dt,
+                    })
+                    with open('/home/pi/Desktop/eds.json', 'w') as file:
+                        json.dump(json_file, file)
+                    return False
 
     def check_time(self, dt):
         # current time in minutes
