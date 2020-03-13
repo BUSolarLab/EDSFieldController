@@ -249,35 +249,43 @@ class PowerMaster:
         self.temp = -1
 
     def get_power_out(self,v_oc,i_sc,temp):
-        #Get normalized open circuit voltage
-        v_norm = self.voltage_normalized(v_oc, temp)
-        #Compute the fill factor
-        FF = self.fill_factor(v_norm)
-        #Calculate the output power
-        p_out = v_oc * i_sc * FF
-        return round(p_out,2)
+        # manage if temperature sensor is not working
+        if temp == 'N/A':
+            retirn v_oc * i_sc
+        else:
+            # get normalized open circuit voltage
+            v_norm = self.voltage_normalized(v_oc, temp)
+            # compute the fill factor
+            FF = self.fill_factor(v_norm)
+            # calculate the output power
+            p_out = v_oc * i_sc * FF
+            return round(p_out,2)
     
     def fill_factor(self,v_norm):
-        #Compute fill factor using normalized voltage
+        # Ccmpute fill factor using normalized voltage
         FF = (v_norm - math.log(v_norm+0.72))/(v_norm+1)
         return FF
 
     def voltage_normalized(self,v_oc,temp):
-        #Coulomb constant
+        # coulomb constant
         q = 1.6*10**-19
-        #Ideality factor, 1 for Si
+        # ideality factor, 1 for Si
         n = 1
-        #Boltzmann Constant
+        # boltzmann Constant
         k = 1.38*10**-23
-        #Calculate normalized temperature
+        # calculate normalized temperature
         cells = 36 #number of cells in the solar panel
         v_norm = (v_oc/cells) * (q/(n*k*temp))
         return v_norm
     
     def get_panel_temp(self,amb_temp, g_poa):
-        noct = 47 #This needs to be confirmed
-        t_pan = amb_temp + ((noct - 20)*g_poa)/800
-        return round(t_pan,2)
+        # manage if temperature sensor is not working
+        if amb_temp == 'N/A':
+            return 'N/A'
+        else:
+            noct = 47 #This needs to be confirmed
+            t_pan = amb_temp + ((noct - 20)*g_poa)/800
+            return round(t_pan,2)
 
 '''
 Performance Ratio Class:
@@ -294,9 +302,8 @@ class PerformanceRatio:
         self.gstc = 1000
 
     def get_pr(self,v_oc,i_sc,temp, power, gpoa):
-        if (gpoa == 0):
-            PR = -1
-        elif (gpoa == -1):
+        # manage is pyranometer sensor is not working
+        if (gpoa <= 0):
             PR = 0.75 #defaulted value when pyranometer not connected
         else:
             PR = power/((self.ptc*gpoa)/self.gstc)

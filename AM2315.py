@@ -85,31 +85,37 @@ class AM2315:
                 break
        
         # GET THE DATA OUT OF THE LIST WE READ
-        self.humidity = ((tmp[2] << 8) | tmp[3]) / 10.0
-        self.temperature = (((tmp[4] & 0x7F) << 8) | tmp[5]) / 10.0
-        if (tmp[4] & 0x80):
-            self.temperature = -self.temperature
+        try:
+            self.humidity = ((tmp[2] << 8) | tmp[3]) / 10.0
+            self.temperature = (((tmp[4] & 0x7F) << 8) | tmp[5]) / 10.0
 
-        self.crc = ((tmp[7] << 8) | tmp[6]) 
-        # Verify CRC here
-        # force CRC error with the next line
-        #tmp[0] = tmp[0]+1
-        t = bytearray([tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]])
-        c = self.verify_crc(t)
+            if (tmp[4] & 0x80):
+                self.temperature = -self.temperature
 
-        if (AM2315DEBUG == True):
+            self.crc = ((tmp[7] << 8) | tmp[6]) 
+            # Verify CRC here
+            # force CRC error with the next line
+            #tmp[0] = tmp[0]+1
+            t = bytearray([tmp[0], tmp[1], tmp[2], tmp[3], tmp[4], tmp[5]])
+            c = self.verify_crc(t)
+
+            if (AM2315DEBUG == True):
             print ("AM2315temperature=",self.temperature)
             print ("AM2315humdity=",self.humidity)
             print ("AM2315crc=",self.crc)
             print ("AM2315c=",c)
 
-        if self.crc != c:
-            if (AM2315DEBUG == True):
-                print ("AM2314 BAD CRC")
-            self.badcrcs = self.badcrcs + 1
-            self.crc = -1
-        else:
-            self.goodreads = self.goodreads+1
+            if self.crc != c:
+                if (AM2315DEBUG == True):
+                    print ("AM2314 BAD CRC")
+                self.badcrcs = self.badcrcs + 1
+                self.crc = -1
+            else:
+                self.goodreads = self.goodreads+1
+
+        except TypeError:
+            self.humidity = 'N/A'
+            self.temperature = 'N/A'
 
     def read_temperature(self):
         self._read_data()
