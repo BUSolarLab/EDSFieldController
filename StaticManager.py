@@ -72,7 +72,7 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':0,
+        'frequency':1,
         'schedule':['SN'] #in minutes
     },
     'eds2':{
@@ -94,7 +94,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['690'] #in minutes
+        'schedule':['660'] #in minutes
     },
     'eds3':{
         'name':'EDS3',
@@ -136,7 +136,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['700'] #in minutes
+        'schedule':['780'] #in minutes
     },
     'eds5':{
         'name':'EDS5',
@@ -156,8 +156,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':1,
-        'schedule':['705'] #in minutes
+        'frequency':2,
+        'schedule':['660'] #in minutes
     },
     'ctrl1':{
         'name':'CTRL1',
