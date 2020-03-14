@@ -181,7 +181,7 @@ while True:
         New Scheduling Measurement Process
         --------------------------------------------------------------------------
         '''
-
+        
         # check temp and humidity until they fall within parameter range or max window reached
         window = 0
         

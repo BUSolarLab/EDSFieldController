@@ -260,7 +260,7 @@ class PowerMaster:
 
     def get_power_out(self,v_oc,i_sc,temp):
         # manage if temperature sensor is not working
-        if temp == 'N/A':
+        if temp == 'Error':
             p_out = v_oc * i_sc
             return round(p_out,2)
         else:
@@ -291,8 +291,8 @@ class PowerMaster:
     
     def get_panel_temp(self,amb_temp, g_poa):
         # manage if temperature sensor is not working
-        if amb_temp == 'N/A':
-            return 'N/A'
+        if amb_temp == 'Error':
+            return 'Error'
         else:
             noct = 47 #This needs to be confirmed
             t_pan = amb_temp + ((noct - 20)*g_poa)/800
