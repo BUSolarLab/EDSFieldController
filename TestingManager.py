@@ -95,7 +95,7 @@ class TestingMaster:
     # check weather against parameters
     def check_temp(self, t_curr):
         # check if the sensor is working
-        if t_curr == 'N/A':
+        if t_curr == 'Error':
             print("Temperature Sensor is not working, resume measurement without temperature values")
             return True
         else:
@@ -110,7 +110,7 @@ class TestingMaster:
         
     def check_humid(self, h_curr):
         # check if humidity sensor is working
-        if h_curr == 'N/A':
+        if h_curr == 'Error':
             print("Humidity Sensor is not working, resume measurement without humidity values")
             return True
         else:
