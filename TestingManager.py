@@ -261,7 +261,8 @@ class PowerMaster:
     def get_power_out(self,v_oc,i_sc,temp):
         # manage if temperature sensor is not working
         if temp == 'N/A':
-            return v_oc * i_sc
+            p_out = v_oc * i_sc
+            return round(p_out,2)
         else:
             # get normalized open circuit voltage
             v_norm = self.voltage_normalized(v_oc, temp)

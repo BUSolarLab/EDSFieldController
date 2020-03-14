@@ -114,8 +114,8 @@ class AM2315:
                 self.goodreads = self.goodreads+1
 
         except TypeError:
-            self.humidity = 'N/A'
-            self.temperature = 'N/A'
+            self.humidity = 'Error'
+            self.temperature = 'Error'
 
     def read_temperature(self):
         self._read_data()
