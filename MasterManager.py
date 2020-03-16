@@ -175,6 +175,18 @@ while True:
         # code for power savings
         GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
 
+        
+        '''
+        --------------------------------------------------------------------------
+        No Functionality if its at night (6PM - 8AM), just do LED blinking
+        --------------------------------------------------------------------------
+        '''
+
+        current_dt=rtc.datetime
+        if current_dt.tm_hour >= 18 and current_dt.tm_hour < 9:
+            day = False
+        else:
+            day = True
 
         '''
         --------------------------------------------------------------------------
@@ -375,7 +387,7 @@ while True:
         '''
 
         '''
-        DELETE
+        DELETE 
         # get current solar time, solar noon time, current time in minutes
         try:
             #curr_dt = rtc.datetime

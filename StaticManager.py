@@ -93,8 +93,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':0,
-        'schedule':['895'] #in minutes
+        'frequency':1,
+        'schedule':['915'] #in minutes. 3.15PM
     },
     'eds3':{
         'name':'EDS3',
@@ -115,7 +115,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':0,
-        'schedule':['900'] #in minutes
+        'schedule':['930'] #in minutes, 3.30PM
     },
     'eds4':{
         'name':'EDS4',
@@ -136,7 +136,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':0,
-        'schedule':['983'] #in minutes
+        'schedule':['960'] #in minutes, 4:00PM
     },
     'eds5':{
         'name':'EDS5',
@@ -156,8 +156,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':2,
-        'schedule':['660'] #in minutes
+        'frequency':0,
+        'schedule':['1020'] #in minutes, 5:00PM
     },
     'ctrl1':{
         'name':'CTRL1',
@@ -177,8 +177,8 @@ PANEL_DATA = {
         'pr_post':'N/A',
         'sr_pre':0,
         'sr_post':'N/A',
-        'frequency':1,
-        'schedule':[] #in minutes
+        'frequency':'', # No Determined Frequency
+        'schedule':[] # No Determined Schedule
     },
     'ctrl2':{
         'name':'CTRL2',
@@ -198,8 +198,8 @@ PANEL_DATA = {
         'pr_post':'N/A',
         'sr_pre':0,
         'sr_post':'N/A',
-        'frequency':1,
-        'schedule':[] #in minutes
+        'frequency':'', # No Determined Frequency
+        'schedule':[] # No Determined Schedule
     }
 }
 
@@ -349,9 +349,9 @@ class ScheduleMaster:
         for schedule in self.schedule_time:
             # check if schedule is solar noon
             if schedule.lower() == 'sn':
-                # check whether current time is within 3 min of solar noon
+                # check whether current time is within 1 min of solar noon, this will be changed based on EDS activation duration
                 solar_noon_min = self.get_solar_time(dt)
-                if abs(solar_noon_min - current_time) < 3:
+                if abs(solar_noon_min - current_time) < 1:
                     return True
                 else:
                     return False
