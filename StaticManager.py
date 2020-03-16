@@ -352,6 +352,7 @@ class ScheduleMaster:
                 # check whether current time is within 2 min of solar noon, this will be changed based on EDS activation duration
                 solar_noon_min = self.get_solar_time(dt)
                 if abs(solar_noon_min - current_time) < 2:
+                    print("HERE")
                     return True
                 else:
                     return False
