@@ -302,7 +302,7 @@ class ScheduleMaster:
                 json_file.update({
                     name:{
                     'is_activated':True,
-                    'record_dt':dt,
+                    'record_dt':dt
                     }
                 })
                 with open('/home/pi/Desktop/eds.json', 'w') as file:
