@@ -93,8 +93,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':1,
-        'schedule':['660'] #in minutes
+        'frequency':0,
+        'schedule':['895'] #in minutes
     },
     'eds3':{
         'name':'EDS3',
@@ -114,8 +114,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':1,
-        'schedule':['720'] #in minutes
+        'frequency':0,
+        'schedule':['900'] #in minutes
     },
     'eds4':{
         'name':'EDS4',
@@ -135,8 +135,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':1,
-        'schedule':['780'] #in minutes
+        'frequency':0,
+        'schedule':['983'] #in minutes
     },
     'eds5':{
         'name':'EDS5',
@@ -338,7 +338,7 @@ class ScheduleMaster:
                     'record_dt':dt,
                     }
                 })
-                with open('/home/pi/Desktop/eds.json', 'w') as file:
+                with open('/home/pi/Desktop/eds.json', 'w+') as file:
                     json.dump(json_file, file)
                 return True        
 
