@@ -286,61 +286,48 @@ class ScheduleMaster:
         TO EDIT: IF record_dt is '', then return True
         '''
         # check if no json file in the desktop directory
-        if self.check_json_file():
-            # load the json file
-            with open('/home/pi/Desktop/eds.json', 'r') as file:
-                json_file = json.load(file)
-            
-            json_file.update({
-                name:{
-                'is_activated':True,
-                'record_dt':dt,
-                }
-            })
-            with open('/home/pi/Desktop/eds.json', 'w') as new_file:
-                json.dump(json_file, new_file)
-            print(json_file)
-            return True
-        else:
-            # load the json file
-            with open('/home/pi/Desktop/eds.json', 'r') as file:
-                json_file = json.load(file)
-            # check for frequency confirmation, also check if it is first activation, meaning record in json will be blank
-            try:
-                current_day = self.day_of_year(dt)
-                activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
+        self.check_json_file()
 
-                #already met desired frequency for activation
-                if current_day - activation_day == self.frequency:
-                    json_file.update({
-                        name:{
-                        'is_activated':True,
-                        'record_dt':dt,
-                        }
-                    })
-                    with open('/home/pi/Desktop/eds.json', 'w+') as file:
-                        json.dump(json_file, file)
-                    return True
-                else:
-                    json_file.update({
-                        name:{
-                        'is_activated':False,
-                        'record_dt':dt,
-                        }
-                    })
-                    with open('/home/pi/Desktop/eds.json', 'w+') as file:
-                        json.dump(json_file, file)
-                    return False
-            except TypeError:
+        # load the json file
+        with open('/home/pi/Desktop/eds.json', 'r') as file:
+            json_file = json.load(file)
+
+        # check for frequency confirmation, also check if it is first activation, meaning record in json will be blank
+        try:
+            current_day = self.day_of_year(dt)
+            activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
+
+            #already met desired frequency for activation
+            if current_day - activation_day == self.frequency:
                 json_file.update({
                     name:{
                     'is_activated':True,
                     'record_dt':dt,
                     }
                 })
-                with open('/home/pi/Desktop/eds.json', 'w+') as file:
+                with open('/home/pi/Desktop/eds.json', 'w') as file:
                     json.dump(json_file, file)
-                return True        
+                return True
+            else:
+                json_file.update({
+                    name:{
+                    'is_activated':False,
+                    'record_dt':dt,
+                    }
+                })
+                with open('/home/pi/Desktop/eds.json', 'w') as file:
+                    json.dump(json_file, file)
+                return False
+        except TypeError:
+            json_file.update({
+                name:{
+                'is_activated':True,
+                'record_dt':dt,
+                }
+            })
+            with open('/home/pi/Desktop/eds.json', 'w') as file:
+                json.dump(json_file, file)
+            return True        
 
     def check_time(self, dt):
         # current time in minutes
@@ -352,7 +339,6 @@ class ScheduleMaster:
                 # check whether current time is within 2 min of solar noon, this will be changed based on EDS activation duration
                 solar_noon_min = self.get_solar_time(dt)
                 if abs(solar_noon_min - current_time) < 2:
-                    print("HERE")
                     return True
                 else:
                     return False
