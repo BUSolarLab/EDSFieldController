@@ -318,7 +318,7 @@ class ScheduleMaster:
                         'record_dt':dt,
                         }
                     })
-                    with open('/home/pi/Desktop/eds.json', 'w') as file:
+                    with open('/home/pi/Desktop/eds.json', 'w+') as file:
                         json.dump(json_file, file)
                     return True
                 else:
@@ -328,7 +328,7 @@ class ScheduleMaster:
                         'record_dt':dt,
                         }
                     })
-                    with open('/home/pi/Desktop/eds.json', 'w') as file:
+                    with open('/home/pi/Desktop/eds.json', 'w+') as file:
                         json.dump(json_file, file)
                     return False
             except TypeError:
