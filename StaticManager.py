@@ -72,7 +72,7 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':1,
+        'frequency':0,
         'schedule':['SN'] #in minutes
     },
     'eds2':{
@@ -93,8 +93,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':0,
-        'schedule':['915'] #in minutes. 3.15PM
+        'frequency':1,
+        'schedule':['720'] #in minutes. 3.15PM
     },
     'eds3':{
         'name':'EDS3',
@@ -115,7 +115,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':0,
-        'schedule':['930'] #in minutes, 3.30PM
+        'schedule':['720'] #in minutes, 3.30PM
     },
     'eds4':{
         'name':'EDS4',
@@ -135,8 +135,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':0,
-        'schedule':['960'] #in minutes, 4:00PM
+        'frequency':1,
+        'schedule':['660'] #in minutes, 4:00PM
     },
     'eds5':{
         'name':'EDS5',
@@ -157,7 +157,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':0,
-        'schedule':['1020'] #in minutes, 5:00PM
+        'schedule':['780'] #in minutes, 5:00PM
     },
     'ctrl1':{
         'name':'CTRL1',
@@ -349,15 +349,15 @@ class ScheduleMaster:
         for schedule in self.schedule_time:
             # check if schedule is solar noon
             if schedule.lower() == 'sn':
-                # check whether current time is within 1 min of solar noon, this will be changed based on EDS activation duration
+                # check whether current time is within 2 min of solar noon, this will be changed based on EDS activation duration
                 solar_noon_min = self.get_solar_time(dt)
-                if abs(solar_noon_min - current_time) < 1:
+                if abs(solar_noon_min - current_time) < 2:
                     return True
                 else:
                     return False
             else:
-                # check whether current time is within 3 min of schedule time
-                if abs(int(schedule) - current_time) < 3:
+                # check whether current time is within 1 min of schedule time, this will be changed based on EDS activation duration
+                if abs(int(schedule) - current_time) < 1:
                     return True
                 else:
                     return False
