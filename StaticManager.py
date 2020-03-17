@@ -72,7 +72,7 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':0,
+        'frequency':1,
         'schedule':['SN'] #in minutes
     },
     'eds2':{
@@ -94,7 +94,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['720'] #in minutes. 3.15PM
+        'schedule':['720', '600'] #in minutes. 12.00PM, 10.00AM
     },
     'eds3':{
         'name':'EDS3',
@@ -114,8 +114,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':0,
-        'schedule':['720'] #in minutes, 3.30PM
+        'frequency':2,
+        'schedule':['720'] #in minutes, 12.00PM
     },
     'eds4':{
         'name':'EDS4',
@@ -136,7 +136,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['660'] #in minutes, 4:00PM
+        'schedule':['660', '780'] #in minutes, 11:00AM, 13:00PM
     },
     'eds5':{
         'name':'EDS5',
@@ -156,8 +156,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':0,
-        'schedule':['780'] #in minutes, 5:00PM
+        'frequency':2,
+        'schedule':['780', '600'] #in minutes, 1:00PM, 10:00AM
     },
     'ctrl1':{
         'name':'CTRL1',
@@ -309,16 +309,17 @@ class ScheduleMaster:
                     json.dump(json_file, file)
                 return True
             else:
+                # don't change the record_dt since did not meet frequency check
                 json_file.update({
                     name:{
                     'is_activated':False,
-                    'record_dt':dt,
                     }
                 })
                 with open('/home/pi/Desktop/eds.json', 'w') as file:
                     json.dump(json_file, file)
                 return False
         except TypeError:
+            # this is to handle the first entry, where record_dt was initialized as ''
             json_file.update({
                 name:{
                 'is_activated':True,
@@ -337,14 +338,15 @@ class ScheduleMaster:
             # check if schedule is solar noon
             if schedule.lower() == 'sn':
                 # check whether current time is within 2 min of solar noon, this will be changed based on EDS activation duration
+                # since absolute, 1 min more and less
                 solar_noon_min = self.get_solar_time(dt)
-                if abs(solar_noon_min - current_time) < 2:
+                if abs(solar_noon_min - current_time) < 1:
                     return True
                 else:
                     return False
             else:
                 # check whether current time is within 1 min of schedule time, this will be changed based on EDS activation duration
-                if abs(int(schedule) - current_time) < 1:
+                if abs(int(schedule) - current_time) < 0.5:
                     return True
                 else:
                     return False
