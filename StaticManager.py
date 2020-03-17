@@ -299,32 +299,26 @@ class ScheduleMaster:
 
             #already met desired frequency for activation
             if current_day - activation_day == self.frequency:
-                json_file.update({
-                    name:{
+                json_file[name].update({
                     'is_activated':True,
                     'record_dt':dt
-                    }
                 })
                 with open('/home/pi/Desktop/eds.json', 'w') as file:
                     json.dump(json_file, file)
                 return True
             else:
                 # don't change the record_dt since did not meet frequency check
-                json_file.update({
-                    name:{
-                    'is_activated':False,
-                    }
+                json_file[name].update({
+                    'is_activated':True
                 })
                 with open('/home/pi/Desktop/eds.json', 'w') as file:
                     json.dump(json_file, file)
                 return False
         except TypeError:
             # this is to handle the first entry, where record_dt was initialized as ''
-            json_file.update({
-                name:{
+            json_file[name].update({
                 'is_activated':True,
-                'record_dt':dt,
-                }
+                'record_dt':dt
             })
             with open('/home/pi/Desktop/eds.json', 'w') as file:
                 json.dump(json_file, file)
