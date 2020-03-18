@@ -403,122 +403,122 @@ while True:
         #print("solarnoon current time difference: "+str(abs(solar_noon_min - curr_time_min)))
         '''
 
-        # if within 60 seconds of solar noon, run measurements (20 min right now) 
-        solar_noon_min = 720 + solar_offset
-        curr_dt = rtc.datetime
-        curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
-        if abs(solar_noon_min - curr_time_min) < 20:
-            '''BEGIN SOLAR NOON MODE'''
-            print_l(rtc.datetime, "Initiating Solar Noon Mode")
-            # get weather and print values in console
-            try:
-                w_read = weather.read_humidity_temperature()
-                print("Temp: ", w_read[1], "C")
-                print("Humid: ", w_read[0], "%")
-                # remove error if corrected
-                if "Sensor-Weather-1" in error_list:
-                    error_list.remove("Sensor-Weather-1")
-            except:
-                add_error("Sensor-Weather-1")
-            # Initialize pre and post data dictionaries
-            data = panel_data
-            # mount the usb for data collection
-            if usb_master.check_usb() == True:
-                # mounts the usb
-                usb_master.setup_usb_mount()
-            else:
-                print_l(rtc.datetime, "No USB Detected!")
-                usb_master.reset()
-            # turn on red and green LEDs, indicating it is measuring time
-            GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
-            GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
-            # Pre EDS Activation Panel Measurements
-            for panel in panel_ids:
-                # check the eds_number
-                panel_num = data[panel]['num']
-                # check panel type eds/ctrl
-                panel_type = data[panel]['type']
-                # get the date and time
-                data[panel]['date_time'] = rtc.datetime
-                # measure global irradiance data from pyranometer
-                irr_master = SP420.Irradiance()
-                g_poa = irr_master.get_irradiance()
-                data[panel]['gpoa'] = g_poa
-                print_l(rtc.datetime, "Noon Mode GPOA Irradiance for " + panel + ": " + str(g_poa))
-                #get the panel temperature using ambient temperature
-                amb_temp = w_read[1]
-                pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
-                data[panel]['temp'] = pan_temp
-                # get humidity data
-                data[panel]['humid'] = w_read[0]
-                '''PRE EDS ACTIVATION MEASUREMENT'''
-                # measure PRE EDS activation ocv and scc
-                ocv_pre = 0
-                scc_pre = 0
-                if panel_type == 'eds':
-                    [ocv_pre, scc_pre] = test_master.run_measure_EDS(panel_num)
-                else:
-                    [ocv_pre, scc_pre] = test_master.run_measure_CTRL(panel_num)
-                print_l(rtc.datetime, "PRE EDS Solar Noon OCV for " + panel + ": " + str(ocv_pre))
-                print_l(rtc.datetime, "PRE EDS Solar Noon SCC for " + panel + ": " + str(scc_pre))
-                data[panel]['ocv_pre'] = ocv_pre
-                data[panel]['scc_pre'] = scc_pre
-                # compute the PRE EDS activation power measurements for each panel
-                power_pre = pow_master.get_power_out(ocv_pre,scc_pre,pan_temp)
-                print_l(rtc.datetime, "PRE EDS Solar Noon Power for " + panel + ": " + str(power_pre))
-                data[panel]['pwr_pre'] = power_pre
-                # compute the PRE EDS activation PR measurements for each panel
-                pr_pre = pr_master.get_pr(ocv_pre,scc_pre,pan_temp,power_pre,g_poa)
-                print_l(rtc.datetime, "PRE EDS Solar Noon PR for " + panel + ": " + str(pr_pre))
-                data[panel]['pr_pre'] = pr_pre
-                # compute the PRE EDS activation SR measurements for each panel
-                sr_pre = soil_master.get_sr(scc_pre, g_poa)
-                print_l(rtc.datetime, "PRE EDS Solar Noon SR for " + panel + ": " + str(sr_pre))
-                data[panel]['sr_pre'] = sr_pre
-                '''EDS ACTIVATION'''
-                # activate the EDS film if it is an eds panel
-                if panel_type == 'eds':
-                    test_master.run_test(panel_num)
-                    print_l(rtc.datetime, "Activating EDS for " + panel + " panel")
-                elif panel_type == 'ctrl':
-                    print_l(rtc.datetime, "Not Activating EDS for " + panel + " panel")
-                '''POST EDS ACTIVATION MEASUREMENT'''
-                # measure POST EDS activation ocv and scc
-                ocv_post = 0
-                scc_post = 0
-                if panel_type == 'eds':
-                    [ocv_post, scc_post] = test_master.run_measure_EDS(panel_num)
-                else:
-                    [ocv_post, scc_post] = test_master.run_measure_CTRL(panel_num)
-                print_l(rtc.datetime, "POST EDS Solar Noon OCV for " + panel + ": " + str(ocv_post))
-                print_l(rtc.datetime, "POST EDS Solar Noon SCC for " + panel + ": " + str(scc_post))
-                data[panel]['ocv_post'] = ocv_post
-                data[panel]['scc_post'] = scc_post
-                # compute the POST EDS activation power measurements for each panel
-                power_post = pow_master.get_power_out(ocv_post,scc_post,pan_temp)
-                print_l(rtc.datetime, "POST EDS Solar Noon Power for " + panel + ": " + str(power_post))
-                data[panel]['pwr_post'] = power_post
-                # compute the POST EDS activation PR measurements for each panel
-                pr_post = pr_master.get_pr(ocv_post,scc_post,pan_temp,power_post,g_poa)
-                print_l(rtc.datetime, "POST EDS Solar Noon PR for " + panel + ": " + str(pr_post))
-                data[panel]['pr_post'] = pr_post
-                # compute the POST EDS activation SR measurements for each panel
-                sr_post = soil_master.get_sr(scc_post, g_poa)
-                print_l(rtc.datetime, "POST EDS Solar Noon SR for " + panel + ": " + str(sr_post))
-                data[panel]['sr_post'] = sr_post
-                # write data to csv file
-                csv_master.write_noon_data(data[panel])
-                print_l(rtc.datetime, "Writing Noon Mode Measurements Results To CSV and TXT Files")
-                # delay before changing to next panel
-                time.sleep(10)
-            # un-mount the usb drive
-            usb_master.reset_usb_mounts()
-            # turn of RED LED, indicating USB can be swapped
-            GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
-            GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
-            # time to swap USB if desired
-            print("Finished measuring all panels. Resuming loop in 10 sec")
-            time.sleep(10)
+        # # if within 60 seconds of solar noon, run measurements (20 min right now) 
+        # solar_noon_min = 720 + solar_offset
+        # curr_dt = rtc.datetime
+        # curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
+        # if abs(solar_noon_min - curr_time_min) < 20:
+        #     '''BEGIN SOLAR NOON MODE'''
+        #     print_l(rtc.datetime, "Initiating Solar Noon Mode")
+        #     # get weather and print values in console
+        #     try:
+        #         w_read = weather.read_humidity_temperature()
+        #         print("Temp: ", w_read[1], "C")
+        #         print("Humid: ", w_read[0], "%")
+        #         # remove error if corrected
+        #         if "Sensor-Weather-1" in error_list:
+        #             error_list.remove("Sensor-Weather-1")
+        #     except:
+        #         add_error("Sensor-Weather-1")
+        #     # Initialize pre and post data dictionaries
+        #     data = panel_data
+        #     # mount the usb for data collection
+        #     if usb_master.check_usb() == True:
+        #         # mounts the usb
+        #         usb_master.setup_usb_mount()
+        #     else:
+        #         print_l(rtc.datetime, "No USB Detected!")
+        #         usb_master.reset()
+        #     # turn on red and green LEDs, indicating it is measuring time
+        #     GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+        #     GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
+        #     # Pre EDS Activation Panel Measurements
+        #     for panel in panel_ids:
+        #         # check the eds_number
+        #         panel_num = data[panel]['num']
+        #         # check panel type eds/ctrl
+        #         panel_type = data[panel]['type']
+        #         # get the date and time
+        #         data[panel]['date_time'] = rtc.datetime
+        #         # measure global irradiance data from pyranometer
+        #         irr_master = SP420.Irradiance()
+        #         g_poa = irr_master.get_irradiance()
+        #         data[panel]['gpoa'] = g_poa
+        #         print_l(rtc.datetime, "Noon Mode GPOA Irradiance for " + panel + ": " + str(g_poa))
+        #         #get the panel temperature using ambient temperature
+        #         amb_temp = w_read[1]
+        #         pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
+        #         data[panel]['temp'] = pan_temp
+        #         # get humidity data
+        #         data[panel]['humid'] = w_read[0]
+        #         '''PRE EDS ACTIVATION MEASUREMENT'''
+        #         # measure PRE EDS activation ocv and scc
+        #         ocv_pre = 0
+        #         scc_pre = 0
+        #         if panel_type == 'eds':
+        #             [ocv_pre, scc_pre] = test_master.run_measure_EDS(panel_num)
+        #         else:
+        #             [ocv_pre, scc_pre] = test_master.run_measure_CTRL(panel_num)
+        #         print_l(rtc.datetime, "PRE EDS Solar Noon OCV for " + panel + ": " + str(ocv_pre))
+        #         print_l(rtc.datetime, "PRE EDS Solar Noon SCC for " + panel + ": " + str(scc_pre))
+        #         data[panel]['ocv_pre'] = ocv_pre
+        #         data[panel]['scc_pre'] = scc_pre
+        #         # compute the PRE EDS activation power measurements for each panel
+        #         power_pre = pow_master.get_power_out(ocv_pre,scc_pre,pan_temp)
+        #         print_l(rtc.datetime, "PRE EDS Solar Noon Power for " + panel + ": " + str(power_pre))
+        #         data[panel]['pwr_pre'] = power_pre
+        #         # compute the PRE EDS activation PR measurements for each panel
+        #         pr_pre = pr_master.get_pr(ocv_pre,scc_pre,pan_temp,power_pre,g_poa)
+        #         print_l(rtc.datetime, "PRE EDS Solar Noon PR for " + panel + ": " + str(pr_pre))
+        #         data[panel]['pr_pre'] = pr_pre
+        #         # compute the PRE EDS activation SR measurements for each panel
+        #         sr_pre = soil_master.get_sr(scc_pre, g_poa)
+        #         print_l(rtc.datetime, "PRE EDS Solar Noon SR for " + panel + ": " + str(sr_pre))
+        #         data[panel]['sr_pre'] = sr_pre
+        #         '''EDS ACTIVATION'''
+        #         # activate the EDS film if it is an eds panel
+        #         if panel_type == 'eds':
+        #             test_master.run_test(panel_num)
+        #             print_l(rtc.datetime, "Activating EDS for " + panel + " panel")
+        #         elif panel_type == 'ctrl':
+        #             print_l(rtc.datetime, "Not Activating EDS for " + panel + " panel")
+        #         '''POST EDS ACTIVATION MEASUREMENT'''
+        #         # measure POST EDS activation ocv and scc
+        #         ocv_post = 0
+        #         scc_post = 0
+        #         if panel_type == 'eds':
+        #             [ocv_post, scc_post] = test_master.run_measure_EDS(panel_num)
+        #         else:
+        #             [ocv_post, scc_post] = test_master.run_measure_CTRL(panel_num)
+        #         print_l(rtc.datetime, "POST EDS Solar Noon OCV for " + panel + ": " + str(ocv_post))
+        #         print_l(rtc.datetime, "POST EDS Solar Noon SCC for " + panel + ": " + str(scc_post))
+        #         data[panel]['ocv_post'] = ocv_post
+        #         data[panel]['scc_post'] = scc_post
+        #         # compute the POST EDS activation power measurements for each panel
+        #         power_post = pow_master.get_power_out(ocv_post,scc_post,pan_temp)
+        #         print_l(rtc.datetime, "POST EDS Solar Noon Power for " + panel + ": " + str(power_post))
+        #         data[panel]['pwr_post'] = power_post
+        #         # compute the POST EDS activation PR measurements for each panel
+        #         pr_post = pr_master.get_pr(ocv_post,scc_post,pan_temp,power_post,g_poa)
+        #         print_l(rtc.datetime, "POST EDS Solar Noon PR for " + panel + ": " + str(pr_post))
+        #         data[panel]['pr_post'] = pr_post
+        #         # compute the POST EDS activation SR measurements for each panel
+        #         sr_post = soil_master.get_sr(scc_post, g_poa)
+        #         print_l(rtc.datetime, "POST EDS Solar Noon SR for " + panel + ": " + str(sr_post))
+        #         data[panel]['sr_post'] = sr_post
+        #         # write data to csv file
+        #         csv_master.write_noon_data(data[panel])
+        #         print_l(rtc.datetime, "Writing Noon Mode Measurements Results To CSV and TXT Files")
+        #         # delay before changing to next panel
+        #         time.sleep(10)
+        #     # un-mount the usb drive
+        #     usb_master.reset_usb_mounts()
+        #     # turn of RED LED, indicating USB can be swapped
+        #     GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
+        #     GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+        #     # time to swap USB if desired
+        #     print("Finished measuring all panels. Resuming loop in 10 sec")
+        #     time.sleep(10)
 
         '''
         END SOLAR NOON DATA ACQUISITION CODE
