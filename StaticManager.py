@@ -327,6 +327,8 @@ class ScheduleMaster:
     def check_time(self, dt):
         # current time in minutes
         current_time = self.minute_of_day(dt)
+        # declare time check
+        time_check = False
         # go through the scheduled times list
         for schedule in self.schedule_time:
             # check if schedule is solar noon
@@ -335,15 +337,19 @@ class ScheduleMaster:
                 # since absolute, 1 min more and less
                 solar_noon_min = self.get_solar_time(dt)
                 if abs(solar_noon_min - current_time) < 1:
-                    return True
+                    time_check = True
+                    break
                 else:
-                    return False
+                    time_check = False
             else:
                 # check whether current time is within 1 min of schedule time, this will be changed based on EDS activation duration
                 if abs(int(schedule) - current_time) < 1:
-                    return True
+                    time_check = True
+                    break
                 else:
-                    return False
+                    time_check = False
+        # return the time_check
+        return time_check
     
     def check_leap_year (self, dt):
         year = dt.tm_year
