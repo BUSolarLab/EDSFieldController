@@ -25,6 +25,8 @@ Based on those parameters, the RasPi computes the following files and saves it o
 
 ## Flow Chart/Block Diagram
 
+<img align="center" src="https://user-images.githubusercontent.com/33497234/76996930-c56bb500-6928-11ea-8f8e-161ea652110e.png">
+
 ![EDS FTU Operations](https://user-images.githubusercontent.com/33497234/76996930-c56bb500-6928-11ea-8f8e-161ea652110e.png)
 
 ## Getting Started
