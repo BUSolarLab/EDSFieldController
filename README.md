@@ -35,9 +35,6 @@ git clone https://github.com/BUSolarLab/EDSFieldController
 chmod +x eds_setup.sh
 sudo ./eds_setup
 ```
-```
-pip install -r requirements.txt
-```
 3. Setup systemctl so code will run on boot
 ```
 Explanation coming soon
