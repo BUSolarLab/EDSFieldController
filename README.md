@@ -18,7 +18,7 @@ Based on those parameters, the RasPi computes the following files and saves it o
 
 ## FTU Setup Schematic
 
-![EDS Numbering Block Diagram](https://user-images.githubusercontent.com/33497234/76996891-b553d580-6928-11ea-8ec8-de90fe6a72b1.jpg | width=300 )
+![EDS Numbering Block Diagram](https://user-images.githubusercontent.com/33497234/76996891-b553d580-6928-11ea-8ec8-de90fe6a72b1.jpg){:height="400px" width="400px"}
 ![Panel Numbering](https://user-images.githubusercontent.com/33497234/76996910-bdac1080-6928-11ea-9835-4e7ae0e19d08.jpg | width=300 )
 
 ## Flow Chart/Block Diagram
