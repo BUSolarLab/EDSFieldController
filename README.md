@@ -17,7 +17,7 @@ Based on those parameters, the RasPi computes the following files and saves it o
 - SR = Soiling Ratio [%]
 
 ## FTU Setup Schematic
-
+<img src="https://user-images.githubusercontent.com/33497234/76996891-b553d580-6928-11ea-8ec8-de90fe6a72b1.jpg" width="100" height="100">
 ![EDS Numbering Block Diagram](https://user-images.githubusercontent.com/33497234/76996891-b553d580-6928-11ea-8ec8-de90fe6a72b1.jpg?s=100)
 ![Panel Numbering](https://user-images.githubusercontent.com/33497234/76996910-bdac1080-6928-11ea-9835-4e7ae0e19d08.jpg)
 ## Flow Chart/Block Diagram
