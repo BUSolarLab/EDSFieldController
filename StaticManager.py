@@ -94,7 +94,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':0,
-        'schedule':['855', '852'] #in minutes. 12.00PM, 10.00AM
+        'schedule':['860', '852'] #in minutes. 12.00PM, 10.00AM
     },
     'eds3':{
         'name':'EDS3',
