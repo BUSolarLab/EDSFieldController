@@ -340,7 +340,7 @@ class ScheduleMaster:
                     return False
             else:
                 # check whether current time is within 1 min of schedule time, this will be changed based on EDS activation duration
-                if abs(int(schedule) - current_time) < 0.5:
+                if abs(int(schedule) - current_time) < 1:
                     return True
                 else:
                     return False
