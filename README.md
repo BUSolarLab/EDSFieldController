@@ -1,5 +1,42 @@
 # EDSFieldController
 
+## Overview
+
+To assess the effectiveness of the Field Test Unit (FTU), the setup needs to gather data from the EDS panels (panel with EDS film) and the CTRL panels (panel without EDS panels). This repository holds the main Python scripts which is run on the FTU's Raspberry Pi. In general, the FTU measures the following parameters:
+- Voc (Open Circuit Voltage)
+- Isc (Short Circuit Current)
+- Pout (Output Power)
+- 
+
+## Flow Chart/Block Diagram
+
+
+
+## Getting Started
+
+1. Clone the github repository
+```
+git clone https://github.com/BUSolarLab/EDSFieldController
+```
+2. Install Dependancies
+```
+python -m pip install --upgrade pip
+```
+```
+pip install -r requirements.txt
+```
+3. Run the desired script
+For Windows:
+```
+python eds_analysis_windows.py
+```
+For Mac:
+```
+python eds_analysis_ios.py
+```
+
+## Instructions
+
 > I will update this with more detail shortly.
 
 Please follow these steps to set up a brand new Raspberry Pi 3 B+
@@ -15,3 +52,5 @@ Please follow these steps to set up a brand new Raspberry Pi 3 B+
 *This is how the code will start automatically on boot. 'sleep 15' is there to create a window for entering the RPi desktop before the code executes.*
 
 9. RPi is now ready for automated function. The code will begin automatically on boot. From now on, if you want to enter the desktop environment on this RPi you can type 'startx' in the command line during the 15 second pause before the MasterManager.py code is run.
+
+## Notes
