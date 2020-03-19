@@ -309,7 +309,7 @@ class ScheduleMaster:
             else:
                 # don't change the record_dt since did not meet frequency check
                 json_file[name].update({
-                    'is_activated':True
+                    'is_activated':False
                 })
                 with open('/home/pi/Desktop/eds.json', 'w') as file:
                     json.dump(json_file, file)
