@@ -235,6 +235,9 @@ while True:
                     # check for frequency check
                     frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
 
+                    print(schedule_pass)
+                    print(frequency_pass)
+
                     '''PASS ALL CHECKS'''
                     if schedule_pass and frequency_pass:
                         # mount the usb for data collection
