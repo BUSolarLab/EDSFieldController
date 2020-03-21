@@ -10,6 +10,7 @@ from math import cos, sin
 from numpy import deg2rad
 import json
 import time
+import subprocess
 
 DEFAULT_CONFIG_PARAM = {
     # EDS Panels for power supply activation
@@ -272,14 +273,6 @@ class ScheduleMaster:
             
             return True
     
-    def activation_record(self, dt):
-        eds = {
-            'is_activated':True,
-            'record_dt':dt
-        }
-        with open('eds.json', 'a') as file:
-            json.dump(eds, file)
-    
     def check_frequency(self,name,dt):
         # check if json file exists, if it doesnt, then return True to run sequence
         '''
@@ -297,7 +290,10 @@ class ScheduleMaster:
             current_day = self.day_of_year(dt)
             activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
 
-            #already met desired frequency for activation
+            # delete the file
+            subprocess.call("sudo rm /home/pi/Desktop/eds.json", shell=True)
+
+            # already met desired frequency for activation
             if current_day - activation_day == self.frequency:
                 json_file[name].update({
                     'is_activated':True,
@@ -322,7 +318,7 @@ class ScheduleMaster:
             })
             with open('/home/pi/Desktop/eds.json', 'w') as file:
                 json.dump(json_file, file)
-            return True        
+            return True    
 
     def check_time(self, dt):
         # current time in minutes
