@@ -294,6 +294,7 @@ class ScheduleMaster:
             subprocess.call("sudo rm /home/pi/Desktop/eds.json", shell=True)
 
             # already met desired frequency for activation
+            print(current_day - activation_day)
             if current_day - activation_day == self.frequency:
                 json_file[name].update({
                     'is_activated':True,
