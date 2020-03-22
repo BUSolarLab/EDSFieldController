@@ -236,6 +236,8 @@ while True:
                     # check for schedule only if it meets frequency check
                     if frequency_pass:
                         schedule_pass = eds_panel.check_time(rtc.datetime)
+                    else:
+                        schedule_pass = False
                         #schedule_pass= True
 
                     '''PASS ALL CHECKS'''
