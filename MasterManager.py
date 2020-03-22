@@ -198,7 +198,6 @@ while True:
         # first check, if it is during the day
         if day:
             # Temperature Humidity Sensor Check
-            print("HERE")
             # check temp and humidity until they fall within parameter range or max window reached
             window = 0
             
@@ -547,6 +546,7 @@ while True:
         
         # TO DISABLE AUTOMATIC TESTING MODE, UNCOMMENT BELOW
         auto_pass = False
+        weather_pass = False
         '''
         --------------------------------------------------------------------------
         BEGIN AUTOMATIC TESTING ACTIVATION CODE
@@ -563,12 +563,12 @@ while True:
             3e) Write data to CSV/txt files
         '''
         # check temp and humidity until they fall within parameter range or max window reached
-        window = 0
-        w_read = weather.read_humidity_temperature()
-        temp_pass = test_master.check_temp(w_read[1])
-        humid_pass = test_master.check_humid(w_read[0])
-        weather_pass = temp_pass and humid_pass
-        
+        #window = 0
+        #w_read = weather.read_humidity_temperature()
+        #temp_pass = test_master.check_temp(w_read[1])
+        #humid_pass = test_master.check_humid(w_read[0])
+        #weather_pass = temp_pass and humid_pass
+        '''
         while window < test_master.get_param('testWindowSeconds') and not weather_pass:
             # increment window by 1 sec
             window += 1
@@ -585,6 +585,7 @@ while True:
                     error_list.remove("Sensor-Weather-2")
             except:
                 add_error("Sensor-Weather-2")
+        '''
         
         # if weather and time checks pass, do automatic testing mode measurements
         if weather_pass and auto_pass:
