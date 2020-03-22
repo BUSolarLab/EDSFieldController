@@ -280,7 +280,7 @@ class ScheduleMaster:
 
         # check if no json file in the desktop directory
         if self.check_json_file(dt):
-            return True:
+            return True
         else:
             # load the json file
             with open('/home/pi/Desktop/eds.json', 'r') as file:
