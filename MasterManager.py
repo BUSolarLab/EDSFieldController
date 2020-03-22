@@ -184,7 +184,7 @@ while True:
         '''
 
         current_dt=rtc.datetime
-        if current_dt.tm_hour >= 18 and current_dt.tm_hour < 9:
+        if current_dt.tm_hour > 18 and current_dt.tm_hour < 9:
             day = False
         else:
             day = True
