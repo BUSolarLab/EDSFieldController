@@ -216,7 +216,7 @@ while True:
                 add_error("Sensor-Weather-2")
 
         # first check, if it is during the day
-        print(da)
+        print(day)
         if day:
             # if weather and time checks pass, do automatic testing mode measurements
             if weather_pass:
