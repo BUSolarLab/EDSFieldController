@@ -184,7 +184,7 @@ while True:
         '''
 
         current_dt=rtc.datetime
-        if current_dt.tm_hour > 17 and current_dt.tm_hour < 9:
+        if current_dt.tm_hour > 17 or current_dt.tm_hour < 9:
             day = False
         else:
             day = True
@@ -216,7 +216,6 @@ while True:
                 add_error("Sensor-Weather-2")
 
         # first check, if it is during the day
-        print(day)
         if day:
             # if weather and time checks pass, do automatic testing mode measurements
             if weather_pass:
