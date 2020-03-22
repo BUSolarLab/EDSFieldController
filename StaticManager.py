@@ -95,7 +95,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':0,
-        'schedule':['1080', '1085'] #in minutes.
+        'schedule':['1100', '1110'] #in minutes.
     },
     'eds3':{
         'name':'EDS3',
@@ -116,7 +116,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':0,
-        'schedule':['1090'] #in minutes, 10.00AM
+        'schedule':['1105'] #in minutes, 10.00AM
     },
     'eds4':{
         'name':'EDS4',
@@ -270,63 +270,49 @@ class ScheduleMaster:
             }
             with open('/home/pi/Desktop/eds.json', 'w+') as file:
                 json.dump(eds, file)
-            
             return True
+
+        else:
+            return False
     
     def check_frequency(self,name,dt):
         # check if json file exists, if it doesnt, then return True to run sequence
-        '''
-        TO EDIT: IF record_dt is '', then return True
-        '''
+
         # check if no json file in the desktop directory
-        self.check_json_file(dt)
-
-        # load the json file
-        with open('/home/pi/Desktop/eds.json', 'r') as file:
-            json_file = json.load(file)
-
-        # check for frequency confirmation, also check if it is first activation, meaning record in json will be blank
-        current_day = self.day_of_year(dt)
-        activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
-
-        # delete the file, avoid permission problems
-        subprocess.call("sudo rm /home/pi/Desktop/eds.json", shell=True)
-
-        # already met desired frequency for activation
-        if current_day - activation_day == self.frequency:
-            json_file[name].update({
-                'is_activated':True,
-                'record_dt':dt
-            })
-            with open('/home/pi/Desktop/eds.json', 'w') as file:
-                json.dump(json_file, file)
-            return True
+        if self.check_json_file(dt):
+            return True:
         else:
-            # don't change the record_dt since did not meet frequency check
-            json_file[name].update({
-                'is_activated':False
-            })
-            with open('/home/pi/Desktop/eds.json', 'w') as file:
-                json.dump(json_file, file)
-            return False
-        '''
-        try: 
+            # load the json file
+            with open('/home/pi/Desktop/eds.json', 'r') as file:
+                json_file = json.load(file)
 
-        except TypeError:
-            # this is to handle the first entry, where record_dt was initialized as ''
-            json_file[name].update({
-                'is_activated':True,
-                'record_dt':dt
-            })
-            with open('/home/pi/Desktop/eds.json', 'w') as file:
-                json.dump(json_file, file)
-            return True
-        ''' 
+            # check for frequency confirmation, also check if it is first activation, meaning record in json will be blank
+            current_day = self.day_of_year(dt)
+            activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
+
+            # already met desired frequency for activation
+            if current_day - activation_day == self.frequency:
+                json_file[name].update({
+                    'is_activated':True,
+                    'record_dt':dt
+                })
+                with open('/home/pi/Desktop/eds.json', 'w') as file:
+                    json.dump(json_file, file)
+                return True
+            else:
+                # don't change the record_dt since did not meet frequency check
+                json_file[name].update({
+                    'is_activated':False
+                })
+                with open('/home/pi/Desktop/eds.json', 'w') as file:
+                    json.dump(json_file, file)
+                return False
+
 
     def check_time(self, dt):
         # current time in minutes
         current_time = self.minute_of_day(dt)
-        print(current_time)
+
         # declare time check
         time_check = False
         # go through the scheduled times list
@@ -343,7 +329,7 @@ class ScheduleMaster:
                     time_check = False
             else:
                 # check whether current time is within 1 min of schedule time, this will be changed based on EDS activation duration
-                if abs(int(schedule) - current_time) < 20:
+                if abs(int(schedule) - current_time) < 2:
                     time_check = True
                     break
                 else:
