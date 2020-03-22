@@ -161,8 +161,8 @@ class CSVMaster:
         self.csv_manual_data = self.location_path + 'manual_data.csv'
 
         # new schedule locations
-        self.csv_location = ''
-        self.txt_location = ''
+        self.csv_location = self.location_path + 'eds_data.csv'
+        self.txt_location = self.location_path + 'eds_data.txt'
 
         # set up base csv and txt files if they don't exist
         self.check_empty_usb()
@@ -333,19 +333,50 @@ class CSVMaster:
     def write_noon_data(self, data):
         self.write_txt_noon_data(data)
         self.write_csv_noon_data(data)
-
-    # write data to designated panel folder
-    def write_data(self, data):
-        # find to save the data
-        self.csv_location = self.location_path + data['name'] + '/' + data['name'] + '.csv'
-        self.txt_location = self.location_path + data['name'] + '/' + data['name'] + '.txt'
-        # write to the data
-
     
     # write to manual data files
     def write_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
         self.write_txt_manual_data(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
         self.write_csv_manual_data(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
+    
+    
+    # write data to designated panel folder
+    def write_data(self, data):
+        # write the txt file
+        self.write_txt_data(data)
+        # write the csv file
+        self.write_csv_data(data)
+    
+    # write to txt version of EDS testing data log file (two copies of data for fidelity)
+    def write_txt_data(self, data):
+        # process raw data into txt dump format with space delimiters
+        row_raw = self.data_row(data)
+        print("TXT: ", row_raw)
+        row = ""
+        for param in row_raw:
+            row += param
+            row += " "
+        row += '\n'
+        
+        try:
+            with open(self.txt_location, 'a') as f_txt:
+                f_txt.writelines(row)
+        except:
+            print("Error writing txt EDS data!")
+    
+    # write to csv version of EDS testing data log file
+    def write_csv_data(self, data):
+        row = self.data_row(data)
+        print("CSV: ", row)
+        try:
+            # attempt to open csv file in append mode (don't want to create lots of files)
+            with open(self.csv_location, mode='a') as f_csv:
+                # write data to csv file
+                writer = csv.writer(f_csv, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(row)
+        except:
+            print("Error writing csv EDS data!")
+        
             
 '''
 Log Master Class:

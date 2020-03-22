@@ -95,7 +95,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['720'] #in minutes. 12.00PM, 10.00AM
+        'schedule':['1015'] #in minutes.
     },
     'eds3':{
         'name':'EDS3',
@@ -244,28 +244,28 @@ class ScheduleMaster:
         self.longitude = longitude
         self.gmt_off = gmt_off
 
-    def check_json_file(self):
+    def check_json_file(self, dt):
         if not path.exists('/home/pi/Desktop/eds.json'):
             eds = {
                 'eds1':{
                     'is_activated':False,
-                    'record_dt': ''
+                    'record_dt': dt
                 },
                 'eds2':{
                     'is_activated':False,
-                    'record_dt': ''
+                    'record_dt': dt
                 },
                 'eds3':{
                     'is_activated':False,
-                    'record_dt': ''
+                    'record_dt': dt
                 },
                 'eds4':{
                     'is_activated':False,
-                    'record_dt': ''
+                    'record_dt': dt
                 },
                 'eds5':{
                     'is_activated':False,
-                    'record_dt': ''
+                    'record_dt': dt
                 }
             }
             with open('/home/pi/Desktop/eds.json', 'w+') as file:
@@ -279,7 +279,7 @@ class ScheduleMaster:
         TO EDIT: IF record_dt is '', then return True
         '''
         # check if no json file in the desktop directory
-        self.check_json_file()
+        self.check_json_file(dt)
 
         # load the json file
         with open('/home/pi/Desktop/eds.json', 'r') as file:
@@ -290,7 +290,7 @@ class ScheduleMaster:
             current_day = self.day_of_year(dt)
             activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
 
-            # delete the file
+            # delete the file, avoid permission problems
             subprocess.call("sudo rm /home/pi/Desktop/eds.json", shell=True)
 
             # already met desired frequency for activation
@@ -310,6 +310,7 @@ class ScheduleMaster:
                 with open('/home/pi/Desktop/eds.json', 'w') as file:
                     json.dump(json_file, file)
                 return False
+        '''
         except TypeError:
             # this is to handle the first entry, where record_dt was initialized as ''
             json_file[name].update({
@@ -318,7 +319,8 @@ class ScheduleMaster:
             })
             with open('/home/pi/Desktop/eds.json', 'w') as file:
                 json.dump(json_file, file)
-            return True    
+            return True
+        ''' 
 
     def check_time(self, dt):
         # current time in minutes

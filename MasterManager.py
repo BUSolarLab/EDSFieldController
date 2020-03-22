@@ -150,7 +150,7 @@ while True:
 
         try:
             current_time = rtc.datetime
-            solar_offset = ceil(DM.get_solar_time(gmt_offset, longitude, rtc.datetime) * 100)/100
+            #solar_offset = ceil(DM.get_solar_time(gmt_offset, longitude, rtc.datetime) * 100)/100
             
             # remove error if corrected
             if "Sensor-RTC-1" in error_list:
@@ -230,10 +230,13 @@ while True:
                     freq = data[eds]['frequency']
                     sched = data[eds]['schedule']
                     eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
-                    schedule_pass = eds_panel.check_time(rtc.datetime)
-                    #schedule_pass= True
+                    
                     # check for frequency check
                     frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
+                    # check for schedule only if it meets frequency check
+                    if frequency_pass:
+                        schedule_pass = eds_panel.check_time(rtc.datetime)
+                        #schedule_pass= True
 
                     '''PASS ALL CHECKS'''
                     if schedule_pass and frequency_pass:
