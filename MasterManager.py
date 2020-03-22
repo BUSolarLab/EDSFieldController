@@ -198,6 +198,7 @@ while True:
         # first check, if it is during the day
         if day:
             # Temperature Humidity Sensor Check
+            print("HERE")
             # check temp and humidity until they fall within parameter range or max window reached
             window = 0
             
