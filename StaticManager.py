@@ -286,31 +286,32 @@ class ScheduleMaster:
             json_file = json.load(file)
 
         # check for frequency confirmation, also check if it is first activation, meaning record in json will be blank
-        try:
-            current_day = self.day_of_year(dt)
-            activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
+        current_day = self.day_of_year(dt)
+        activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
 
-            # delete the file, avoid permission problems
-            subprocess.call("sudo rm /home/pi/Desktop/eds.json", shell=True)
+        # delete the file, avoid permission problems
+        subprocess.call("sudo rm /home/pi/Desktop/eds.json", shell=True)
 
-            # already met desired frequency for activation
-            if current_day - activation_day == self.frequency:
-                json_file[name].update({
-                    'is_activated':True,
-                    'record_dt':dt
-                })
-                with open('/home/pi/Desktop/eds.json', 'w') as file:
-                    json.dump(json_file, file)
-                return True
-            else:
-                # don't change the record_dt since did not meet frequency check
-                json_file[name].update({
-                    'is_activated':False
-                })
-                with open('/home/pi/Desktop/eds.json', 'w') as file:
-                    json.dump(json_file, file)
-                return False
+        # already met desired frequency for activation
+        if current_day - activation_day == self.frequency:
+            json_file[name].update({
+                'is_activated':True,
+                'record_dt':dt
+            })
+            with open('/home/pi/Desktop/eds.json', 'w') as file:
+                json.dump(json_file, file)
+            return True
+        else:
+            # don't change the record_dt since did not meet frequency check
+            json_file[name].update({
+                'is_activated':False
+            })
+            with open('/home/pi/Desktop/eds.json', 'w') as file:
+                json.dump(json_file, file)
+            return False
         '''
+        try: 
+            
         except TypeError:
             # this is to handle the first entry, where record_dt was initialized as ''
             json_file[name].update({
