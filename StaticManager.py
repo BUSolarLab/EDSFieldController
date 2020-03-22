@@ -94,8 +94,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':1,
-        'schedule':['1015'] #in minutes.
+        'frequency':0,
+        'schedule':['1020'] #in minutes.
     },
     'eds3':{
         'name':'EDS3',
@@ -311,7 +311,7 @@ class ScheduleMaster:
             return False
         '''
         try: 
-            
+
         except TypeError:
             # this is to handle the first entry, where record_dt was initialized as ''
             json_file[name].update({
