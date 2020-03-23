@@ -234,6 +234,8 @@ while True:
                     
                     # check for frequency check
                     frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
+                    print(eds)
+                    print(frequency_pass)
                     # check for schedule only if it meets frequency check
                     if frequency_pass:
                         schedule_pass = eds_panel.check_time(rtc.datetime)
