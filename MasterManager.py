@@ -86,6 +86,9 @@ temp_pass = False
 humid_pass = False
 weather_pass = False
 auto_pass = False
+schedule_pass = False
+frequency_pass = False
+json_reset = False
 
 # error handling initialization
 error_list = []
@@ -176,7 +179,6 @@ while True:
         # code for power savings
         GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
 
-        
         '''
         --------------------------------------------------------------------------
         No Functionality if its at night (6PM - 8AM), just do LED blinking
@@ -186,8 +188,10 @@ while True:
         current_dt=rtc.datetime
         if current_dt.tm_hour > 17 or current_dt.tm_hour < 9:
             day = False
+            json_reset = True
         else:
             day = True
+            json_reset = False
 
         '''
         --------------------------------------------------------------------------
@@ -230,18 +234,13 @@ while True:
                     # check for the schedule
                     freq = data[eds]['frequency']
                     sched = data[eds]['schedule']
+                    # declare panel class
                     eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
-                    
-                    # check for frequency check
-                    frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
-                    print(eds)
-                    print(frequency_pass)
-                    # check for schedule only if it meets frequency check
-                    if frequency_pass:
-                        schedule_pass = eds_panel.check_time(rtc.datetime)
-                    else:
-                        schedule_pass = False
-                        #schedule_pass= True
+                    # check for the schedule check
+                    schedule_pass = eds_panel.check_time(rtc.datetime)
+                    # check for frequency check only if it meets schedule check
+                    if schedule_pass:
+                        frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
 
                     '''PASS ALL CHECKS'''
                     if schedule_pass and frequency_pass:
@@ -382,7 +381,21 @@ while True:
                         time.sleep(10)
                     else:
                         print("Did not pass schedule and frequency checks")
-                #print("Finished measuring all panels. Resuming loop in 10 sec")
+        else:
+            '''Reset json File'''
+            if json_reset:
+                # load the json file
+                with open('/home/pi/Desktop/eds.json', 'r') as file:
+                    json_file = json.load(file)
+                # reset all is_activated into false
+                eds_names = ['eds1','eds2','eds3','eds4','eds5']
+                for x in eds_names:
+                    json_file[x].update({
+                        'is_activated':False
+                    })
+                # re-write the new json file
+                with open('/home/pi/Desktop/eds.json', 'w+') as file:
+                    json.dump(json_file, file)
 
         '''
         --------------------------------------------------------------------------
