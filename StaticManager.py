@@ -285,7 +285,7 @@ class ScheduleMaster:
                 json_file = json.load(file)
             # check if it has already activated today, if it has return true for other activation times today
             is_act = json_file[name]['is_activated']
-            if is_act:
+            if is_act.lower() == 'true':
                 return True
             else:
                 # check for frequency confirmation, also check if it is first activation, meaning record in json will be blank
