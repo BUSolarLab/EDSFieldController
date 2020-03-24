@@ -170,11 +170,12 @@ class CSVMaster:
     # set up all initial csv and txt files if they don't exist
     def check_empty_usb(self):
         self.check_for_txt_file(self.txt_testing_data)
-        self.check_for_txt_file(self.txt_noon_data)
         self.check_for_txt_file(self.txt_manual_data)
         self.check_for_csv_file(self.csv_testing_data)
-        self.check_for_csv_file(self.csv_noon_data)
         self.check_for_csv_file(self.csv_manual_data)
+
+        self.check_for_csv_file(self.csv_location)
+        self.check_for_csv_file(self.txt_location)
     
     # checks for existing data file, and creates it if none exist
     def check_for_txt_file(self, name):
@@ -193,9 +194,6 @@ class CSVMaster:
                     writer.writerow(HEADER_CSV)
             except:
                 print("Error creating csv file! Please check.")
-    
-    # initialize folders and csv txt files for new schedule mode
-    
     
     # construct object of data to be inserted in csv/txt file
     def data_row(self, data):
@@ -267,34 +265,6 @@ class CSVMaster:
         except:
             print("Error writing txt EDS testing data!")
     
-    # write to csv version of solar noon testing data log file
-    def write_csv_noon_data(self, data):
-        # self, dt, temp, humid, g_poa, eds_act, eds_ctrl_num, volt, cur, power, pr, sr
-        row = self.data_row(data)
-        try:
-            # attempt to open csv file in append mode (don't want to create lots of files)
-            with open(self.csv_noon_data, mode='a') as f_csv:
-                # write data to csv file
-                writer = csv.writer(f_csv, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                writer.writerow(row)
-        except:
-            print("Error writing csv solar noon testing data!")
-    
-    # write to txt version of solar noon testing data log file
-    def write_txt_noon_data(self, data):
-        # process raw data into txt dump format with space delimiters
-        row_raw = self.data_row(data)
-        row = ""
-        for param in row_raw:
-            row += param
-            row += " "
-        row += '\n'
-        
-        try:
-            with open(self.txt_noon_data, 'a') as f_txt:
-                f_txt.writelines(row)
-        except:
-            print("Error writing txt solar noon data!")
     
     # write to csv version of manual testing data log file
     def write_csv_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,sr_data):
@@ -338,8 +308,7 @@ class CSVMaster:
     def write_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
         self.write_txt_manual_data(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
         self.write_csv_manual_data(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
-    
-    
+     
     # write data to designated panel folder
     def write_data(self, data):
         # write the txt file
