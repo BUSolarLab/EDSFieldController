@@ -9,6 +9,7 @@ Started: September 2018
 # dependencies
 import RPi.GPIO as GPIO
 import subprocess
+import json
 import time
 import busio
 from board import *
