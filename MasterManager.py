@@ -198,7 +198,7 @@ while True:
         New Scheduling Measurement Process
         --------------------------------------------------------------------------
         '''
-
+        json_reset = True
         # first check, if it is during the day
         if day:
             # Temperature Humidity Sensor Check
