@@ -186,7 +186,7 @@ while True:
         '''
 
         current_dt=rtc.datetime
-        if current_dt.tm_hour > 17 or current_dt.tm_hour < 9:
+        if current_dt.tm_hour > 13 or current_dt.tm_hour < 9:
             day = False
             json_reset = True
         else:
@@ -198,7 +198,7 @@ while True:
         New Scheduling Measurement Process
         --------------------------------------------------------------------------
         '''
-        json_reset = True
+
         # first check, if it is during the day
         if day:
             # Temperature Humidity Sensor Check
