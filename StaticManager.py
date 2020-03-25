@@ -137,7 +137,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['837'] #in minutes, 11:00AM, 13:00PM
+        'schedule':['841'] #in minutes, 11:00AM, 13:00PM
     },
     'eds5':{
         'name':'EDS5',
@@ -285,7 +285,7 @@ class ScheduleMaster:
                 json_file = json.load(file)
             # check if it has already activated today, if it has return true for other activation times today
             is_act = json_file[name]['is_activated']
-            if is_act.lower() == 'true':
+            if is_act:
                 return True
             else:
                 # check for frequency confirmation, also check if it is first activation, meaning record in json will be blank
