@@ -95,7 +95,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['840'] #in minutes.
+        'schedule':['780'] #in minutes.
     },
     'eds3':{
         'name':'EDS3',
@@ -137,7 +137,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['875'] #in minutes, 11:00AM, 13:00PM
+        'schedule':['780'] #in minutes, 11:00AM, 13:00PM
     },
     'eds5':{
         'name':'EDS5',
@@ -158,7 +158,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':2,
-        'schedule':['890'] #in minutes, 1:00PM, 10:00AM
+        'schedule':['660'] #in minutes, 1:00PM, 10:00AM
     },
     'ctrl1':{
         'name':'CTRL1',
@@ -323,7 +323,7 @@ class ScheduleMaster:
                 # check whether current time is within 2 min of solar noon, this will be changed based on EDS activation duration
                 # since absolute, 1 min more and less
                 solar_noon_min = self.get_solar_time(dt)
-                if abs(solar_noon_min - current_time) < 2:
+                if abs(solar_noon_min - current_time) < 1:
                     time_check = True
                     break
                 else:
@@ -331,7 +331,7 @@ class ScheduleMaster:
             else:
                 print(abs(int(schedule) - current_time))
                 # check whether current time is within 1 min of schedule time, this will be changed based on EDS activation duration
-                if abs(int(schedule) - current_time) < 2:
+                if abs(int(schedule) - current_time) < 1:
                     time_check = True
                     break
                 else:
