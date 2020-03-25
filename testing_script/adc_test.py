@@ -6,14 +6,20 @@ from adafruit_mcp3xxx.analog_in import AnalogIn
 import RPi.GPIO as GPIO
 import time
 
-# Reset ports
-GPIO.setup(8,GPIO.IN)
-GPIO.setup(15,GPIO.IN)
+# Note: To switch the relay ports, we need to vary GPIO.IN and GPIO.OUT.
+# GPIO.IN will switch the relay off, GPIO.OUT will switch the relay on.
 
-# Set the ports, 
+# Setup the board
+GPIO.setmode(GPIO.BCM)
+
+# Reset Ports to Off. GPIO
+GPIO.setup(7,GPIO.IN)
+GPIO.setup(25,GPIO.IN)
+
+# Set the ports, this will measure PV1 
 GPIO.setup(7, GPIO.OUT)
 
-# Measure Isc
+# Measure Isc, since adc relay port is pin 25
 GPIO.setup(25, GPIO.OUT)
 time.sleep(3)
 #create the spi bus
@@ -47,6 +53,6 @@ print('Raw ADC Value: ', chan.value)
 print('ADC Voltage: ' + str(chan.voltage) + 'V')
 print('Voc Voltage: ' + str(chan.voltage*11) + 'V')
 
-#Reset port
+#Reset Ports
 GPIO.setup(7, GPIO.IN)
 GPIO.setup(25, GPIO.IN)

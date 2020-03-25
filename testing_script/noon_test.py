@@ -17,26 +17,19 @@ def get_solar_time(gmt_off, dt, longitude, latitude):
 def print_time(dt):
     return (str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year) + ' ' + str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec) + '')
 
-
-#Days per month
-Y_DAYS = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
-
 # RTC setup
 i2c_bus = busio.I2C(SCL, SDA)
 rtc = adafruit_pcf8523.PCF8523(i2c_bus)
 
-
 # get solar offset
 current_time = rtc.datetime
-longitude = -71.05
+longitude = -71.05 #change depending on location
 gmt_offset = -5
 latitude = 1
 solar_offset = ceil(get_solar_time(gmt_offset, current_time, longitude, latitude) * 100)/100
 
 # get solar noon
 curr_dt = rtc.datetime
-yday = Y_DAYS[curr_dt.tm_mon - 1] + curr_dt.tm_mday
-solar_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60 + solar_offset
 curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
 solar_noon_min = 720 + solar_offset
 

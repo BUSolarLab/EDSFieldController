@@ -38,8 +38,6 @@ class ADCMaster:
     def __init__(self):
         #GPIO pin to trigger the relay, high is OCV, low is SCC
         GPIO.setup(25, GPIO.OUT)
-        #Properties
-        self.bat_div = 10
         
     def get_ocv_PV(self):
         spi = busio.SPI(clock=board.SCK, MISO=board.MISO, MOSI=board.MOSI)

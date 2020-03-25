@@ -5,18 +5,23 @@ import adafruit_mcp3xxx.mcp3008 as MCP
 from adafruit_mcp3xxx.analog_in import AnalogIn
 import RPi.GPIO as GPIO
 import time
+
 '''Normally Open (relay LED off) is when GPIO.IN, normally closed (relay LED on) is when GPIO.OUT'''
 #This script shows the accuracy of the motherboard's circuit for voc and isc measurements
+
+# change this depending on the actual voltage and current values from the power supply
 actual_voc = 3
 actual_isc = 0.3
+
+# run measurement 5 times, make power supply connected to EDS panel 1
 for x in range(5):
 
     print("------------------------------")
     print("Trial " + str(x))
     print("------------------------------")
     # Reset ports
-    GPIO.setup(8,GPIO.IN)
-    GPIO.setup(15,GPIO.IN)
+    GPIO.setup(7,GPIO.IN)
+    GPIO.setup(25,GPIO.IN)
 
     # Set the ports, 
     GPIO.setup(7, GPIO.OUT)

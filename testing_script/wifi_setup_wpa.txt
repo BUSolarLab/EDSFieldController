@@ -1,0 +1,19 @@
+sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+
+###Copy this down####
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=US
+
+network={
+
+        ssid="BU (802.1x)"
+        scan_ssid=1
+        key_mgmt=WPA-EAP
+        group=CCMP TKIP
+        identity="add your bu id"
+        password="add your bu password"
+        phase1="peapver=0"
+        phase2="MSCHAPV2"
+}
+

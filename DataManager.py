@@ -141,7 +141,6 @@ class USBMaster:
         return self.USB_path
     
 
-
 '''
 CSV Master Class:
 Functionality:
@@ -155,8 +154,6 @@ class CSVMaster:
         self.location_path = usb_path + '/'
         self.txt_testing_data = self.location_path + 'testing_data.txt'
         self.csv_testing_data = self.location_path + 'testing_data.csv'
-        self.txt_noon_data = self.location_path + 'noon_data.txt'
-        self.csv_noon_data = self.location_path + 'noon_data.csv'
         self.txt_manual_data = self.location_path + 'manual_data.txt'
         self.csv_manual_data = self.location_path + 'manual_data.csv'
 
@@ -298,11 +295,6 @@ class CSVMaster:
     def write_testing_data(self, data):
         self.write_txt_testing_data(data)
         self.write_csv_testing_data(data)
-        
-    # write to noon data files
-    def write_noon_data(self, data):
-        self.write_txt_noon_data(data)
-        self.write_csv_noon_data(data)
     
     # write to manual data files
     def write_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
