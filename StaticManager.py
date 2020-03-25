@@ -137,7 +137,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['841'] #in minutes, 11:00AM, 13:00PM
+        'schedule':['875'] #in minutes, 11:00AM, 13:00PM
     },
     'eds5':{
         'name':'EDS5',
@@ -158,7 +158,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':2,
-        'schedule':['840'] #in minutes, 1:00PM, 10:00AM
+        'schedule':['890'] #in minutes, 1:00PM, 10:00AM
     },
     'ctrl1':{
         'name':'CTRL1',
