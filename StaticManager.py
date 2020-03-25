@@ -137,7 +137,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['835'] #in minutes, 11:00AM, 13:00PM
+        'schedule':['837'] #in minutes, 11:00AM, 13:00PM
     },
     'eds5':{
         'name':'EDS5',
@@ -329,6 +329,7 @@ class ScheduleMaster:
                 else:
                     time_check = False
             else:
+                print(abs(int(schedule) - current_time))
                 # check whether current time is within 1 min of schedule time, this will be changed based on EDS activation duration
                 if abs(int(schedule) - current_time) < 2:
                     time_check = True
@@ -336,7 +337,6 @@ class ScheduleMaster:
                 else:
                     time_check = False
         # return the time_check
-        print(abs(int(schedule) - current_time))
         return time_check
     
     def check_leap_year (self, dt):
