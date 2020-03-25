@@ -336,6 +336,7 @@ class ScheduleMaster:
                 else:
                     time_check = False
         # return the time_check
+        print(abs(int(schedule) - current_time))
         return time_check
     
     def check_leap_year (self, dt):
