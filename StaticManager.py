@@ -12,6 +12,14 @@ import json
 import time
 import subprocess
 
+EDS_SCHEDULE = {
+    'eds1': [],
+    'eds2': [],
+    'eds3': [],
+    'eds4': [],
+    'eds5': []
+}
+
 DEFAULT_CONFIG_PARAM = {
     # EDS Panels for power supply activation
     'EDS1': 4,
@@ -137,7 +145,7 @@ PANEL_DATA = {
         'sr_pre':0,
         'sr_post':0,
         'frequency':1,
-        'schedule':['780'] #in minutes, 11:00AM, 13:00PM
+        'schedule':['600'] #in minutes, 11:00AM, 13:00PM
     },
     'eds5':{
         'name':'EDS5',
