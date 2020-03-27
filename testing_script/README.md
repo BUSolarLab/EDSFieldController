@@ -64,6 +64,10 @@ _Solar Noon Test_
 
 The script is called noon_test.py. One of the functionalities of the FTU is to be able to take measurements during solar noon, which is the time during the day with the highest peak irradiance. This time varies based on the latitude of the location. This script tests whether the RasPi will do a desired action during solar noon time.
 
+_Reset EDS Json File_
+
+This script is called reset_eds_json.py. This script can be run after changing the FTU schedule. This is because to make sure there are no bugs, we need to set is_activated to all false, and set all the record_dt to the current rtc. This can be done by running this script.
+
 _Systemd_
 
 To allow scripts to run continuously when the RasPi boots, we need to create a systemd service file. There is more documentation on this. But, the file systemd_sample.txt is a sample format for the service file.

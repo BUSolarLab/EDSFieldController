@@ -13,11 +13,26 @@ import time
 import subprocess
 
 EDS_SCHEDULE = {
-    'eds1': [],
-    'eds2': [],
-    'eds3': [],
-    'eds4': [],
-    'eds5': []
+    'eds1': {
+        'schedule':['SN'],
+        'frequency':1
+    },
+    'eds2': {
+        'schedule':['780'],
+        'frequency':1
+    },
+    'eds3': {
+        'schedule':['720'],
+        'frequency':3
+    },
+    'eds4': {
+        'schedule':['600'],
+        'frequency':1
+    },
+    'eds5': {
+        'schedule':['660'],
+        'frequency':2
+    },
 }
 
 DEFAULT_CONFIG_PARAM = {
@@ -47,16 +62,16 @@ DEFAULT_CONFIG_PARAM = {
     'minTemperatureCelsius': 10,
     'maxRelativeHumidity': 60,
     'minRelativeHumidity': 5,
-    'testDurationSeconds': 60, # 1 minute
-    'testWindowSeconds': 2700,
+    'testDurationSeconds': 90, # 1.30 minute, duration for EDS activation
+    'testWindowSeconds': 2700, # window duration for reconfiguring temperature-humidity sensor
     # indicators/switches
     'outPinLEDGreen': 5,
     'outPinLEDRed': 13,
     'inPinManualActivate': 22,
-    'manualEDSNumber': 5, #EDS 5
+    'manualEDSNumber': 5, #EDS 5, not pin number
     'ADC': 25,
     'solarChargerEDSNumber': 6,
-    # location data
+    # location data for solar noon calculation
     'degLongitude': -71.05,
     'offsetGMT': -5,
     }
@@ -81,8 +96,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':1,
-        'schedule':['SN'] #in minutes
+        'frequency':EDS_SCHEDULE['eds1']['frequency'],
+        'schedule':EDS_SCHEDULE['eds1']['schedule']
     },
     'eds2':{
         'name':'EDS2',
@@ -102,8 +117,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':1,
-        'schedule':['780'] #in minutes.
+        'frequency':EDS_SCHEDULE['eds2']['frequency'],
+        'schedule':EDS_SCHEDULE['eds2']['schedule']
     },
     'eds3':{
         'name':'EDS3',
@@ -123,8 +138,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':3,
-        'schedule':['720'] #in minutes, 10.00AM
+        'frequency':EDS_SCHEDULE['eds3']['frequency'],
+        'schedule':EDS_SCHEDULE['eds3']['schedule']
     },
     'eds4':{
         'name':'EDS4',
@@ -144,8 +159,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':1,
-        'schedule':['600'] #in minutes, 11:00AM, 13:00PM
+        'frequency':EDS_SCHEDULE['eds4']['frequency'],
+        'schedule':EDS_SCHEDULE['eds4']['schedule']
     },
     'eds5':{
         'name':'EDS5',
@@ -165,8 +180,8 @@ PANEL_DATA = {
         'pr_post':0,
         'sr_pre':0,
         'sr_post':0,
-        'frequency':2,
-        'schedule':['660'] #in minutes, 1:00PM, 10:00AM
+        'frequency':EDS_SCHEDULE['eds5']['frequency'],
+        'schedule':EDS_SCHEDULE['eds5']['schedule']
     },
     'ctrl1':{
         'name':'CTRL1',
@@ -337,7 +352,6 @@ class ScheduleMaster:
                 else:
                     time_check = False
             else:
-                print(abs(int(schedule) - current_time))
                 # check whether current time is within 1 min of schedule time, this will be changed based on EDS activation duration
                 if abs(int(schedule) - current_time) < 1:
                     time_check = True
