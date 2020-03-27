@@ -63,7 +63,6 @@ DEFAULT_CONFIG_PARAM = {
     'maxRelativeHumidity': 60,
     'minRelativeHumidity': 5,
     'testDurationSeconds': 90, # 1.30 minute, duration for EDS activation
-    'testWindowSeconds': 2700, # window duration for reconfiguring temperature-humidity sensor
     # indicators/switches
     'outPinLEDGreen': 5,
     'outPinLEDRed': 13,

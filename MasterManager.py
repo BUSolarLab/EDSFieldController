@@ -33,7 +33,7 @@ weather = AM2315.AM2315()
 i2c_bus = busio.I2C(SCL, SDA)
 rtc = adafruit_pcf8523.PCF8523(i2c_bus)
 
-# creating initial files to usb
+# creating initial csv and txt files to usb
 print("Setting up initial CSV and TXT files in USB if not exist yet")
 usb_master.setup_usb_mount()
 csv_master = DM.CSVMaster(usb_master.get_USB_path())
@@ -57,7 +57,7 @@ gmt_offset = test_master.get_param('offsetGMT')
 longitude = test_master.get_param('degLongitude')
 latitude = 1 # latitude currently unused
 
-# channel setups
+# RasPi board setup
 GPIO.setmode(GPIO.BCM)
 
 # LED port setup
@@ -99,7 +99,7 @@ error_flag = False
 def print_time(dt):
     print(str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year) + ' ' + str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec), end='')
 
-# function to print to log file
+# function to print formatted log into the log file
 def print_l(dt, phrase):
     print_time(dt)
     print(" " + phrase)
@@ -120,11 +120,12 @@ def add_error(error):
 '''
 ~~~CORE LOOP~~~
 This loop governs the overall code for the long term remote testing of the field units
-1) Checks the time of day
-2) Checks the temperature and humidity before testing
-3) Runs testing sequence
-4) Writes data to log files
-5) Alerts in the case of an error
+1) Check for weather, USB, schedule, and frequency
+2) Run Sequence (measurement, activation, and measurement) an EDS panel
+3) Save data to USB
+4) Run measurement for both CTRL panels
+5) Save data to USB
+6) Repeat steps 1-5 for all the EDS panels
 '''
 
 while True:
@@ -151,11 +152,8 @@ while True:
         Checking if RTC is working (initial check)
         --------------------------------------------------------------------------
         '''
-
         try:
             current_time = rtc.datetime
-            #solar_offset = ceil(DM.get_solar_time(gmt_offset, longitude, rtc.datetime) * 100)/100
-            
             # remove error if corrected
             if "Sensor-RTC-1" in error_list:
                 error_list.remove("Sensor-RTC-1")
@@ -164,7 +162,7 @@ while True:
         
         '''
         --------------------------------------------------------------------------
-        Green LED Blinks if loop working
+        Green LED Blinks if loop working, Red LED Off
         --------------------------------------------------------------------------
         '''
         # flip indicator GREEN LED to show proper working
@@ -179,13 +177,11 @@ while True:
         
         # code for power savings
         GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
-
         '''
         --------------------------------------------------------------------------
-        No Functionality if its at night (6PM - 8AM), just do LED blinking
+        No Functionality if its at night (4PM - 9AM) to save power, just do LED blinking
         --------------------------------------------------------------------------
         '''
-
         current_dt=rtc.datetime
         if current_dt.tm_hour > 16 or current_dt.tm_hour < 9:
             day = False
@@ -193,13 +189,11 @@ while True:
         else:
             day = True
             json_reset = False
-
         '''
         --------------------------------------------------------------------------
-        New Scheduling Measurement Process
+        Field Test Unit Schedule for Measurement and Activation
         --------------------------------------------------------------------------
         '''
-
         # first check, if it is during the day
         if day:
             # Temperature Humidity Sensor Check
@@ -207,57 +201,35 @@ while True:
             temp_pass = test_master.check_temp(w_read[1])
             humid_pass = test_master.check_humid(w_read[0])
             weather_pass = temp_pass and humid_pass
-            '''
-            # check temp and humidity until they fall within parameter range or max window reached
-            window = 0
-            while window < test_master.get_param('testWindowSeconds') and not weather_pass:
-                # increment window by 1 sec
-                window += 1
-                time.sleep(1)
-                # check temp and humidity until they fall within parameter range or max window reached
-                try:
-                    w_read = weather.read_humidity_temperature()
-                    temp_pass = test_master.check_temp(w_read[1])
-                    humid_pass = test_master.check_humid(w_read[0])
-                    weather_pass = temp_pass and humid_pass
-                    
-                    # remove error if corrected
-                    if "Sensor-Weather-2" in error_list:
-                        error_list.remove("Sensor-Weather-2")
-                except:
-                    add_error("Sensor-Weather-2")
-            '''
-            # if weather and time checks pass, do automatic testing mode measurements
+            # if weather and time checks pass, proceed to next check
             if weather_pass:
-                # Initialize pre and post data dictionaries
+                # initialize panel data
                 data = panel_data
                 # Pre EDS Activation Panel Measurements
                 for eds in eds_ids:
-                    '''EDS PANEL MEASUREMENT'''
-                    # start the measurement process
                     print("Weather check passed. Now proceeding for time check for " + eds + " panel")
-                    # check for the schedule
+                    # get data for frequency and schedule check for the current eds panel
                     freq = data[eds]['frequency']
                     sched = data[eds]['schedule']
-                    # declare panel class
+                    # declare panel class, which gives the frequency and schedule checks
                     eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
                     # check for the schedule check
                     schedule_pass = eds_panel.check_time(rtc.datetime)
-                    #schedule_pass = True
                     # check for frequency check only if it meets schedule check
                     if schedule_pass:
                         frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
-
-                    '''PASS ALL CHECKS'''
+                    # proceed to EDS measurement and activation process
                     if schedule_pass and frequency_pass:
-                        # mount the usb for data collection
+                        # mount the usb for data collection if there is a USB plugged
                         if usb_master.check_usb() == True:
                             # mounts the usb
                             usb_master.setup_usb_mount()
                         else:
+                            # if not, then reboot
                             print_l(rtc.datetime, "No USB Detected!")
                             usb_master.reset()
                         # turn green and red LED on to show automatic testing is operating
+                        # red LED on means USB should not be unplugged
                         GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
                         GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
                         # start the measurement process
@@ -277,7 +249,8 @@ while True:
                         data[eds]['temp'] = pan_temp
                         # get humidity data
                         data[eds]['humid'] = w_read[0]
-                        '''PRE EDS ACTIVATION MEASUREMENT'''
+
+                        # PRE EDS ACTIVATION MEASUREMENT
                         # measure PRE EDS activation ocv and scc
                         ocv_pre = 0
                         scc_pre = 0
@@ -298,11 +271,12 @@ while True:
                         sr_pre = soil_master.get_sr(scc_pre, g_poa)
                         print_l(rtc.datetime, "PRE EDS SR for " + eds + ": " + str(sr_pre))
                         data[eds]['sr_pre'] = sr_pre
-                        '''EDS ACTIVATION'''
-                        # activate the EDS film if it is an eds panel
+
+                        # EDS ACTIVATION
                         test_master.run_test(panel_num)
                         print_l(rtc.datetime, "Activating EDS for " + eds + " panel")
-                        '''POST EDS ACTIVATION MEASUREMENT'''
+
+                        # POST EDS ACTIVATION MEASUREMENT
                         # measure POST EDS activation ocv and scc
                         ocv_post = 0
                         scc_post = 0
@@ -323,13 +297,16 @@ while True:
                         sr_post = soil_master.get_sr(scc_post, g_poa)
                         print_l(rtc.datetime, "POST EDS SR for " + eds + ": " + str(sr_post))
                         data[eds]['sr_post'] = sr_post
+
+                        # WRITE DATA TO USB
                         # write data to csv file
-                        csv_master.write_testing_data(data[eds])
+                        #csv_master.write_testing_data(data[eds])
                         csv_master.write_data(data[eds])
-                        print_l(rtc.datetime, "Writing Automatic Testing Mode Measurements Results To CSV and TXT Files")
-                        # delay before changing to next EDS panel
+                        print_l(rtc.datetime, "Writing Results To CSV and TXT Files")
+                        # delay before changing to control panels
                         time.sleep(10)
-                        '''CTRL PANEL MEASUREMENTS'''
+
+                        # CTRL PANEL MEASUREMENTS
                         for ctrl in ctrl_ids:
                             # start the measurement process
                             print_l(rtc.datetime, "Measuring Control Panels. Initiating testing procedure for " + ctrl + " panel")
@@ -369,11 +346,13 @@ while True:
                             sr_pre = soil_master.get_sr(scc_pre, g_poa)
                             print_l(rtc.datetime, "PRE EDS SR for " + ctrl + ": " + str(sr_pre))
                             data[ctrl]['sr_pre'] = sr_pre
-                            '''NO EDS ACTIVATION'''
+
+                            # NO EDS ACTIVATION AND POST MEASUREMENTS FOR CTRL PANELS
                             print_l(rtc.datetime, "Not Activating EDS for " + ctrl + " panel")
-                            '''NO NEED POST EDS ACTIVATION MEASUREMENT'''
+
+                            # SAVE DATA TO USB
                             # write data to csv file
-                            csv_master.write_testing_data(data[ctrl])
+                            #csv_master.write_testing_data(data[ctrl])
                             csv_master.write_data(data[ctrl])
                             print_l(rtc.datetime, "Writing Results To CSV and TXT Files")
                             # delay before changing to next EDS panel
@@ -390,7 +369,7 @@ while True:
                     else:
                         print("Did not pass schedule and frequency checks")
         else:
-            '''Reset json File'''
+            # Set Activation Flags to False in eds.json at the end of the day
             if json_reset:
                 # load the json file
                 with open('/home/pi/Desktop/eds.json', 'r') as file:
