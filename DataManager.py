@@ -375,18 +375,3 @@ class LogMaster:
                 f_log.writelines(datetime + ' - ' + phrase + '\n')
         except:
             print("Error writing to existing log file! Please check.")
-
-
-'''
-The following function calculates precise solar noon time dependent on given time zone and latitude.
-This will allow testing schedules to coordinate around local solar noon.
-'''
-   
-def get_solar_time(gmt_off, longitude, dt):
-    # implementation adapted from https://sciencing.com/calculate-solar-time-8612288.html
-    A = 15 * gmt_off
-    B = (dt.tm_yday - 81) * 360 / 365
-    C = 9.87 * sin(deg2rad(2 * B)) - 7.53 * cos(deg2rad(B)) - 1.58 * sin(deg2rad(B))
-    D = 4 * (A - longitude) + C
-    # return solar time offset in minutes
-    return D

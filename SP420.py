@@ -138,8 +138,9 @@ class Irradiance(object):
         sleep(2.0)
         print("------------------------------------------")
 
-#sample = Irradiance()
-#x = sample.get_irradiance()
-#print("Irradiance: " + str(x) + " W/m2")
-#while True:
-    #sample.read_and_print_calibration()
+if __name__ == "__main__":
+    sample = Irradiance()
+    x = sample.get_irradiance()
+    print("Irradiance: " + str(x) + " W/m2")
+    #while True:
+        #sample.read_and_print_calibration()
