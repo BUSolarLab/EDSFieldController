@@ -327,7 +327,7 @@ Functionality:
 '''
 class Soiling:
     def __init__(self):
-        #Isc clean, reference isc value
+        #Isc clean, reference isc value from the solar panel spec
         self.isc_clean = 0.68
         #irradiance for Isc cleaned, reference irradiance
         self.irr_clean = 1000

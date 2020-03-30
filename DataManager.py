@@ -151,13 +151,14 @@ Functionality:
 class CSVMaster:
     # initialize all file names to write to
     def __init__(self, usb_path):
+        # usb path
         self.location_path = usb_path + '/'
-        self.txt_testing_data = self.location_path + 'testing_data.txt'
-        self.csv_testing_data = self.location_path + 'testing_data.csv'
+        
+        # path for manual mode
         self.txt_manual_data = self.location_path + 'manual_data.txt'
         self.csv_manual_data = self.location_path + 'manual_data.csv'
 
-        # new schedule locations
+        # path for normal scheduled measurements
         self.csv_location = self.location_path + 'eds_data.csv'
         self.txt_location = self.location_path + 'eds_data.txt'
 
@@ -166,14 +167,13 @@ class CSVMaster:
     
     # set up all initial csv and txt files if they don't exist
     def check_empty_usb(self):
-        self.check_for_txt_file(self.txt_testing_data)
-        self.check_for_txt_file(self.txt_manual_data)
-        self.check_for_csv_file(self.csv_testing_data)
-        self.check_for_csv_file(self.csv_manual_data)
-
+        # for scheduled mode
         self.check_for_csv_file(self.csv_location)
         self.check_for_csv_file(self.txt_location)
-    
+        # for manual mode
+        self.check_for_txt_file(self.txt_manual_data)
+        self.check_for_csv_file(self.csv_manual_data)
+
     # checks for existing data file, and creates it if none exist
     def check_for_txt_file(self, name):
         if not os.path.isfile(name):
@@ -230,39 +230,7 @@ class CSVMaster:
             out.append(str(x))
 
         return out
-    
-    # write to csv version of EDS testing data log file
-    def write_csv_testing_data(self, data):
-        row = self.data_row(data)
-        print("CSV: ", row)
-        try:
-            # attempt to open csv file in append mode (don't want to create lots of files)
-            with open(self.csv_testing_data, mode='a') as f_csv:
-                # write data to csv file
-                writer = csv.writer(f_csv, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                writer.writerow(row)
-        except:
-            print("Error writing csv EDS testing data!")
         
-    
-    # write to txt version of EDS testing data log file (two copies of data for fidelity)
-    def write_txt_testing_data(self, data):
-        # process raw data into txt dump format with space delimiters
-        row_raw = self.data_row(data)
-        print("TXT: ", row_raw)
-        row = ""
-        for param in row_raw:
-            row += param
-            row += " "
-        row += '\n'
-        
-        try:
-            with open(self.txt_testing_data, 'a') as f_txt:
-                f_txt.writelines(row)
-        except:
-            print("Error writing txt EDS testing data!")
-    
-    
     # write to csv version of manual testing data log file
     def write_csv_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,sr_data):
         row = self.data_row_manual(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,sr_data)
@@ -290,11 +258,6 @@ class CSVMaster:
                 f_txt.writelines(row)
         except:
             print("Error writing txt manual data!")
-            
-    # write to testing data files
-    def write_testing_data(self, data):
-        self.write_txt_testing_data(data)
-        self.write_csv_testing_data(data)
     
     # write to manual data files
     def write_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):

@@ -75,7 +75,7 @@ DEFAULT_CONFIG_PARAM = {
     'offsetGMT': -5,
     }
 
-# dictionary for panel measurement
+# dictionary for panel measurement, default panel data
 PANEL_DATA = {
     'eds1':{
         'name':'EDS1',
