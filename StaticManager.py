@@ -15,11 +15,11 @@ import subprocess
 EDS_SCHEDULE = {
     'eds1': {
         'schedule':['SN'],
-        'frequency':1
+        'frequency':3
     },
     'eds2': {
         'schedule':['780'],
-        'frequency':1
+        'frequency':3
     },
     'eds3': {
         'schedule':['720'],
@@ -27,11 +27,11 @@ EDS_SCHEDULE = {
     },
     'eds4': {
         'schedule':['600'],
-        'frequency':1
+        'frequency':3
     },
     'eds5': {
         'schedule':['660'],
-        'frequency':2
+        'frequency':3
     },
 }
 
@@ -78,7 +78,7 @@ DEFAULT_CONFIG_PARAM = {
 # dictionary for panel measurement, default panel data
 PANEL_DATA = {
     'eds1':{
-        'name':'EDS1',
+        'name':'EDS-PV1',
         'num':1,
         'type':'eds',
         'date_time':'',
@@ -99,7 +99,7 @@ PANEL_DATA = {
         'schedule':EDS_SCHEDULE['eds1']['schedule']
     },
     'eds2':{
-        'name':'EDS2',
+        'name':'EDS-PV2',
         'num':2,
         'type':'eds',
         'date_time':'',
@@ -120,7 +120,7 @@ PANEL_DATA = {
         'schedule':EDS_SCHEDULE['eds2']['schedule']
     },
     'eds3':{
-        'name':'EDS3',
+        'name':'EDS-PV3',
         'num':3,
         'type':'eds',
         'date_time':'',
@@ -141,7 +141,7 @@ PANEL_DATA = {
         'schedule':EDS_SCHEDULE['eds3']['schedule']
     },
     'eds4':{
-        'name':'EDS4',
+        'name':'EDS-PV4',
         'num':4,
         'type':'eds',
         'date_time':'',
@@ -162,7 +162,7 @@ PANEL_DATA = {
         'schedule':EDS_SCHEDULE['eds4']['schedule']
     },
     'eds5':{
-        'name':'EDS5',
+        'name':'EDS-PV5',
         'num':5,
         'type':'eds',
         'date_time':'',
@@ -183,7 +183,7 @@ PANEL_DATA = {
         'schedule':EDS_SCHEDULE['eds5']['schedule']
     },
     'ctrl1':{
-        'name':'CTRL1',
+        'name':'CTRL-PV1',
         'num':1,
         'type':'ctrl',
         'date_time':'',
@@ -204,7 +204,7 @@ PANEL_DATA = {
         'schedule':[] # No Determined Schedule
     },
     'ctrl2':{
-        'name':'CTRL2',
+        'name':'CTRL-PV2',
         'num':2,
         'type':'ctrl',
         'date_time':'',

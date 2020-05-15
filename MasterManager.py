@@ -269,7 +269,7 @@ while True:
                         data[eds]['pr_pre'] = pr_pre
                         # compute the PRE EDS activation SR measurements for each panel
                         sr_pre = soil_master.get_sr(scc_pre, g_poa)
-                        print_l(rtc.datetime, "PRE EDS SR for " + eds + ": " + str(sr_pre))
+                        print_l(rtc.datetime, "PRE EDS SI for " + eds + ": " + str(sr_pre))
                         data[eds]['sr_pre'] = sr_pre
 
                         # EDS ACTIVATION
@@ -295,7 +295,7 @@ while True:
                         data[eds]['pr_post'] = pr_post
                         # compute the POST EDS activation SR measurements for each panel
                         sr_post = soil_master.get_sr(scc_post, g_poa)
-                        print_l(rtc.datetime, "POST EDS SR for " + eds + ": " + str(sr_post))
+                        print_l(rtc.datetime, "POST EDS SI for " + eds + ": " + str(sr_post))
                         data[eds]['sr_post'] = sr_post
 
                         # WRITE DATA TO USB
