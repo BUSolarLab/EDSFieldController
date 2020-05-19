@@ -62,7 +62,7 @@ DEFAULT_CONFIG_PARAM = {
     'minTemperatureCelsius': 10,
     'maxRelativeHumidity': 60,
     'minRelativeHumidity': 5,
-    'testDurationSeconds': 90, # 1.30 minute, duration for EDS activation
+    'testDurationSeconds': 120, #2 minute, duration for EDS activation
     # indicators/switches
     'outPinLEDGreen': 5,
     'outPinLEDRed': 13,
