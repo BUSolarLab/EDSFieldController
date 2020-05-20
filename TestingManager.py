@@ -333,10 +333,10 @@ class Soiling:
         self.irr_clean = 1000
 
     #Soiling Ratio Formula
-    def get_sr(self,isc_soiled, gpoa):
+    def get_si(self,isc_soiled, gpoa):
         if (gpoa == -1):
-            SR = (isc_soiled)/(self.isc_clean)
-            return round(SR,2)
+            SI = (isc_soiled)/(self.isc_clean)
+            return round(SI,2)
         else:
             SR = (isc_soiled/gpoa)/(self.isc_clean/self.irr_clean)
-            return round(SR,2)
+            return round(SI,2)

@@ -267,10 +267,10 @@ while True:
                         pr_pre = pr_master.get_pr(ocv_pre,scc_pre,pan_temp,power_pre,g_poa)
                         print_l(rtc.datetime, "PRE EDS PR for " + eds + ": " + str(pr_pre))
                         data[eds]['pr_pre'] = pr_pre
-                        # compute the PRE EDS activation SR measurements for each panel
-                        sr_pre = soil_master.get_sr(scc_pre, g_poa)
-                        print_l(rtc.datetime, "PRE EDS SI for " + eds + ": " + str(sr_pre))
-                        data[eds]['sr_pre'] = sr_pre
+                        # compute the PRE EDS activation SI measurements for each panel
+                        si_pre = soil_master.get_si(scc_pre, g_poa)
+                        print_l(rtc.datetime, "PRE EDS SI for " + eds + ": " + str(si_pre))
+                        data[eds]['si_pre'] = si_pre
 
                         # EDS ACTIVATION
                         test_master.run_test(panel_num)
@@ -293,10 +293,10 @@ while True:
                         pr_post = pr_master.get_pr(ocv_post,scc_post,pan_temp,power_post,g_poa)
                         print_l(rtc.datetime, "POST EDS PR for " + eds + ": " + str(pr_post))
                         data[eds]['pr_post'] = pr_post
-                        # compute the POST EDS activation SR measurements for each panel
-                        sr_post = soil_master.get_sr(scc_post, g_poa)
-                        print_l(rtc.datetime, "POST EDS SI for " + eds + ": " + str(sr_post))
-                        data[eds]['sr_post'] = sr_post
+                        # compute the POST EDS activation SI measurements for each panel
+                        si_post = soil_master.get_si(scc_post, g_poa)
+                        print_l(rtc.datetime, "POST EDS SI for " + eds + ": " + str(si_post))
+                        data[eds]['si_post'] = si_post
 
                         # WRITE DATA TO USB
                         # write data to csv file
@@ -341,10 +341,10 @@ while True:
                             pr_pre = pr_master.get_pr(ocv_pre,scc_pre,pan_temp,power_pre,g_poa)
                             print_l(rtc.datetime, "PRE EDS PR for " + ctrl + ": " + str(pr_pre))
                             data[ctrl]['pr_pre'] = pr_pre
-                            # compute the PRE EDS activation SR measurements for each panel
-                            sr_pre = soil_master.get_sr(scc_pre, g_poa)
-                            print_l(rtc.datetime, "PRE EDS SR for " + ctrl + ": " + str(sr_pre))
-                            data[ctrl]['sr_pre'] = sr_pre
+                            # compute the PRE EDS activation SI measurements for each panel
+                            si_pre = soil_master.get_si(scc_pre, g_poa)
+                            print_l(rtc.datetime, "PRE EDS SI for " + ctrl + ": " + str(si_pre))
+                            data[ctrl]['si_pre'] = si_pre
 
                             # NO EDS ACTIVATION AND POST MEASUREMENTS FOR CTRL PANELS
                             print_l(rtc.datetime, "Not Activating EDS for " + ctrl + " panel")
@@ -424,9 +424,9 @@ while True:
             # compute the PR before eds activation
             eds_pr_before = pr_master.get_pr(eds_ocv_before,eds_scc_before,pan_temp,eds_power_before,g_poa)
             print_l(rtc.datetime, "Pre-EDS Manual Activation PR Calculation for EDS" + str(eds_num) + ": " + str(eds_pr_before))
-            # compute the SR before eds activation
-            eds_sr_before = soil_master.get_sr(eds_scc_before, g_poa)
-            print_l(rtc.datetime, "Pre-EDS Manual Activation SR Calculation for EDS" + str(eds_num) + ": " + str(eds_sr_before))
+            # compute the SI before eds activation
+            eds_si_before = soil_master.get_si(eds_scc_before, g_poa)
+            print_l(rtc.datetime, "Pre-EDS Manual Activation SI Calculation for EDS" + str(eds_num) + ": " + str(eds_si_before))
             # activate the EDS film
             test_master.run_test(eds_num)
             # measure PV voc and isc after EDS activation
@@ -442,17 +442,17 @@ while True:
             # compute the PR measurement Post EDS                       # compute the PR before eds activation
             eds_pr_after = pr_master.get_pr(eds_ocv_after,eds_scc_after,pan_temp,eds_power_after,g_poa)
             print_l(rtc.datetime, "Post-EDS Manual Activation PR Calculation for EDS" + str(eds_num) + ": " + str(eds_pr_after))
-            # compute the SR before eds activation
-            eds_sr_after = soil_master.get_sr(eds_scc_after, g_poa)
-            print_l(rtc.datetime, "Post-EDS Manual Activation SR Calculation for EDS" + str(eds_num) + ": " + str(eds_sr_after))
+            # compute the SI before eds activation
+            eds_si_after = soil_master.get_si(eds_scc_after, g_poa)
+            print_l(rtc.datetime, "Post-EDS Manual Activation SI Calculation for EDS" + str(eds_num) + ": " + str(eds_si_after))
             # compile data
             man_power_data = [eds_power_before,eds_power_after]
             man_pr_data = [eds_pr_before,eds_pr_after]
-            man_sr_data = [eds_sr_before, eds_sr_after]
+            man_si_data = [eds_si_before, eds_si_after]
 
             # SAVE DATA TO USB
             # write data for EDS tested
-            csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, man_power_data, man_pr_data, man_sr_data)
+            csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, man_power_data, man_pr_data, man_si_data)
             print_l(rtc.datetime, "Writing Manual Testing Mode Measurements Results To CSV and TXT Files")
             # un-mount the usb drive
             usb_master.reset_usb_mounts()

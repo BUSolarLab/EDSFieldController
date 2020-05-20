@@ -13,8 +13,8 @@ from math import cos, sin
 from numpy import deg2rad
 
 # necessary constants
-HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "Voc_Before(V)", "Voc_After(V)", "Isc_Before(A)", "Isc_After(A)", "Pout_Before(W)","Pout_After(W)", "PR_Before","PR_After", "SR_Before","SR_After"]
-HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) Voc_Before(V) Voc_After(V) Isc_Before(A) Isc_After(A) Pout_Before(W) Pout_After(W) PR_Before PR_After SR_Before SR_After"
+HEADER_CSV = ["Date", "Time", "Temperature(C)", "Humidity(%)", "GPOA(W/M2)", "EDS/CTRL(#)", "Voc_Before(V)", "Voc_After(V)", "Isc_Before(A)", "Isc_After(A)", "Pout_Before(W)","Pout_After(W)", "PR_Before","PR_After", "SI_Before","SI_After"]
+HEADER_TXT = "Date Time Temperature(C) Humidity(%) GPOA(W/M2) EDS/CTRL(#) Voc_Before(V) Voc_After(V) Isc_Before(A) Isc_After(A) Pout_Before(W) Pout_After(W) PR_Before PR_After SI_Before SI_After"
 
 '''
 USB Master Class:
@@ -208,14 +208,14 @@ class CSVMaster:
         pwr_post = data['pwr_post']
         pr_pre = data['pr_pre']
         pr_post = data['pr_post']
-        sr_pre = data['sr_pre']
-        sr_post = data['sr_post']
+        si_pre = data['si_pre']
+        si_post = data['si_post']
         # create date and time 
         date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
         time = str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
-        return [date, time, str(temp), str(humid), str(g_poa),panel_name, str(ocv_pre), str(ocv_post), str(scc_pre), str(scc_post), str(pwr_pre), str(pwr_post), str(pr_pre), str(pr_post), str(sr_pre), str(sr_post)]
+        return [date, time, str(temp), str(humid), str(g_poa),panel_name, str(ocv_pre), str(ocv_post), str(scc_pre), str(scc_post), str(pwr_pre), str(pwr_post), str(pr_pre), str(pr_post), str(si_pre), str(si_post)]
 
-    def data_row_manual(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
+    def data_row_manual(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, si_data):
         date = str(dt.tm_mon) + '/' + str(dt.tm_mday) + '/' + str(dt.tm_year)
         time = str(dt.tm_hour) + ':' + str(dt.tm_min) + ':' + str(dt.tm_sec)
         out = [date, time, str(temp), str(humid), str(g_poa), str(eds_num), str(eds_ocv_before), str(eds_ocv_after), str(eds_scc_before), str(eds_scc_after)]
@@ -225,15 +225,15 @@ class CSVMaster:
         #Append PR data
         for x in pr_data:
             out.append(str(x))
-        #Append SR data
-        for x in sr_data:
+        #Append SI data
+        for x in si_data:
             out.append(str(x))
 
         return out
         
     # write to csv version of manual testing data log file
-    def write_csv_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,sr_data):
-        row = self.data_row_manual(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,sr_data)
+    def write_csv_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,si_data):
+        row = self.data_row_manual(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power,pr_data,si_data)
         try:
             # attempt to open csv file in append mode (don't want to create lots of files)
             with open(self.csv_manual_data, mode='a') as f_csv:
@@ -244,9 +244,9 @@ class CSVMaster:
             print("Error writing csv manual testing data!")
     
     # write to txt version of manual  testing data log file
-    def write_txt_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
+    def write_txt_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, si_data):
         # process raw data into txt dump format with space delimiters
-        row_raw = self.data_row_manual(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
+        row_raw = self.data_row_manual(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, si_data)
         row = ""
         for param in row_raw:
             row += param
@@ -260,9 +260,9 @@ class CSVMaster:
             print("Error writing txt manual data!")
     
     # write to manual data files
-    def write_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data):
-        self.write_txt_manual_data(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
-        self.write_csv_manual_data(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, sr_data)
+    def write_manual_data(self, dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, si_data):
+        self.write_txt_manual_data(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, si_data)
+        self.write_csv_manual_data(dt, temp, humid, g_poa, eds_num, eds_ocv_before, eds_ocv_after, eds_scc_before, eds_scc_after, eds_power, pr_data, si_data)
      
     # write data to designated panel folder
     def write_data(self, data):

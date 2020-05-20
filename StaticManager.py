@@ -93,8 +93,8 @@ PANEL_DATA = {
         'pwr_post':0,
         'pr_pre':0,
         'pr_post':0,
-        'sr_pre':0,
-        'sr_post':0,
+        'si_pre':0,
+        'si_post':0,
         'frequency':EDS_SCHEDULE['eds1']['frequency'],
         'schedule':EDS_SCHEDULE['eds1']['schedule']
     },
@@ -114,8 +114,8 @@ PANEL_DATA = {
         'pwr_post':0,
         'pr_pre':0,
         'pr_post':0,
-        'sr_pre':0,
-        'sr_post':0,
+        'si_pre':0,
+        'si_post':0,
         'frequency':EDS_SCHEDULE['eds2']['frequency'],
         'schedule':EDS_SCHEDULE['eds2']['schedule']
     },
@@ -135,8 +135,8 @@ PANEL_DATA = {
         'pwr_post':0,
         'pr_pre':0,
         'pr_post':0,
-        'sr_pre':0,
-        'sr_post':0,
+        'si_pre':0,
+        'si_post':0,
         'frequency':EDS_SCHEDULE['eds3']['frequency'],
         'schedule':EDS_SCHEDULE['eds3']['schedule']
     },
@@ -156,8 +156,8 @@ PANEL_DATA = {
         'pwr_post':0,
         'pr_pre':0,
         'pr_post':0,
-        'sr_pre':0,
-        'sr_post':0,
+        'si_pre':0,
+        'si_post':0,
         'frequency':EDS_SCHEDULE['eds4']['frequency'],
         'schedule':EDS_SCHEDULE['eds4']['schedule']
     },
@@ -177,8 +177,8 @@ PANEL_DATA = {
         'pwr_post':0,
         'pr_pre':0,
         'pr_post':0,
-        'sr_pre':0,
-        'sr_post':0,
+        'si_pre':0,
+        'si_post':0,
         'frequency':EDS_SCHEDULE['eds5']['frequency'],
         'schedule':EDS_SCHEDULE['eds5']['schedule']
     },
@@ -198,8 +198,8 @@ PANEL_DATA = {
         'pwr_post':'N/A',
         'pr_pre':0,
         'pr_post':'N/A',
-        'sr_pre':0,
-        'sr_post':'N/A',
+        'si_pre':0,
+        'si_post':'N/A',
         'frequency':'', # No Determined Frequency
         'schedule':[] # No Determined Schedule
     },
@@ -219,8 +219,8 @@ PANEL_DATA = {
         'pwr_post':'N/A',
         'pr_pre':0,
         'pr_post':'N/A',
-        'sr_pre':0,
-        'sr_post':'N/A',
+        'si_pre':0,
+        'si_post':'N/A',
         'frequency':'', # No Determined Frequency
         'schedule':[] # No Determined Schedule
     }
