@@ -338,5 +338,5 @@ class Soiling:
             SI = (isc_soiled)/(self.isc_clean)
             return round(SI,2)
         else:
-            SR = (isc_soiled/gpoa)/(self.isc_clean/self.irr_clean)
+            SI = (isc_soiled/gpoa)/(self.isc_clean/self.irr_clean)
             return round(SI,2)
