@@ -219,8 +219,6 @@ while True:
                     if schedule_pass:
                         frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
                     # proceed to EDS measurement and activation process
-                    schedule_pass = True
-                    frequency_pass = True
                     if schedule_pass and frequency_pass:
                         # mount the usb for data collection if there is a USB plugged
                         if usb_master.check_usb() == True:
