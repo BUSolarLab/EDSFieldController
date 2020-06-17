@@ -197,7 +197,7 @@ while True:
         Field Test Unit Schedule for Measurement only
         --------------------------------------------------------------------------
         '''
-        if (current_dt.tm_hour == 17) and (current_dt.tm_min >= 0 or current_dt.tm_min < 59):
+        if (current_dt.tm_hour == 12) and (current_dt.tm_min >= 0 or current_dt.tm_min < 3):
             #initialize weather and gpoa reading functions
             w_read = weather.read_humidity_temperature()
             temp_pass = test_master.check_temp(w_read[1])
