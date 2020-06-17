@@ -116,6 +116,9 @@ def add_error(error):
         rtc.datetime = time.struct_time((1,1,1,1,1,1,1,1,1))
         print_l(rtc.datetime, "ERROR FOUND: " + error)
 
+print("Starting FTU code Written by Aditya Brian and Ben...\n")
+print("time...\n")
+print(rtc.datetime)
 
 '''
 ~~~CORE LOOP~~~
