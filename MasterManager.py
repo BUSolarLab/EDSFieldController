@@ -206,6 +206,7 @@ while True:
             #initialize panel data for measuerement
             data = panel_data
             # Pre EDS Activation Panel Measurements for all eds
+
             for eds in eds_ids:
             # mount the usb for data collection if there is a USB plugged
                 if usb_master.check_usb() == True:
@@ -268,55 +269,76 @@ while True:
                 # delay before changing to control panels
                 time.sleep(10)
 
-                for ctrl in ctrl_ids:
-                        # start the measurement process
-                        print_l(rtc.datetime, "Measuring Control Panels. Initiating testing procedure for " + ctrl + " panel")
-                        # check the eds_number
-                        panel_num = data[ctrl]['num']
-                        # get the date and time
-                        data[ctrl]['date_time'] = rtc.datetime
-                        # measure global irradiance data from pyranometer
-                        irr_master = SP420.Irradiance()
-                        g_poa = irr_master.get_irradiance()
-                        data[ctrl]['gpoa'] = g_poa
-                        print_l(rtc.datetime, "GPOA Irradiance for " + ctrl + ": " + str(g_poa))
-                        #get the panel temperature using ambient temperature
-                        amb_temp = w_read[1]
-                        pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
-                        data[ctrl]['temp'] = pan_temp
-                        # get humidity data
-                        data[ctrl]['humid'] = w_read[0]
-                        '''PRE EDS ACTIVATION MEASUREMENT'''
-                        # measure PRE EDS activation ocv and scc
-                        ocv_pre = 0
-                        scc_pre = 0
-                        [ocv_pre, scc_pre] = test_master.run_measure_CTRL(panel_num)
-                        print_l(rtc.datetime, "PRE EDS OCV for " + ctrl + ": " + str(ocv_pre))
-                        print_l(rtc.datetime, "PRE EDS SCC for " + ctrl + ": " + str(scc_pre))
-                        data[ctrl]['ocv_pre'] = ocv_pre
-                        data[ctrl]['scc_pre'] = scc_pre
-                        # compute the PRE EDS activation power measurements for each panel
-                        power_pre = pow_master.get_power_out(ocv_pre,scc_pre,pan_temp)
-                        print_l(rtc.datetime, "PRE EDS Power for " + ctrl + ": " + str(power_pre))
-                        data[ctrl]['pwr_pre'] = power_pre
-                        # compute the PRE EDS activation PR measurements for each panel
-                        pr_pre = pr_master.get_pr(ocv_pre,scc_pre,pan_temp,power_pre,g_poa)
-                        print_l(rtc.datetime, "PRE EDS PR for " + ctrl + ": " + str(pr_pre))
-                        data[ctrl]['pr_pre'] = pr_pre
-                        # compute the PRE EDS activation SI measurements for each panel
-                        si_pre = soil_master.get_si(scc_pre, g_poa)
-                        print_l(rtc.datetime, "PRE EDS SI for " + ctrl + ": " + str(si_pre))
-                        data[ctrl]['si_pre'] = si_pre
+                # un-mount the usb drive
+                usb_master.reset_usb_mounts()
+                # turn of RED LED, indicating USB can be swapped
+                GPIO.output(test_master.get_pin('outPinLEDRed'), 0)
+                GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
+                # time to swap USB if desired
+                time.sleep(10)
 
-                        # NO EDS ACTIVATION AND POST MEASUREMENTS FOR CTRL PANELS
-                        print_l(rtc.datetime, "Not Activating EDS for " + ctrl + " panel")
+            for ctrl in ctrl_ids:
+                if usb_master.check_usb() == True:
+                    # mounts the usb
+                    usb_master.setup_usb_mount()
+                else:
+                    # if not, then reboot
+                    print_l(rtc.datetime, "No USB Detected!")
+                    usb_master.reset()
 
-                        # SAVE DATA TO USB
-                        # write data to csv file
-                        csv_master.write_data(data[ctrl])
-                        print_l(rtc.datetime, "Writing Results To CSV and TXT Files")
-                        # delay before changing to next EDS panel
-                        time.sleep(10)
+                    # turn green and red LED on to show automatic testing is operating
+                    # red LED on means USB should not be unplugged
+                    GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
+                    GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
+
+                    # start the measurement process
+                    print_l(rtc.datetime, "Measuring Control Panels. Initiating testing procedure for " + ctrl + " panel")
+                    # check the eds_number
+                    panel_num = data[ctrl]['num']
+                    # get the date and time
+                    data[ctrl]['date_time'] = rtc.datetime
+                    # measure global irradiance data from pyranometer
+                    irr_master = SP420.Irradiance()
+                    g_poa = irr_master.get_irradiance()
+                    data[ctrl]['gpoa'] = g_poa
+                    print_l(rtc.datetime, "GPOA Irradiance for " + ctrl + ": " + str(g_poa))
+                    #get the panel temperature using ambient temperature
+                    amb_temp = w_read[1]
+                    pan_temp = pow_master.get_panel_temp(amb_temp,g_poa)
+                    data[ctrl]['temp'] = pan_temp
+                    # get humidity data
+                    data[ctrl]['humid'] = w_read[0]
+                    '''PRE EDS ACTIVATION MEASUREMENT'''
+                    # measure PRE EDS activation ocv and scc
+                    ocv_pre = 0
+                    scc_pre = 0
+                    [ocv_pre, scc_pre] = test_master.run_measure_CTRL(panel_num)
+                    print_l(rtc.datetime, "PRE EDS OCV for " + ctrl + ": " + str(ocv_pre))
+                    print_l(rtc.datetime, "PRE EDS SCC for " + ctrl + ": " + str(scc_pre))
+                    data[ctrl]['ocv_pre'] = ocv_pre
+                    data[ctrl]['scc_pre'] = scc_pre
+                    # compute the PRE EDS activation power measurements for each panel
+                    power_pre = pow_master.get_power_out(ocv_pre,scc_pre,pan_temp)
+                    print_l(rtc.datetime, "PRE EDS Power for " + ctrl + ": " + str(power_pre))
+                    data[ctrl]['pwr_pre'] = power_pre
+                    # compute the PRE EDS activation PR measurements for each panel
+                    pr_pre = pr_master.get_pr(ocv_pre,scc_pre,pan_temp,power_pre,g_poa)
+                    print_l(rtc.datetime, "PRE EDS PR for " + ctrl + ": " + str(pr_pre))
+                    data[ctrl]['pr_pre'] = pr_pre
+                    # compute the PRE EDS activation SI measurements for each panel
+                    si_pre = soil_master.get_si(scc_pre, g_poa)
+                    print_l(rtc.datetime, "PRE EDS SI for " + ctrl + ": " + str(si_pre))
+                    data[ctrl]['si_pre'] = si_pre
+
+                    # NO EDS ACTIVATION AND POST MEASUREMENTS FOR CTRL PANELS
+                    print_l(rtc.datetime, "Not Activating EDS for " + ctrl + " panel")
+
+                    # SAVE DATA TO USB
+                    # write data to csv file
+                    csv_master.write_data(data[ctrl])
+                    print_l(rtc.datetime, "Writing Results To CSV and TXT Files")
+                    # delay before changing to next EDS panel
+                    time.sleep(10)
                         
                 # un-mount the usb drive
                 usb_master.reset_usb_mounts()
