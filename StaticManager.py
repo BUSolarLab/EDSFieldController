@@ -34,16 +34,16 @@ EDS_SCHEDULE = {
         'frequency':3
     },
 }
-
+#DO NOT CHANGE THIS UNLESS CIRCUITRY HAS CHANGED
 DEFAULT_CONFIG_PARAM = {
-    # EDS Panels for power supply activation
+    # EDS Panels for power supply activation pin numbers
     'EDS1': 4,
     'EDS2': 17,
     'EDS3': 6,
     'EDS4': 19,
     'EDS5': 26,
     'EDS6': 27,
-    # EDS nd CTRL Panels measurement
+    # EDS and CTRL Panels measurement pin numbers
     'EDS1PV': 7,
     'EDS2PV': 8,
     'EDS3PV': 12,
