@@ -198,6 +198,11 @@ while True:
         --------------------------------------------------------------------------
         '''
         if (current_dt.tm_hour == 12) and (current_dt.tm_min >= 0 or current_dt.tm_min < 5):
+            #initialize weather and gpoa reading functions
+            w_read = weather.read_humidity_temperature()
+            temp_pass = test_master.check_temp(w_read[1])
+            humid_pass = test_master.check_humid(w_read[0])
+            weather_pass = temp_pass and humid_pass
             #initialize panel data for measuerement
             data = panel_data
             # Pre EDS Activation Panel Measurements for all eds
