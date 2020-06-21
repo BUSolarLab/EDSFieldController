@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\testing_script"
   ],
-  "SelectedNode": "\\MasterManager.py",
+  "SelectedNode": "\\TestingManager.py",
   "PreviewInSolutionExplorer": false
 }
