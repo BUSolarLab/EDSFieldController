@@ -199,6 +199,7 @@ while True:
         --------------------------------------------------------------------------
         '''
         if (current_dt.tm_hour == 12) and (current_dt.tm_min >= 0 and current_dt.tm_min < 3):
+            print_l(rtc.datetime, "Measurement only process starting...")
             #initialize weather and gpoa reading functions
             w_read = weather.read_humidity_temperature()
             temp_pass = test_master.check_temp(w_read[1])
@@ -288,7 +289,7 @@ while True:
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
 
                 # start the measurement process
-                print_l(rtc.datetime, "Weather, schedule, and frequency checks passed. Initiating testing procedure for " + eds + " panel")
+                print_l(rtc.datetime, "Time check passed. Initiating testing procedure for " + eds + " panel")
                 # check the eds_number
                 panel_num = data[eds]['num']
                 # get the date and time
