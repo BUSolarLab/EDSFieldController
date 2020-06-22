@@ -114,7 +114,8 @@ def add_error(error):
     try:
         print_l(rtc.datetime, "ERROR FOUND: " + error)
     except:
-        rtc.datetime = time.struct_time((1,1,1,1,1,1,1,1,1))
+        #rtc.datetime = time.struct_time((1,1,1,1,1,1,1,1,1))
+        logging.exception("message")
         print_l(rtc.datetime, "ERROR FOUND: " + error)
 
 print("Starting FTU code Written by Aditya Brian and Ben...")
@@ -148,7 +149,6 @@ while True:
             for ctrl in range(len(ctrl_ids)):
                 GPIO.cleanup(test_master.get_pin('CTRL'+str(ctrl+1)+'PV'))
         except:
-            logging.exception("message")
             add_error("GPIO-Cleanup")
             
         '''
@@ -162,7 +162,6 @@ while True:
             if "Sensor-RTC-1" in error_list:
                 error_list.remove("Sensor-RTC-1")
         except:
-            logging.exception("message")
             add_error("Sensor-RTC-1")
         
         '''
@@ -631,7 +630,6 @@ while True:
     
     # END MASTER TRY-EXCEPT envelope
     except:
-        logging.exception("message")
         add_error("FATAL CORE ERROR")
         raise
         

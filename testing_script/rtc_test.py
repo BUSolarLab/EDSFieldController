@@ -17,12 +17,15 @@ print(x)
 
 #Testing
 t = rtc.datetime
-print(t)
-print(t.tm_hour,t.tm_min)
-print("Is it in power savings mode?")
-print(t.tm_hour > 16 or t.tm_hour < 9)
-print("\n")
-curr_dt = rtc.datetime
-curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
-print(curr_time_min)
-print(curr_dt.tm_yday)
+try: 
+    print(x)
+    print(t)
+    print(t.tm_hour,t.tm_min)
+    print("Is it in power savings mode?")
+    print(t.tm_hour > 16 or t.tm_hour < 9)
+    print("\n")
+except:
+    curr_dt = rtc.datetime
+    curr_time_min = curr_dt.tm_hour * 60 + curr_dt.tm_min + curr_dt.tm_sec / 60
+    print(curr_time_min)
+    print(curr_dt.tm_yday)
