@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Adafruit_Python_GPIO" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Adafruit_Python_GPIO/Adafruit_CircuitPython_MCP3xxx" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/EDSFieldController" vcs="Git" />
   </component>
 </project>
