@@ -199,7 +199,7 @@ while True:
         Field Test Unit Schedule for Measurement only
         --------------------------------------------------------------------------
         '''
-        if (current_dt.tm_hour == 12) and (current_dt.tm_min >= 0 and current_dt.tm_min < 3):
+        if (current_dt.tm_hour == 19) #and (current_dt.tm_min >= 0 and current_dt.tm_min < 3):
             print_l(rtc.datetime, "Measurement only process starting...")
             #initialize weather and gpoa reading functions
             w_read = weather.read_humidity_temperature()
@@ -326,6 +326,15 @@ while True:
                 print_l(rtc.datetime, "PRE EDS SI for " + eds + ": " + str(si_pre))
                 data[eds]['si_pre'] = si_pre
 
+                # POST EDS ACTIVATION MEASUREMENT Not used instead put N/A
+                ocv_post = 'N/A'
+                scc_post = 'N/A'
+                data[eds]['ocv_post'] = ocv_post
+                data[eds]['scc_post'] = scc_post
+                data[eds]['pwr_post'] = 'N/A'
+                data[eds]['pr_post'] = 'N/A'
+                data[eds]['si_post'] = 'N/A'
+
                 # WRITE DATA TO USB
                 # write data to csv file
                 csv_master.write_data(data[eds])
@@ -359,7 +368,7 @@ while True:
                 data = panel_data
                 # Pre EDS Activation Panel Measurements
                 for eds in eds_ids:
-                    print("Weather check passed. Now proceeding for time check for " + eds + " panel")
+                    #print("Weather check passed. Now proceeding for time check for " + eds + " panel")
                     # get data for frequency and schedule check for the current eds panel
                     freq = data[eds]['frequency']
                     sched = data[eds]['schedule']
@@ -367,11 +376,9 @@ while True:
                     eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
                     # check for the schedule check
                     schedule_pass = eds_panel.check_time(rtc.datetime)
-                    #schedule_pass = True
                     # check for frequency check only if it meets schedule check
                     if schedule_pass:
                         frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
-                        #frequency_pass = True
                     # proceed to EDS measurement and activation process
                     if schedule_pass and frequency_pass:
                         # mount the usb for data collection if there is a USB plugged
@@ -637,7 +644,6 @@ while True:
     if not not error_list:
         e_phrase = "Current error list: "
         for err in error_list:
-            logging.exception("message")
             e_phrase += " [" + err + "]"
         print_l(rtc.datetime, e_phrase)
         
@@ -648,4 +654,4 @@ while True:
         else:
             GPIO.output(test_master.get_pin('outPinLEDRed'), 0) 
     
-    # END CORE LOOP
+ # END CORE LOOP
