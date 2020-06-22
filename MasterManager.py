@@ -148,6 +148,7 @@ while True:
             for ctrl in range(len(ctrl_ids)):
                 GPIO.cleanup(test_master.get_pin('CTRL'+str(ctrl+1)+'PV'))
         except:
+            logging.exception("message")
             add_error("GPIO-Cleanup")
             
         '''
@@ -161,6 +162,7 @@ while True:
             if "Sensor-RTC-1" in error_list:
                 error_list.remove("Sensor-RTC-1")
         except:
+            logging.exception("message")
             add_error("Sensor-RTC-1")
         
         '''
@@ -632,14 +634,15 @@ while True:
     
     # END MASTER TRY-EXCEPT envelope
     except:
-        add_error("FATAL CORE ERROR")
         logging.exception("message")
+        add_error("FATAL CORE ERROR")
         raise
         
     # error handling
     if not not error_list:
         e_phrase = "Current error list: "
         for err in error_list:
+            logging.exception("message")
             e_phrase += " [" + err + "]"
         print_l(rtc.datetime, e_phrase)
         
