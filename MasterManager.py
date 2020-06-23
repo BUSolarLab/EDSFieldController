@@ -25,7 +25,8 @@ from math import floor, ceil
 
 print("Initializing...")
 #initilize logging
-logging.basicConfig(filename = 'Error.log', level = logging.INFO)
+logging.basicConfig(format='%(asctime)s %(message)s', filename = 'Error.log', level = logging.INFO)
+logging.info('Code started')
 # read config, get constants, etc
 static_master = SM.StaticMaster()
 test_master = TM.TestingMaster(static_master.get_config())
@@ -122,7 +123,7 @@ def add_error(error):
         print_l(rtc.datetime, "ERROR FOUND: " + error)
     except Exception as e:
         # rtc.datetime = time.struct_time((1,1,1,1,1,1,1,1,1))
-        logging.exception(print_time(rtc.datetime), "Bad error %s",e)
+        logging.exception( "Bad error %s",e)
         print_l(rtc.datetime, "ERROR FOUND: " + error)
 
 
@@ -656,7 +657,7 @@ while True:
 
     # END MASTER TRY-EXCEPT envelope
     except Exception as e:
-        logging.exception(print_time(rtc.datetime), "Bad error %s",e)
+        logging.exception("Bad error %s",e)
         add_error("FATAL CORE ERROR")
         raise
 
