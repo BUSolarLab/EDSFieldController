@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f104a842-57df-425f-9fc9-fd5b3f7de1e9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/EDSFieldController.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/EDSFieldController.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/EDSFieldController/v15/.suo" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/EDSFieldController/v15/.suo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/slnx.sqlite" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/slnx.sqlite" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MasterManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/MasterManager.py" afterDir="false" />
-    </list>
+    <list default="true" id="f104a842-57df-425f-9fc9-fd5b3f7de1e9" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,12 +51,32 @@
       <option name="presentableId" value="Default" />
       <updated>1592866752595</updated>
     </task>
+    <task id="LOCAL-00001" summary="reformatted code for readablility">
+      <created>1592869084358</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1592869084358</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="reformatted code for readablility" />
+    <option name="LAST_COMMIT_MESSAGE" value="reformatted code for readablility" />
+  </component>
   <component name="WindowStateProjectService">
+    <state x="1117" y="458" key="CommitChangelistDialog2" timestamp="1592869083699">
+      <screen x="0" y="0" width="2560" height="1410" />
+    </state>
+    <state x="1117" y="458" key="CommitChangelistDialog2/0.0.2560.1410@0.0.2560.1410" timestamp="1592869083699" />
     <state x="846" y="512" key="SettingsEditor" timestamp="1592868071741">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
     <state x="846" y="512" key="SettingsEditor/0.0.2560.1410@0.0.2560.1410" timestamp="1592868071741" />
+    <state x="1082" y="623" key="Vcs.Push.Dialog.v2" timestamp="1592869094838">
+      <screen x="0" y="0" width="2560" height="1410" />
+    </state>
+    <state x="1082" y="623" key="Vcs.Push.Dialog.v2/0.0.2560.1410@0.0.2560.1410" timestamp="1592869094838" />
   </component>
 </project>

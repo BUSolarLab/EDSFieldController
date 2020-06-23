@@ -204,8 +204,7 @@ while True:
         Field Test Unit Schedule for Measurement only
         --------------------------------------------------------------------------
         '''
-        if (current_dt.tm_hour == 19):
-            # and (current_dt.tm_min >= 0 and current_dt.tm_min < 3):
+        if (current_dt.tm_hour == 12) and (current_dt.tm_min >= 0 and current_dt.tm_min < 3):
             print_l(rtc.datetime, "Measurement only process starting...")
             # initialize weather and gpoa reading functions
             w_read = weather.read_humidity_temperature()
@@ -382,9 +381,11 @@ while True:
                     eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
                     # check for the schedule check
                     schedule_pass = eds_panel.check_time(rtc.datetime)
+                    schedule_pass = True
                     # check for frequency check only if it meets schedule check
                     if schedule_pass:
                         frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
+                        frequency_pass = True
                     # proceed to EDS measurement and activation process
                     if schedule_pass and frequency_pass:
                         # mount the usb for data collection if there is a USB plugged
