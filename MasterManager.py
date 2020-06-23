@@ -25,9 +25,7 @@ from math import floor, ceil
 
 print("Initializing...")
 #initilize logging
-logging.basicConfig(filename = 'Master.log', level = logging.INFO)
-logging.basicConfig(format='%(asctime)s %(message)s')
-logging.info('Start logging')
+logging.basicConfig(filename = 'Error.log', level = logging.INFO)
 # read config, get constants, etc
 static_master = SM.StaticMaster()
 test_master = TM.TestingMaster(static_master.get_config())
@@ -124,7 +122,7 @@ def add_error(error):
         print_l(rtc.datetime, "ERROR FOUND: " + error)
     except Exception as e:
         # rtc.datetime = time.struct_time((1,1,1,1,1,1,1,1,1))
-        logging.exception("Unexpected exception! %s",e)
+        logging.exception(print_time(rtc.datetime), "Unexpected exception! %s",e)
         print_l(rtc.datetime, "ERROR FOUND: " + error)
 
 
