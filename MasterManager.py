@@ -120,8 +120,9 @@ def add_error(error):
         error_list.append(error)
     try:
         print_l(rtc.datetime, "ERROR FOUND: " + error)
-    except:
+    except Exception as e:
         # rtc.datetime = time.struct_time((1,1,1,1,1,1,1,1,1))
+        logging.exception(print_time(rtc.datetime), "Bad error %s",e)
         print_l(rtc.datetime, "ERROR FOUND: " + error)
 
 
@@ -655,7 +656,7 @@ while True:
 
     # END MASTER TRY-EXCEPT envelope
     except Exception as e:
-        logging.exception(print_time(rtc.datetime),e)
+        logging.exception(print_time(rtc.datetime), "Bad error %s",e)
         add_error("FATAL CORE ERROR")
         raise
 
