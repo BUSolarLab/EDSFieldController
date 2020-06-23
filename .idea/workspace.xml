@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f104a842-57df-425f-9fc9-fd5b3f7de1e9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/EDSFieldController/v15/.suo" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/EDSFieldController/v15/.suo" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vs/VSWorkspaceState.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/VSWorkspaceState.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.vs/slnx.sqlite" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/slnx.sqlite" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

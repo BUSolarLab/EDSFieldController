@@ -314,9 +314,10 @@ class ScheduleMaster:
                 current_day = self.day_of_year(dt)
                 #Try except statement for checking if first time activation
                 try:
+                    print("checking \n")
                     activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
                 except:
-                    print("something wrong \n")
+                    print("something is wrong \n")
                     json_file[name].update({
                         'is_activated':True,
                         'record_dt':dt
