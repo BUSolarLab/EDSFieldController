@@ -316,18 +316,7 @@ class ScheduleMaster:
                 try:
                     activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
                 except:
-                    json_file[name].update({
-                        'is_activated':True,
-                        'record_dt':dt
-                    })
-                    with open('/home/pi/Desktop/eds.json', 'w') as file:
-                        json.dump(json_file, file)
-                    return True
-                # already met desired frequency for activation
-                print(current_day - activation_day)
-                print("\n")
-                print(self.frequency)
-                if current_day - activation_day == self.frequency:
+                    print("something wrong \n")
                     json_file[name].update({
                         'is_activated':True,
                         'record_dt':dt
@@ -336,13 +325,24 @@ class ScheduleMaster:
                         json.dump(json_file, file)
                     return True
                 else:
-                    # don't change the record_dt since did not meet frequency check
-                    json_file[name].update({
-                        'is_activated':False
-                    })
-                    with open('/home/pi/Desktop/eds.json', 'w') as file:
-                        json.dump(json_file, file)
-                    return False
+                    print("nothing went wrong \n")
+                    # already met desired frequency for activation
+                    if current_day - activation_day == self.frequency:
+                        json_file[name].update({
+                            'is_activated':True,
+                            'record_dt':dt
+                        })
+                        with open('/home/pi/Desktop/eds.json', 'w') as file:
+                            json.dump(json_file, file)
+                        return True
+                    else:
+                        # don't change the record_dt since did not meet frequency check
+                        json_file[name].update({
+                            'is_activated':False
+                        })
+                        with open('/home/pi/Desktop/eds.json', 'w') as file:
+                            json.dump(json_file, file)
+                        return False
 
 
     def check_time(self, dt):
