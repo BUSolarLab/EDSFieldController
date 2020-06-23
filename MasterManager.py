@@ -22,8 +22,12 @@ import DataManager as DM
 import TestingManager as TM
 from math import floor, ceil
 
-# read config, get constants, etc
+
 print("Initializing...")
+#initilize logging
+logging.basicConfig(filename = 'Master.log', level = logging.INFO)
+logging.basicConfig(format='%(asctime)s %(message)s')
+# read config, get constants, etc
 static_master = SM.StaticMaster()
 test_master = TM.TestingMaster(static_master.get_config())
 usb_master = DM.USBMaster()
@@ -402,7 +406,7 @@ while True:
                         GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
                         # start the measurement process
                         print_l(rtc.datetime,
-                                "Weather, schedule, and frequency checks passed. Initiating testing procedure for " + eds + " panel")
+                                " Weather, schedule, and frequency checks passed. Initiating testing procedure for " + eds + " panel")
                         # check the eds_number
                         panel_num = data[eds]['num']
                         # get the date and time
