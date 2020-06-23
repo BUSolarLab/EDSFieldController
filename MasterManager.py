@@ -27,6 +27,7 @@ print("Initializing...")
 #initilize logging
 logging.basicConfig(filename = 'Master.log', level = logging.INFO)
 logging.basicConfig(format='%(asctime)s %(message)s')
+
 # read config, get constants, etc
 static_master = SM.StaticMaster()
 test_master = TM.TestingMaster(static_master.get_config())
@@ -121,9 +122,9 @@ def add_error(error):
         error_list.append(error)
     try:
         print_l(rtc.datetime, "ERROR FOUND: " + error)
-    except:
+    except Exception as e:
         # rtc.datetime = time.struct_time((1,1,1,1,1,1,1,1,1))
-        logging.exception("message")
+        logging.Exception("Unexpected exception! %s",e)
         print_l(rtc.datetime, "ERROR FOUND: " + error)
 
 
@@ -656,7 +657,8 @@ while True:
             error_list.remove("FATAL CORE ERROR")
 
     # END MASTER TRY-EXCEPT envelope
-    except:
+    except Exception as e:
+        logging.Exception("Unexpected exception! %s",e)
         add_error("FATAL CORE ERROR")
         raise
 
