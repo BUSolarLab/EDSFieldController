@@ -314,10 +314,9 @@ class ScheduleMaster:
                 current_day = self.day_of_year(dt)
                 #Try except statement for checking if first time activation
                 try:
-                    print("checking \n")
                     activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
                 except:
-                    print("something is wrong \n")
+                    print("Firt time activation \n")
                     json_file[name].update({
                         'is_activated':True,
                         'record_dt':dt
@@ -326,7 +325,7 @@ class ScheduleMaster:
                         json.dump(json_file, file)
                     return True
                 else:
-                    print("nothing went wrong \n")
+                    print("Subsequent Activations \n")
                     # already met desired frequency for activation
                     if current_day - activation_day == self.frequency:
                         json_file[name].update({

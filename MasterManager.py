@@ -198,7 +198,7 @@ while True:
         current_dt = rtc.datetime
         #Make this a while loop to reduce power consumtion
         if current_dt.tm_hour > 16 or current_dt.tm_hour < 9:
-            day = True
+            day = False
             json_reset = True
         else:
             day = True
