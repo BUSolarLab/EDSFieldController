@@ -124,7 +124,7 @@ def add_error(error):
 
 
 print("Starting FTU code Written by Aditya Brian and Ben...")
-print(rtc.datetime)
+print_time(rtc.datetime)
 
 '''
 ~~~CORE LOOP~~~
