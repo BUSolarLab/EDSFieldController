@@ -312,8 +312,17 @@ class ScheduleMaster:
             else:
                 # check for frequency confirmation, also check if it is first activation, meaning record in json will be blank
                 current_day = self.day_of_year(dt)
-                activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
-
+                #Try except statement for checking if first time activation
+                try:
+                    activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
+                except:
+                    json_file[name].update({
+                        'is_activated':True,
+                        'record_dt':dt
+                    })
+                    with open('/home/pi/Desktop/eds.json', 'w') as file:
+                        json.dump(json_file, file)
+                    return True
                 # already met desired frequency for activation
                 if current_day - activation_day == self.frequency:
                     json_file[name].update({
