@@ -27,7 +27,7 @@ print("Initializing...")
 #initilize logging
 logging.basicConfig(filename = 'Master.log', level = logging.INFO)
 logging.basicConfig(format='%(asctime)s %(message)s')
-
+logging.info('Start logging')
 # read config, get constants, etc
 static_master = SM.StaticMaster()
 test_master = TM.TestingMaster(static_master.get_config())
