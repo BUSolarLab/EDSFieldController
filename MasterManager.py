@@ -385,8 +385,7 @@ while True:
                     # declare panel class, which gives the frequency and schedule checks
                     eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
                     # check for the schedule check
-                    #schedule_pass = eds_panel.check_time(rtc.datetime)
-                    schedule_pass = True
+                    schedule_pass = eds_panel.check_time(rtc.datetime)
                     # check for frequency check only if it meets schedule check
                     if schedule_pass:
                         frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
