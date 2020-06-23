@@ -324,6 +324,9 @@ class ScheduleMaster:
                         json.dump(json_file, file)
                     return True
                 # already met desired frequency for activation
+                print(current_day - activation_day)
+                print("\n")
+                print(self.frequency)
                 if current_day - activation_day == self.frequency:
                     json_file[name].update({
                         'is_activated':True,
