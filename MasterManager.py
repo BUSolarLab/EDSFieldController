@@ -194,7 +194,7 @@ while True:
         current_dt = rtc.datetime
         #Make this a while loop to reduce power consumtion
         if current_dt.tm_hour > 16 or current_dt.tm_hour < 9:
-            day = False
+            day = True
             json_reset = True
         else:
             day = True
@@ -362,7 +362,7 @@ while True:
         --------------------------------------------------------------------------
         '''
         # first check, if it is during the day
-        if True:
+        if day:
             # Temperature Humidity Sensor Check
             w_read = weather.read_humidity_temperature()
             temp_pass = test_master.check_temp(w_read[1])
@@ -381,7 +381,8 @@ while True:
                     # declare panel class, which gives the frequency and schedule checks
                     eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
                     # check for the schedule check
-                    schedule_pass = eds_panel.check_time(rtc.datetime)
+                    #schedule_pass = eds_panel.check_time(rtc.datetime)
+                    schedule_pass = True
                     # check for frequency check only if it meets schedule check
                     if schedule_pass:
                         frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
