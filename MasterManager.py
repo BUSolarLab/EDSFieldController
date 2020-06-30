@@ -209,7 +209,7 @@ while True:
         Field Test Unit Schedule for Measurement only
         --------------------------------------------------------------------------
         '''
-        if (current_dt.tm_hour == 12) and (current_dt.tm_min >= 0 and current_dt.tm_min < 3):
+        if (current_dt.tm_hour == 12) and (current_dt.tm_min >= 0 and current_dt.tm_min < 1):
             print_l(rtc.datetime, "Measurement only process starting...")
             # initialize weather and gpoa reading functions
             w_read = weather.read_humidity_temperature()
