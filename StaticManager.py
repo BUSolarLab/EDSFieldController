@@ -22,7 +22,7 @@ EDS_SCHEDULE = {
         'frequency':3
     },
     'eds3': {
-        'schedule':['720'],
+        'schedule':['730'],
         'frequency':3
     },
     'eds4': {
