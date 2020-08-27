@@ -15,23 +15,23 @@ import subprocess
 EDS_SCHEDULE = {
     'eds1': {
         'schedule':['SN'],
-        'frequency':3
+        'frequency':1
     },
     'eds2': {
         'schedule':['780'],
-        'frequency':3
+        'frequency':1
     },
     'eds3': {
         'schedule':['730'],
-        'frequency':3
+        'frequency':1
     },
     'eds4': {
         'schedule':['600'],
-        'frequency':3
+        'frequency':1
     },
     'eds5': {
         'schedule':['660'],
-        'frequency':3
+        'frequency':1
     },
 }
 #DO NOT CHANGE THIS UNLESS CIRCUITRY HAS CHANGED
