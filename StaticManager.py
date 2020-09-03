@@ -327,7 +327,7 @@ class ScheduleMaster:
                 else:
                     print("Subsequent Activations \n")
                     # already met desired frequency for activation
-                    if current_day - activation_day == self.frequency:
+                    if current_day - activation_day >= self.frequency:
                         json_file[name].update({
                             'is_activated':True,
                             'record_dt':dt

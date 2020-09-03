@@ -396,7 +396,7 @@ while True:
                         frequency_pass = False
                     # proceed to EDS measurement and activation process
                     if schedule_pass and frequency_pass:
-                        print_l(rtc.datetime," schule and frequency passed for " + eds + " panel")
+                        print_l(rtc.datetime," schedule and frequency passed for " + eds + " panel")
                         # mount the usb for data collection if there is a USB plugged
                         if usb_master.check_usb() == True:
                             # mounts the usb
