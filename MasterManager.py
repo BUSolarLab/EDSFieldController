@@ -297,7 +297,7 @@ while True:
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
 
                 # start the measurement process
-                print_l(rtc.datetime, "Time check passed. Initiating testing procedure for " + eds + " panel")
+                print_l(rtc.datetime, "Time check passed. Measurement procedure for " + eds + " panel")
                 # check the eds_number
                 panel_num = data[eds]['num']
                 # get the date and time
@@ -378,7 +378,7 @@ while True:
                 data = panel_data
                 # Pre EDS Activation Panel Measurements
                 for eds in eds_ids:
-                    print(" Weather check passed. Now proceeding for time check for " + eds + " panel")
+                    print_l(rtc.datetime, " Weather check passed. Now proceeding for time check for " + eds + " panel")
                     # get data for frequency and schedule check for the current eds panel
                     freq = data[eds]['frequency']
                     sched = data[eds]['schedule']
