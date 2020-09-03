@@ -232,7 +232,7 @@ while True:
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
 
                 # start the measurement process
-                print_l(rtc.datetime, "Time checked. Initiating testing procedure for " + ctrl + " panel")
+                print_l(rtc.datetime, "Time checked. Measurement procedure for " + ctrl + " panel")
                 # check the eds_number
                 panel_num = data[ctrl]['num']
                 # get the date and time
@@ -366,7 +366,7 @@ while True:
         --------------------------------------------------------------------------
         '''
         # first check, if it is during the day
-        if True:
+        if day:
             # Temperature Humidity Sensor Check
             w_read = weather.read_humidity_temperature()
             temp_pass = test_master.check_temp(w_read[1])
@@ -386,14 +386,10 @@ while True:
                     eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
                     # check for the schedule check
                     schedule_pass = eds_panel.check_time(rtc.datetime)
-                    schedule_pass = True
                     # check for frequency check only if it meets schedule check
                     if schedule_pass:
                         print_l(rtc.datetime," schedule passed for " + eds + " panel")
                         frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
-                        if frequency_pass:
-                            print_l(rtc.datetime," frequency passed for " + eds + " panel")
-                        frequency_pass = False
                     # proceed to EDS measurement and activation process
                     if schedule_pass and frequency_pass:
                         print_l(rtc.datetime," schedule and frequency passed for " + eds + " panel")
