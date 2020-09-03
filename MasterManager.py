@@ -366,7 +366,7 @@ while True:
         --------------------------------------------------------------------------
         '''
         # first check, if it is during the day
-        if day:
+        if True:
             # Temperature Humidity Sensor Check
             w_read = weather.read_humidity_temperature()
             temp_pass = test_master.check_temp(w_read[1])
