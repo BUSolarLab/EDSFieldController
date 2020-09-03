@@ -386,11 +386,17 @@ while True:
                     eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
                     # check for the schedule check
                     schedule_pass = eds_panel.check_time(rtc.datetime)
+                    schedule_pass == True
                     # check for frequency check only if it meets schedule check
                     if schedule_pass:
+                        print_l(rtc.datetime," schedule passed for " + eds + " panel")
                         frequency_pass = eds_panel.check_frequency(eds, rtc.datetime)
+                        if frequency_pass:
+                            print_l(rtc.datetime," frequency passed for " + eds + " panel")
+                        frequency_pass == False
                     # proceed to EDS measurement and activation process
                     if schedule_pass and frequency_pass:
+                        print_l(rtc.datetime," schule and frequency passed for " + eds + " panel")
                         # mount the usb for data collection if there is a USB plugged
                         if usb_master.check_usb() == True:
                             # mounts the usb

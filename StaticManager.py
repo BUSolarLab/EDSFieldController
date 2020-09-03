@@ -305,7 +305,7 @@ class ScheduleMaster:
             # load the json file
             with open('/home/pi/Desktop/eds.json', 'r') as file:
                 json_file = json.load(file)
-            # check if it has already activated today, if it has return true for other activation times today
+            # check if it has already activated today, if it has, return true for other activation times today
             is_act = json_file[name]['is_activated']
             if is_act:
                 return True
