@@ -41,8 +41,9 @@ i2c_bus = busio.I2C(SCL, SDA)
 #rtc = adafruit_pcf8523.PCF8523(i2c_bus)
 #comment if using rtc time
 current_date = datetime.datetime.now()
-current_time = time.struct_time((x.year, x.month, x.day. x.hour, x.minute, 
-                                             x.second, 0, -1, -1))
+current_time = time.struct_time((current_date.year, current_date.month,
+                                current_date.day. current_date.hour, current_date.minute,
+                               current_date.second, 0, -1, -1))
 
 # creating initial csv and txt files to usb
 print("Setting up initial CSV and TXT files in USB if not exist yet")
