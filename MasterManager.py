@@ -37,13 +37,20 @@ print(usb_master.get_USB_path())
 # setup sensors
 weather = AM2315.AM2315()
 i2c_bus = busio.I2C(SCL, SDA)
-rtc = adafruit_pcf8523.PCF8523(i2c_bus)
+#uncomment if rtc is working
+#rtc = adafruit_pcf8523.PCF8523(i2c_bus)
+#comment if using rtc time
+current_date = datetime.datetime.now()
+current_time = time.struct_time((x.year, x.month, x.day. x.hour, x.minute, 
+                                             x.second, 0, -1, -1))
 
 # creating initial csv and txt files to usb
 print("Setting up initial CSV and TXT files in USB if not exist yet")
 usb_master.setup_usb_mount()
 csv_master = DM.CSVMaster(usb_master.get_USB_path())
-log_master = DM.LogMaster(usb_master.get_USB_path(), rtc.datetime)
+#uncomment for rtc
+#log_master = DM.LogMaster(usb_master.get_USB_path(), rtc.datetime)
+log_master = DM.LogMaster(usb_master.get_USB_path(), current_time)
 usb_master.reset_usb_mounts()
 
 # initialize measurement classes
@@ -167,10 +174,10 @@ while True:
         --------------------------------------------------------------------------
         '''
         try:
-            current_date = datetime.datetimeds.now()
-            current_time = time.struct_time((x.year, x.month, x.day. x.hour, x.minute, 
-                                             x.second, 0, -1, -1))
-            #rtc.datetime
+            #temp code added untill rtc time is fixed
+            current_date = datetime.datetime.now()
+            #current_time = rtc.datetime
+
             # remove error if corrected
             if "Sensor-RTC-1" in error_list:
                 error_list.remove("Sensor-RTC-1")
