@@ -11,6 +11,7 @@ import RPi.GPIO as GPIO
 import logging
 import subprocess
 import json
+import datetime
 import time
 import busio
 from board import *
@@ -166,7 +167,10 @@ while True:
         --------------------------------------------------------------------------
         '''
         try:
-            current_time = rtc.datetime
+            current_date = datetime.datetimeds.now()
+            current_time = time.struct_time((x.year, x.month, x.day. x.hour, x.minute, 
+                                             x.second, 0, -1, -1))
+            #rtc.datetime
             # remove error if corrected
             if "Sensor-RTC-1" in error_list:
                 error_list.remove("Sensor-RTC-1")
