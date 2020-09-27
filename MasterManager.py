@@ -39,19 +39,24 @@ weather = AM2315.AM2315()
 i2c_bus = busio.I2C(SCL, SDA)
 #uncomment if rtc is working
 #rtc = adafruit_pcf8523.PCF8523(i2c_bus)
-#comment if using rtc time
-current_date = datetime.datetime.now()
-current_time = time.struct_time((current_date.year, current_date.month,current_date.day, 
-                                 current_date.hour, current_date.minute,
-                                 current_date.second, 0, -1, -1))
+
+#set up rtc or network time
+def current_time():
+    current_date = datetime.datetime.now()
+    current_clock = time.struct_time((current_date.year, current_date.month,current_date.day, 
+                                     current_date.hour, current_date.minute,
+                                     current_date.second, 0, -1, -1))
+    #comment line above and uncomment line below if using rtc 
+    #current_clock = rtc.datetime
+    return current_clock
 
 # creating initial csv and txt files to usb
 print("Setting up initial CSV and TXT files in USB if not exist yet")
 usb_master.setup_usb_mount()
 csv_master = DM.CSVMaster(usb_master.get_USB_path())
 #uncomment for rtc
-#log_master = DM.LogMaster(usb_master.get_USB_path(), current_time)
-log_master = DM.LogMaster(usb_master.get_USB_path(), current_time)
+#log_master = DM.LogMaster(usb_master.get_USB_path(), current_time())
+log_master = DM.LogMaster(usb_master.get_USB_path(), current_time())
 usb_master.reset_usb_mounts()
 
 # initialize measurement classes
@@ -129,16 +134,16 @@ def add_error(error):
     if error not in error_list:
         error_list.append(error)
     try:
-        print_l(current_time, "ERROR FOUND: " + error)
+        print_l(current_time(), "ERROR FOUND: " + error)
     except Exception as e:
-        # current_time = time.struct_time((1,1,1,1,1,1,1,1,1))
+        # current_time() = time.struct_time((1,1,1,1,1,1,1,1,1))
         logging.exception( "Bad error %s",e)
-        print_l(current_time, "ERROR FOUND: " + error)
+        print_l(current_time(), "ERROR FOUND: " + error)
 
 
 print("Starting FTU code Written by Aditya Brian and Ben...")
 #uncomment if rtc is working
-print_time(current_time)
+print_time(current_time())
 
 '''
 ~~~CORE LOOP~~~
@@ -176,9 +181,8 @@ while True:
         --------------------------------------------------------------------------
         '''
         try:
-            #temp code added untill rtc time is fixed
+            #temp code added until rtc time is fixed
             current_date = datetime.datetime.now()
-            #current_time = current_time
 
             # remove error if corrected
             if "Sensor-RTC-1" in error_list:
@@ -208,7 +212,7 @@ while True:
         No Functionality if its at night (4PM - 9AM) to save power, just do LED blinking
         --------------------------------------------------------------------------
         '''
-        current_dt = current_time
+        current_dt = current_time()
 
         #Make this a while loop to reduce power consumtion
         if current_dt.tm_hour > 16 or current_dt.tm_hour < 9:
@@ -224,7 +228,7 @@ while True:
         --------------------------------------------------------------------------
         '''
         if (current_dt.tm_hour == 12) and (current_dt.tm_min >= 0 and current_dt.tm_min < 1):
-            print_l(current_time, "Measurement only process starting...")
+            print_l(current_time(), "Measurement only process starting...")
             # initialize weather and gpoa reading functions
             w_read = weather.read_humidity_temperature()
             # initialize panel data for measuerement
@@ -237,7 +241,7 @@ while True:
                     usb_master.setup_usb_mount()
                 else:
                     # if not, then reboot
-                    print_l(current_time, "No USB Detected!")
+                    print_l(current_time(), "No USB Detected!")
                     usb_master.reset()
 
                 # turn green and red LED on to show automatic testing is operating
@@ -246,16 +250,16 @@ while True:
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
 
                 # start the measurement process
-                print_l(current_time, "Time checked. Measurement procedure for " + ctrl + " panel")
+                print_l(current_time(), "Time checked. Measurement procedure for " + ctrl + " panel")
                 # check the eds_number
                 panel_num = data[ctrl]['num']
                 # get the date and time
-                data[ctrl]['date_time'] = current_time
+                data[ctrl]['date_time'] = current_time()
                 # measure global irradiance data from pyranometer
                 irr_master = SP420.Irradiance()
                 g_poa = irr_master.get_irradiance()
                 data[ctrl]['gpoa'] = g_poa
-                print_l(current_time, "GPOA Irradiance for " + ctrl + ": " + str(g_poa))
+                print_l(current_time(), "GPOA Irradiance for " + ctrl + ": " + str(g_poa))
                 # get the panel temperature using ambient temperature
                 amb_temp = w_read[1]
                 pan_temp = pow_master.get_panel_temp(amb_temp, g_poa)
@@ -267,30 +271,30 @@ while True:
                 ocv_pre = 0
                 scc_pre = 0
                 [ocv_pre, scc_pre] = test_master.run_measure_CTRL(panel_num)
-                print_l(current_time, "PRE EDS OCV for " + ctrl + ": " + str(ocv_pre))
-                print_l(current_time, "PRE EDS SCC for " + ctrl + ": " + str(scc_pre))
+                print_l(current_time(), "PRE EDS OCV for " + ctrl + ": " + str(ocv_pre))
+                print_l(current_time(), "PRE EDS SCC for " + ctrl + ": " + str(scc_pre))
                 data[ctrl]['ocv_pre'] = ocv_pre
                 data[ctrl]['scc_pre'] = scc_pre
                 # compute the PRE EDS activation power measurements for each panel
                 power_pre = pow_master.get_power_out(ocv_pre, scc_pre, pan_temp)
-                print_l(current_time, "PRE EDS Power for " + ctrl + ": " + str(power_pre))
+                print_l(current_time(), "PRE EDS Power for " + ctrl + ": " + str(power_pre))
                 data[ctrl]['pwr_pre'] = power_pre
                 # compute the PRE EDS activation PR measurements for each panel
                 pr_pre = pr_master.get_pr(ocv_pre, scc_pre, pan_temp, power_pre, g_poa)
-                print_l(current_time, "PRE EDS PR for " + ctrl + ": " + str(pr_pre))
+                print_l(current_time(), "PRE EDS PR for " + ctrl + ": " + str(pr_pre))
                 data[ctrl]['pr_pre'] = pr_pre
                 # compute the PRE EDS activation SI measurements for each panel
                 si_pre = soil_master.get_si(scc_pre, g_poa)
-                print_l(current_time, "PRE EDS SI for " + ctrl + ": " + str(si_pre))
+                print_l(current_time(), "PRE EDS SI for " + ctrl + ": " + str(si_pre))
                 data[ctrl]['si_pre'] = si_pre
 
                 # NO EDS ACTIVATION AND POST MEASUREMENTS FOR CTRL PANELS
-                print_l(current_time, "Not Activating EDS for " + ctrl + " panel")
+                print_l(current_time(), "Not Activating EDS for " + ctrl + " panel")
 
                 # SAVE DATA TO USB
                 # write data to csv file
                 csv_master.write_data(data[ctrl])
-                print_l(current_time, "Writing Results To CSV and TXT Files")
+                print_l(current_time(), "Writing Results To CSV and TXT Files")
                 # delay before changing to next EDS panel
                 time.sleep(10)
 
@@ -302,7 +306,7 @@ while True:
                     usb_master.setup_usb_mount()
                 else:
                     # if not, then reboot
-                    print_l(current_time, "No USB Detected!")
+                    print_l(current_time(), "No USB Detected!")
                     usb_master.reset()
 
                 # turn green and red LED on to show automatic testing is operating
@@ -311,16 +315,16 @@ while True:
                 GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
 
                 # start the measurement process
-                print_l(current_time, "Time check passed. Measurement procedure for " + eds + " panel")
+                print_l(current_time(), "Time check passed. Measurement procedure for " + eds + " panel")
                 # check the eds_number
                 panel_num = data[eds]['num']
                 # get the date and time
-                data[eds]['date_time'] = current_time
+                data[eds]['date_time'] = current_time()
                 # measure global irradiance data from pyranometer
                 irr_master = SP420.Irradiance()
                 g_poa = irr_master.get_irradiance()
                 data[eds]['gpoa'] = g_poa
-                print_l(current_time, "GPOA Irradiance for " + eds + ": " + str(g_poa))
+                print_l(current_time(), "GPOA Irradiance for " + eds + ": " + str(g_poa))
                 # get the panel temperature using ambient temperature
                 amb_temp = w_read[1]
                 pan_temp = pow_master.get_panel_temp(amb_temp, g_poa)
@@ -333,21 +337,21 @@ while True:
                 ocv_pre = 0
                 scc_pre = 0
                 [ocv_pre, scc_pre] = test_master.run_measure_EDS(panel_num)
-                print_l(current_time, "PRE EDS OCV for " + eds + ": " + str(ocv_pre))
-                print_l(current_time, "PRE EDS SCC for " + eds + ": " + str(scc_pre))
+                print_l(current_time(), "PRE EDS OCV for " + eds + ": " + str(ocv_pre))
+                print_l(current_time(), "PRE EDS SCC for " + eds + ": " + str(scc_pre))
                 data[eds]['ocv_pre'] = ocv_pre
                 data[eds]['scc_pre'] = scc_pre
                 # compute the PRE EDS activation power measurements for each panel
                 power_pre = pow_master.get_power_out(ocv_pre, scc_pre, pan_temp)
-                print_l(current_time, "PRE EDS Power for " + eds + ": " + str(power_pre))
+                print_l(current_time(), "PRE EDS Power for " + eds + ": " + str(power_pre))
                 data[eds]['pwr_pre'] = power_pre
                 # compute the PRE EDS activation PR measurements for each panel
                 pr_pre = pr_master.get_pr(ocv_pre, scc_pre, pan_temp, power_pre, g_poa)
-                print_l(current_time, "PRE EDS PR for " + eds + ": " + str(pr_pre))
+                print_l(current_time(), "PRE EDS PR for " + eds + ": " + str(pr_pre))
                 data[eds]['pr_pre'] = pr_pre
                 # compute the PRE EDS activation SI measurements for each panel
                 si_pre = soil_master.get_si(scc_pre, g_poa)
-                print_l(current_time, "PRE EDS SI for " + eds + ": " + str(si_pre))
+                print_l(current_time(), "PRE EDS SI for " + eds + ": " + str(si_pre))
                 data[eds]['si_pre'] = si_pre
 
                 # POST EDS ACTIVATION MEASUREMENT Not used instead put N/A
@@ -362,7 +366,7 @@ while True:
                 # WRITE DATA TO USB
                 # write data to csv file
                 csv_master.write_data(data[eds])
-                print_l(current_time, "Writing Results To CSV and TXT Files")
+                print_l(current_time(), "Writing Results To CSV and TXT Files")
                 # delay before changing to control panels
                 time.sleep(10)
 
@@ -392,45 +396,45 @@ while True:
                 data = panel_data
                 # Pre EDS Activation Panel Measurements
                 for eds in eds_ids:
-                    print_l(current_time, " Weather check passed. Now proceeding for time check for " + eds + " panel")
+                    print_l(current_time(), " Weather check passed. Now proceeding for time check for " + eds + " panel")
                     # get data for frequency and schedule check for the current eds panel
                     freq = data[eds]['frequency']
                     sched = data[eds]['schedule']
                     # declare panel class, which gives the frequency and schedule checks
                     eds_panel = SM.ScheduleMaster(eds, freq, sched, longitude, gmt_offset)
                     # check for the schedule check
-                    schedule_pass = eds_panel.check_time(current_time)
+                    schedule_pass = eds_panel.check_time(current_time())
                     # check for frequency check only if it meets schedule check
                     if schedule_pass:
-                        print_l(current_time," schedule passed for " + eds + " panel")
-                        frequency_pass = eds_panel.check_frequency(eds, current_time)
+                        print_l(current_time()," schedule passed for " + eds + " panel")
+                        frequency_pass = eds_panel.check_frequency(eds, current_time())
                     # proceed to EDS measurement and activation process
                     if schedule_pass and frequency_pass:
-                        print_l(current_time," schedule and frequency passed for " + eds + " panel")
+                        print_l(current_time()," schedule and frequency passed for " + eds + " panel")
                         # mount the usb for data collection if there is a USB plugged
                         if usb_master.check_usb() == True:
                             # mounts the usb
                             usb_master.setup_usb_mount()
                         else:
                             # if not, then reboot
-                            print_l(current_time, "No USB Detected!")
+                            print_l(current_time(), "No USB Detected!")
                             usb_master.reset()
                         # turn green and red LED on to show automatic testing is operating
                         # red LED on means USB should not be unplugged
                         GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
                         GPIO.output(test_master.get_pin('outPinLEDGreen'), 1)
                         # start the measurement process
-                        print_l(current_time,
+                        print_l(current_time(),
                                 " Weather, schedule, and frequency checks passed. Initiating testing procedure for " + eds + " panel")
                         # check the eds_number
                         panel_num = data[eds]['num']
                         # get the date and time
-                        data[eds]['date_time'] = current_time
+                        data[eds]['date_time'] = current_time()
                         # measure global irradiance data from pyranometer
                         irr_master = SP420.Irradiance()
                         g_poa = irr_master.get_irradiance()
                         data[eds]['gpoa'] = g_poa
-                        print_l(current_time, "GPOA Irradiance for " + eds + ": " + str(g_poa))
+                        print_l(current_time(), "GPOA Irradiance for " + eds + ": " + str(g_poa))
                         # get the panel temperature using ambient temperature
                         amb_temp = w_read[1]
                         pan_temp = pow_master.get_panel_temp(amb_temp, g_poa)
@@ -443,70 +447,70 @@ while True:
                         ocv_pre = 0
                         scc_pre = 0
                         [ocv_pre, scc_pre] = test_master.run_measure_EDS(panel_num)
-                        print_l(current_time, "PRE EDS OCV for " + eds + ": " + str(ocv_pre))
-                        print_l(current_time, "PRE EDS SCC for " + eds + ": " + str(scc_pre))
+                        print_l(current_time(), "PRE EDS OCV for " + eds + ": " + str(ocv_pre))
+                        print_l(current_time(), "PRE EDS SCC for " + eds + ": " + str(scc_pre))
                         data[eds]['ocv_pre'] = ocv_pre
                         data[eds]['scc_pre'] = scc_pre
                         # compute the PRE EDS activation power measurements for each panel
                         power_pre = pow_master.get_power_out(ocv_pre, scc_pre, pan_temp)
-                        print_l(current_time, "PRE EDS Power for " + eds + ": " + str(power_pre))
+                        print_l(current_time(), "PRE EDS Power for " + eds + ": " + str(power_pre))
                         data[eds]['pwr_pre'] = power_pre
                         # compute the PRE EDS activation PR measurements for each panel
                         pr_pre = pr_master.get_pr(ocv_pre, scc_pre, pan_temp, power_pre, g_poa)
-                        print_l(current_time, "PRE EDS PR for " + eds + ": " + str(pr_pre))
+                        print_l(current_time(), "PRE EDS PR for " + eds + ": " + str(pr_pre))
                         data[eds]['pr_pre'] = pr_pre
                         # compute the PRE EDS activation SI measurements for each panel
                         si_pre = soil_master.get_si(scc_pre, g_poa)
-                        print_l(current_time, "PRE EDS SI for " + eds + ": " + str(si_pre))
+                        print_l(current_time(), "PRE EDS SI for " + eds + ": " + str(si_pre))
                         data[eds]['si_pre'] = si_pre
 
                         # EDS ACTIVATION
                         test_master.run_test(panel_num)
-                        print_l(current_time, "Activating EDS for " + eds + " panel")
+                        print_l(current_time(), "Activating EDS for " + eds + " panel")
 
                         # POST EDS ACTIVATION MEASUREMENT
                         # measure POST EDS activation ocv and scc
                         ocv_post = 0
                         scc_post = 0
                         [ocv_post, scc_post] = test_master.run_measure_EDS(panel_num)
-                        print_l(current_time, "POST EDS OCV for " + eds + ": " + str(ocv_post))
-                        print_l(current_time, "POST EDS SCC for " + eds + ": " + str(scc_post))
+                        print_l(current_time(), "POST EDS OCV for " + eds + ": " + str(ocv_post))
+                        print_l(current_time(), "POST EDS SCC for " + eds + ": " + str(scc_post))
                         data[eds]['ocv_post'] = ocv_post
                         data[eds]['scc_post'] = scc_post
                         # compute the POST EDS activation power measurements for each panel
                         power_post = pow_master.get_power_out(ocv_post, scc_post, pan_temp)
-                        print_l(current_time, "POST EDS Power for " + eds + ": " + str(power_post))
+                        print_l(current_time(), "POST EDS Power for " + eds + ": " + str(power_post))
                         data[eds]['pwr_post'] = power_post
                         # compute the POST EDS activation PR measurements for each panel
                         pr_post = pr_master.get_pr(ocv_post, scc_post, pan_temp, power_post, g_poa)
-                        print_l(current_time, "POST EDS PR for " + eds + ": " + str(pr_post))
+                        print_l(current_time(), "POST EDS PR for " + eds + ": " + str(pr_post))
                         data[eds]['pr_post'] = pr_post
                         # compute the POST EDS activation SI measurements for each panel
                         si_post = soil_master.get_si(scc_post, g_poa)
-                        print_l(current_time, "POST EDS SI for " + eds + ": " + str(si_post))
+                        print_l(current_time(), "POST EDS SI for " + eds + ": " + str(si_post))
                         data[eds]['si_post'] = si_post
 
                         # WRITE DATA TO USB
                         # write data to csv file
                         csv_master.write_data(data[eds])
-                        print_l(current_time, "Writing Results To CSV and TXT Files")
+                        print_l(current_time(), "Writing Results To CSV and TXT Files")
                         # delay before changing to control panels
                         time.sleep(10)
 
                         # CTRL PANEL MEASUREMENTS
                         for ctrl in ctrl_ids:
                             # start the measurement process
-                            print_l(current_time,
+                            print_l(current_time(),
                                     "Measuring Control Panels. Initiating testing procedure for " + ctrl + " panel")
                             # check the eds_number
                             panel_num = data[ctrl]['num']
                             # get the date and time
-                            data[ctrl]['date_time'] = current_time
+                            data[ctrl]['date_time'] = current_time()
                             # measure global irradiance data from pyranometer
                             irr_master = SP420.Irradiance()
                             g_poa = irr_master.get_irradiance()
                             data[ctrl]['gpoa'] = g_poa
-                            print_l(current_time, "GPOA Irradiance for " + ctrl + ": " + str(g_poa))
+                            print_l(current_time(), "GPOA Irradiance for " + ctrl + ": " + str(g_poa))
                             # get the panel temperature using ambient temperature
                             amb_temp = w_read[1]
                             pan_temp = pow_master.get_panel_temp(amb_temp, g_poa)
@@ -518,30 +522,30 @@ while True:
                             ocv_pre = 0
                             scc_pre = 0
                             [ocv_pre, scc_pre] = test_master.run_measure_CTRL(panel_num)
-                            print_l(current_time, "PRE EDS OCV for " + ctrl + ": " + str(ocv_pre))
-                            print_l(current_time, "PRE EDS SCC for " + ctrl + ": " + str(scc_pre))
+                            print_l(current_time(), "PRE EDS OCV for " + ctrl + ": " + str(ocv_pre))
+                            print_l(current_time(), "PRE EDS SCC for " + ctrl + ": " + str(scc_pre))
                             data[ctrl]['ocv_pre'] = ocv_pre
                             data[ctrl]['scc_pre'] = scc_pre
                             # compute the PRE EDS activation power measurements for each panel
                             power_pre = pow_master.get_power_out(ocv_pre, scc_pre, pan_temp)
-                            print_l(current_time, "PRE EDS Power for " + ctrl + ": " + str(power_pre))
+                            print_l(current_time(), "PRE EDS Power for " + ctrl + ": " + str(power_pre))
                             data[ctrl]['pwr_pre'] = power_pre
                             # compute the PRE EDS activation PR measurements for each panel
                             pr_pre = pr_master.get_pr(ocv_pre, scc_pre, pan_temp, power_pre, g_poa)
-                            print_l(current_time, "PRE EDS PR for " + ctrl + ": " + str(pr_pre))
+                            print_l(current_time(), "PRE EDS PR for " + ctrl + ": " + str(pr_pre))
                             data[ctrl]['pr_pre'] = pr_pre
                             # compute the PRE EDS activation SI measurements for each panel
                             si_pre = soil_master.get_si(scc_pre, g_poa)
-                            print_l(current_time, "PRE EDS SI for " + ctrl + ": " + str(si_pre))
+                            print_l(current_time(), "PRE EDS SI for " + ctrl + ": " + str(si_pre))
                             data[ctrl]['si_pre'] = si_pre
 
                             # NO EDS ACTIVATION AND POST MEASUREMENTS FOR CTRL PANELS
-                            print_l(current_time, "Not Activating EDS for " + ctrl + " panel")
+                            print_l(current_time(), "Not Activating EDS for " + ctrl + " panel")
 
                             # SAVE DATA TO USB
                             # write data to csv file
                             csv_master.write_data(data[ctrl])
-                            print_l(current_time, "Writing Results To CSV and TXT Files")
+                            print_l(current_time(), "Writing Results To CSV and TXT Files")
                             # delay before changing to next EDS panel
                             time.sleep(10)
 
@@ -584,7 +588,7 @@ while True:
                 # mounts the usb
                 usb_master.setup_usb_mount()
             else:
-                print_l(current_time, "No USB Detected!")
+                print_l(current_time(), "No USB Detected!")
                 usb_master.reset()
             # turn green and red LED on to show measuring time
             GPIO.output(test_master.get_pin('outPinLEDRed'), 1)
@@ -595,50 +599,50 @@ while True:
             w_read = weather.read_humidity_temperature()
 
             # START SEQUENCE
-            print_l(current_time, "FORCED. Running Manual Activation Mode for EDS" + str(eds_num))
+            print_l(current_time(), "FORCED. Running Manual Activation Mode for EDS" + str(eds_num))
             # Get global irradiance data from pyranometer
             irr_master = SP420.Irradiance()
             g_poa = irr_master.get_irradiance()
-            print_l(current_time, "GPOA Measurement for EDS " + str(eds_num) + ": " + str(g_poa))
+            print_l(current_time(), "GPOA Measurement for EDS " + str(eds_num) + ": " + str(g_poa))
             # measure PV voc and isc before EDS activation
             [eds_ocv_before, eds_scc_before] = test_master.run_measure_EDS(eds_num)
-            print_l(current_time, "Pre-test OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_before))
-            print_l(current_time, "Pre-test SCC for EDS" + str(eds_num) + ": " + str(eds_scc_before))
+            print_l(current_time(), "Pre-test OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_before))
+            print_l(current_time(), "Pre-test SCC for EDS" + str(eds_num) + ": " + str(eds_scc_before))
             # get the panel temperature using ambient temperature
             amb_temp = w_read[1]
             pan_temp = pow_master.get_panel_temp(amb_temp, g_poa)
             # compute the power measurements for each panel
             eds_power_before = pow_master.get_power_out(eds_ocv_before, eds_scc_before, pan_temp)
-            print_l(current_time,
+            print_l(current_time(),
                     "Pre-EDS Manual Activation Power Calculation for EDS" + str(eds_num) + ": " + str(eds_power_before))
             # compute the PR before eds activation
             eds_pr_before = pr_master.get_pr(eds_ocv_before, eds_scc_before, pan_temp, eds_power_before, g_poa)
-            print_l(current_time,
+            print_l(current_time(),
                     "Pre-EDS Manual Activation PR Calculation for EDS" + str(eds_num) + ": " + str(eds_pr_before))
             # compute the SI before eds activation
             eds_si_before = soil_master.get_si(eds_scc_before, g_poa)
-            print_l(current_time,
+            print_l(current_time(),
                     "Pre-EDS Manual Activation SI Calculation for EDS" + str(eds_num) + ": " + str(eds_si_before))
             # activate the EDS film
             test_master.run_test(eds_num)
             # measure PV voc and isc after EDS activation
             [eds_ocv_after, eds_scc_after] = test_master.run_measure_EDS(eds_num)
-            print_l(current_time, "Post-EDS Manual Activation OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_after))
-            print_l(current_time, "Post-EDS Manual Activation SCC for EDS" + str(eds_num) + ": " + str(eds_scc_after))
+            print_l(current_time(), "Post-EDS Manual Activation OCV for EDS" + str(eds_num) + ": " + str(eds_ocv_after))
+            print_l(current_time(), "Post-EDS Manual Activation SCC for EDS" + str(eds_num) + ": " + str(eds_scc_after))
             # get the panel temperature using ambient temperature
             amb_temp = w_read[1]
             pan_temp = pow_master.get_panel_temp(amb_temp, g_poa)
             # compute the power measurements Post EDS
             eds_power_after = pow_master.get_power_out(eds_ocv_after, eds_scc_after, pan_temp)
-            print_l(current_time,
+            print_l(current_time(),
                     "Post-EDS Manual Activation Power for EDS" + str(eds_num) + ": " + str(eds_power_after))
             # compute the PR measurement Post EDS                       # compute the PR before eds activation
             eds_pr_after = pr_master.get_pr(eds_ocv_after, eds_scc_after, pan_temp, eds_power_after, g_poa)
-            print_l(current_time,
+            print_l(current_time(),
                     "Post-EDS Manual Activation PR Calculation for EDS" + str(eds_num) + ": " + str(eds_pr_after))
             # compute the SI before eds activation
             eds_si_after = soil_master.get_si(eds_scc_after, g_poa)
-            print_l(current_time,
+            print_l(current_time(),
                     "Post-EDS Manual Activation SI Calculation for EDS" + str(eds_num) + ": " + str(eds_si_after))
             # compile data
             man_power_data = [eds_power_before, eds_power_after]
@@ -649,7 +653,7 @@ while True:
             # write data for EDS tested
             csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], g_poa, eds_num, eds_ocv_before, eds_ocv_after,
                                          eds_scc_before, eds_scc_after, man_power_data, man_pr_data, man_si_data)
-            print_l(current_time, "Writing Manual Testing Mode Measurements Results To CSV and TXT Files")
+            print_l(current_time(), "Writing Manual Testing Mode Measurements Results To CSV and TXT Files")
             # un-mount the usb drive
             usb_master.reset_usb_mounts()
             # turn of RED LED, indicating USB can be swapped
@@ -659,7 +663,7 @@ while True:
             time.sleep(10)
 
             # FINISH
-            print_l(current_time, "Ended Manual Activation Test of EDS" + str(eds_num))
+            print_l(current_time(), "Ended Manual Activation Test of EDS" + str(eds_num))
 
         '''
         END MANUAL ACTIVATION CODE
@@ -681,7 +685,7 @@ while True:
         e_phrase = "Current error list: "
         for err in error_list:
             e_phrase += " [" + err + "]"
-        print_l(current_time, e_phrase)
+        print_l(current_time(), e_phrase)
 
     # blinking RED LED if error is raised
     if error_flag:
