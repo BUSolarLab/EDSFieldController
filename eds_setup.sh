@@ -16,6 +16,7 @@ echo ---
 echo Installing external dependencies. THIS TAKES A MINUTE. PLEASE WAIT...
 sudo pip3 install RPI.GPIO
 sudo pip3 install adafruit-circuitpython-pcf8523
+pip3 install adafruit-circuitpython-mcp3xxx
 sudo pip3 install adafruit-circuitpython-am2320
 sudo pip3 install i2cdev
 sudo apt-get update

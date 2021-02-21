@@ -38,6 +38,8 @@ git clone https://github.com/BUSolarLab/EDSFieldController
 ```
 chmod +x eds_setup.sh
 sudo ./eds_setup
+copy eds_bones.js to the desktop rename to "eds.js"
+create "usb_names.txt" file in desktop and input "xxxx-xxxx usb name" into text file 
 ```
 3. Setup systemctl so code will run on boot
 ```
