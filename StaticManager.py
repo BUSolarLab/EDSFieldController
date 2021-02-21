@@ -36,6 +36,7 @@ EDS_SCHEDULE = {
 }
 #DO NOT CHANGE THIS UNLESS CIRCUITRY HAS CHANGED
 DEFAULT_CONFIG_PARAM = {
+    #EDS numbers correspond to gpio pin numbers these numbers are different than the pi pinout 
     # EDS Panels for power supply activation pin numbers
     'EDS1': 4,
     'EDS2': 17,
@@ -43,6 +44,7 @@ DEFAULT_CONFIG_PARAM = {
     'EDS4': 19,
     'EDS5': 26,
     'EDS6': 27,
+    #'VOC/ISC': 25, 
     # EDS and CTRL Panels measurement pin numbers
     'EDS1PV': 7,
     'EDS2PV': 8,
@@ -58,12 +60,13 @@ DEFAULT_CONFIG_PARAM = {
     'EDSIDS': ['eds1','eds2','eds3','eds4','eds5'],
     'CTRLIDS': ['ctrl1','ctrl2'],
     # testing requirements
-    'maxTemperatureCelsius': 40,
-    'minTemperatureCelsius': 10,
-    'maxRelativeHumidity': 60,
-    'minRelativeHumidity': 5,
-    'testDurationSeconds': 120, #2 minute, duration for EDS activation
+    'maxTemperatureCelsius': 40, #degrees C
+    'minTemperatureCelsius': 10, #degrees C
+    'maxRelativeHumidity': 60,   #percentage
+    'minRelativeHumidity': 5,    #percentage
+    'testDurationSeconds': 120, #(seconds) 2 minute, duration for EDS activation
     # indicators/switches
+    #gpio pin number
     'outPinLEDGreen': 5,
     'outPinLEDRed': 13,
     'inPinManualActivate': 22,

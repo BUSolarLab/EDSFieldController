@@ -142,7 +142,6 @@ def add_error(error):
 
 
 print("Starting FTU code Written by Aditya Brian and Ben...")
-#uncomment if rtc is working
 print_time(current_time())
 
 '''
@@ -651,7 +650,7 @@ while True:
 
             # SAVE DATA TO USB
             # write data for EDS tested
-            csv_master.write_manual_data(curr_dt, w_read[1], w_read[0], g_poa, eds_num, eds_ocv_before, eds_ocv_after,
+            csv_master.write_manual_data(current_time(), w_read[1], w_read[0], g_poa, eds_num, eds_ocv_before, eds_ocv_after,
                                          eds_scc_before, eds_scc_after, man_power_data, man_pr_data, man_si_data)
             print_l(current_time(), "Writing Manual Testing Mode Measurements Results To CSV and TXT Files")
             # un-mount the usb drive
