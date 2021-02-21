@@ -185,7 +185,7 @@ class TestingMaster:
         GPIO.cleanup(pv_relay)
         time.sleep(0.5)
         # round the measurement results
-        return [round(read_ocv,2), round(read_scc*100,2)]
+        return [round(read_ocv,2), round(read_scc,2)]
     
     def run_measure_CTRL(self, ctrl_num):
         # Get pin for PV relay
