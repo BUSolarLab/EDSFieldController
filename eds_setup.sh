@@ -2,18 +2,22 @@
 #
 echo Initiating EDS Controller Setup...
 echo ---
-cd /Desktop
+cd /home/pi/Desktop
 echo ---
 #
-echo Installing Python code from github.com/BUSolarLab/EDSFieldController...
-git clone https://github.com/BUSolarLab/EDSFieldController.git
-echo ---
+#echo Installing Python code from github.com/BUSolarLab/EDSFieldController...
+#git clone https://github.com/BUSolarLab/EDSFieldController.git
+#echo ---
 #
 echo Creating usb_names.txt on Desktop
 touch usb_names.txt
 echo ---
 #
 echo Installing external dependencies. THIS TAKES A MINUTE. PLEASE WAIT...
+sudo apt-get install python3-pip
+python -m pip install --upgrade pip setuptools
+sudo apt-get install libatlas-base-dev
+sudo pip3 install numpy
 sudo pip3 install RPI.GPIO
 sudo pip3 install adafruit-circuitpython-pcf8523
 pip3 install adafruit-circuitpython-mcp3xxx
