@@ -14,10 +14,12 @@ touch usb_names.txt
 echo ---
 #
 echo Installing external dependencies. THIS TAKES A MINUTE. PLEASE WAIT...
-sudo apt-get install python3-pip
-python -m pip install --upgrade pip setuptools
-sudo apt-get install libatlas-base-dev
-sudo pip3 install numpy
+#uncomment if installing for rasbian lite (One must also create a Desktop directory for the pi)
+#sudo apt-get install raspberrypi-ui-mods
+#sudo apt-get install python3-pip
+#python -m pip install --upgrade pip setuptools
+#sudo apt-get install libatlas-base-dev
+#sudo pip3 install numpy
 sudo pip3 install RPI.GPIO
 sudo pip3 install adafruit-circuitpython-pcf8523
 pip3 install adafruit-circuitpython-mcp3xxx
