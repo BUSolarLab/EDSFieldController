@@ -6,6 +6,7 @@ Test 1
 1. Switch to normally closed by setting GPIO ports to output (3.3V), which is considered as LOW logic to relay
 2. Switch to normally open (LEDS off) by setting GPIO ports to input (~4V from the relay)
 '''
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 # Change to 0,1 for low high
 pinList = [4,17,6,19,26,27,25,23,15,20,16,12,8,7]
