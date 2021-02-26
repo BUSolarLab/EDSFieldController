@@ -16,11 +16,11 @@ for i in pinList:
 try:
     #LED ON
     for i in pinList:
-        GPIO.output(i,0)
+        GPIO.setup(i,GPIO.IN)
         time.sleep(0.5)
     #LED OFF
     for i in pinList:
-        GPIO.output(i,1)
+        GPIO.setup(i,GPIO.OUT)
         time.sleep(0.5)
 except KeyboardInterrupt:
     GPIO.cleanup()
