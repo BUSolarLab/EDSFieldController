@@ -7,21 +7,20 @@ Test 1
 2. Switch to normally open (LEDS off) by setting GPIO ports to input (~4V from the relay)
 '''
 GPIO.setmode(GPIO.BCM)
-
+# Change to 0,1 for low high
 pinList = [4,17,6,19,26,27,25,23,15,20,16,12,8,7]
 
 for i in pinList:
-    GPIO.setup(i,GPIO.IN)
-
+    GPIO.setup(i,GPIO.OUT)
 
 try:
     #LED ON
     for i in pinList:
-        GPIO.setup(i,GPIO.OUT)
+        GPIO.output(i,0)
         time.sleep(0.5)
     #LED OFF
     for i in pinList:
-        GPIO.setup(i,GPIO.IN)
+        GPIO.output(i,1)
         time.sleep(0.5)
 except KeyboardInterrupt:
     GPIO.cleanup()

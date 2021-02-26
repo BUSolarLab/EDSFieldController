@@ -44,7 +44,6 @@ DEFAULT_CONFIG_PARAM = {
     'EDS4': 19,
     'EDS5': 26,
     'EDS6': 27,
-    #'VOC/ISC': 25, 
     # EDS and CTRL Panels measurement pin numbers
     'EDS1PV': 7,
     'EDS2PV': 8,
