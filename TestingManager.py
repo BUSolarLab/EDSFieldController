@@ -47,7 +47,7 @@ class ADCMaster:
         raw = chan.voltage
         print('PV Raw volt read: ' + str(raw) + '[V]')
         #correction constant
-        correction_voc = 1 # Motherboard throughhole revision # 1.0520(M1), 1.7369(M2)
+        correction_voc = 1.247213 # Motherboard throughhole revision # 1.0520(M1), 1.7369(M2)
         R2 = 5.6 #Resistor 2 value in Megaohms in Voltage divider circuit
         R1 = 1 #Resistor 1 value in Megaohms Voltage divider circuit
         VDC = (R2 + R1) / R1
