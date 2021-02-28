@@ -34,7 +34,7 @@ time.sleep(3)
 print("Isc")
 print('Raw ADC Value: ', chan.value)
 print('ADC Voltage: ' + str(chan.voltage) + 'V')
-print('Isc Ampere: ' + str(chan.voltage) + 'A')
+print('Isc Ampere: ' + str(chan.voltage*1.4517) + 'A')
 
 #Delay
 time.sleep(3)
@@ -53,7 +53,7 @@ time.sleep(3)
 print("Voc")
 print('Raw ADC Value: ', chan.value)
 print('ADC Voltage: ' + str(chan.voltage) + 'V')
-print('Voc Voltage: ' + str(chan.voltage*11) + 'V')
+print('Voc Voltage: ' + str(chan.voltage*6.6* 1.247213) + 'V')
 
 #Reset Ports
 GPIO.setup(7, GPIO.IN)
