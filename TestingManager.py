@@ -47,7 +47,7 @@ class ADCMaster:
         raw = chan.voltage
         print('PV Raw volt read: ' + str(raw) + '[V]')
         #correction constant
-        correction_voc = 1.7369#1.0520(M1), 1.7369(M2)
+        correction_voc = 1 # Motherboard throughhole revision # 1.0520(M1), 1.7369(M2)
         # Since we divided voltage by 11, multiply by 11 to get actual Voc
         return raw * 11 * correction_voc
     
@@ -59,7 +59,7 @@ class ADCMaster:
         raw = chan.voltage
         print('PV Raw curr read: ' + str(raw) + '[A]')
         #correction constant
-        correction_isc = 1.5927#1.5674(M1), 1.5927(M2)
+        correction_isc = 1 #Motherboard Through hole adc revision # 1.5674(M1), 1.5927(M2)
         #SCC = Voc x 1 Ohm
         return raw * 1 * correction_isc
 

@@ -69,7 +69,7 @@ DEFAULT_CONFIG_PARAM = {
     'outPinLEDGreen': 5,
     'outPinLEDRed': 13,
     'inPinManualActivate': 22,
-    'manualEDSNumber': 2, #EDS 5, not pin number
+    'manualEDSNumber': 1, #EDS 5, not pin number
     'ADC': 25,
     'solarChargerEDSNumber': 6,
     # location data for solar noon calculation
