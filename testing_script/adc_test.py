@@ -53,7 +53,7 @@ time.sleep(3)
 print("Voc")
 print('Raw ADC Value: ', chan.value)
 print('ADC Voltage: ' + str(chan.voltage) + 'V')
-print('Voc Voltage: ' + str(chan.voltage*6.6* 1.247213) + 'V')
+print('Voc Voltage: ' + str(chan.voltage*6.6* 1.347213) + 'V')
 
 #Reset Ports
 GPIO.setup(7, GPIO.IN)
