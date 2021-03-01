@@ -16,20 +16,13 @@ message = input("Press enter to quit program\n")
 
 GPIO.cleanup()
 '''
-
+#button wired to pin 22
 #Using event_detection (current method for the FTU code)
-
-# setup GPIO board and pin, in this case pin #10
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(10,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
-# add event to the pin
-GPIO.add_event_detect(10,GPIO.RISING)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 while True:
-    if GPIO.event_detected(10):
-        print("Button is pressed")
-        time.sleep(6)
-    else:
-        print("No button pressed")
-        time.sleep(6)
-
+    time.sleep(0.2)
+    input_state  = GPIO.input(22)
+    if input_state == True:
+        print('Button pressed')

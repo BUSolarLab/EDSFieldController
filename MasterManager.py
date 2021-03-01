@@ -87,7 +87,7 @@ GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
 
 # manual button port setup
 GPIO.setup(test_master.get_pin('inPinManualActivate'), GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.add_event_detect(test_master.get_pin('inPinManualActivate'), GPIO.RISING)
+# GPIO.add_event_detect(test_master.get_pin('inPinManualActivate'), GPIO.RISING)
 
 # adc chip port setup
 GPIO.setup(test_master.get_pin('ADC'), GPIO.OUT)
@@ -581,7 +581,8 @@ while True:
         1) Check for changing input on switch pin
         2) If input is changed, and input is high (activate), then begin test
         '''
-        if GPIO.event_detected(test_master.get_pin('inPinManualActivate')):
+        input_state = GPIO.input(test_master.get_pin('inPinManualActivate'))
+        if input_state == True:
             # mount the usb for data collection
             if usb_master.check_usb() == True:
                 # mounts the usb
