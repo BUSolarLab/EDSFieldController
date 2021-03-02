@@ -352,6 +352,7 @@ class ScheduleMaster:
 					elif:
 					#checks for change in year
 						if current_year - activation_year >= 1:
+							print("year change")
 							json_file[name].update({
 								'is_activated':True,
 								'record_dt':dt
