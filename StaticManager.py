@@ -268,48 +268,8 @@ class ScheduleMaster:
         self.longitude = longitude
         self.gmt_off = gmt_off
 
-    #allows for function to be called without a class instance
     @staticmethod
-    def check_json_exist_blank(dt):
-        eds = {
-                'eds1':{
-                    'is_activated':False,
-                    'record_dt': dt
-                },
-                'eds2':{
-                    'is_activated':False,
-                    'record_dt': dt
-                },
-                'eds3':{
-                    'is_activated':False,
-                    'record_dt': dt
-                },
-                'eds4':{
-                    'is_activated':False,
-                    'record_dt': dt
-                },
-                'eds5':{
-                    'is_activated':False,
-                    'record_dt': dt
-                }
-            }
-        #checks if json exists
-        if not path.exists('/home/pi/Desktop/eds.json'):
-            print("json does not exist")
-            with open('/home/pi/Desktop/eds.json', 'w+') as file:
-                json.dump(eds, file)
-            return True
-        # checks if json is blank
-        elif path.getsize('/home/pi/Desktop/eds.json') <= 2:
-            print(" Json file is blank ")
-            with open('/home/pi/Desktop/eds.json', 'w+') as file:
-                json.dump(eds, file)
-            return True
-
-        else:
-            return False
-
-    def check_json_file(self, dt):
+    def check_json_file(dt):
         eds = {
                 'eds1':{
                     'is_activated':False,
@@ -350,7 +310,7 @@ class ScheduleMaster:
     
     def check_frequency(self,name,dt):
         # check if no json file in the desktop directory
-        if self.check_json_file(dt):
+        if check_json_file(dt):
             return True
         else:
             # load the json file
