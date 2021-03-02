@@ -310,7 +310,7 @@ class ScheduleMaster:
     
     def check_frequency(self,name,dt):
         # check if no json file in the desktop directory
-        if check_json_file(dt):
+        if self.check_json_file(dt):
             return True
         else:
             # load the json file
