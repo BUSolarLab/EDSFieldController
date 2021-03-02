@@ -294,13 +294,13 @@ class ScheduleMaster:
             }
         #checks if json exists
         if not path.exists('/home/pi/Desktop/eds.json'):
-            print("json does not exist")
+            print("\n json does not exist fixed \n")
             with open('/home/pi/Desktop/eds.json', 'w+') as file:
                 json.dump(eds, file)
             return True
         # checks if json is blank
         elif path.getsize('/home/pi/Desktop/eds.json') <= 2:
-            print(" Json file is blank ")
+            print("\n Json file is blank fixed \n")
             with open('/home/pi/Desktop/eds.json', 'w+') as file:
                 json.dump(eds, file)
             return True
