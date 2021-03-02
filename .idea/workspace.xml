@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f104a842-57df-425f-9fc9-fd5b3f7de1e9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/StaticManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/StaticManager.py" afterDir="false" />
-    </list>
+    <list default="true" id="f104a842-57df-425f-9fc9-fd5b3f7de1e9" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -81,27 +79,42 @@
       <option name="project" value="LOCAL" />
       <updated>1614702439435</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="fixed indent errors">
+      <created>1614702611019</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1614702611019</updated>
+    </task>
+    <task id="LOCAL-00006" summary="returned code to normal year change fixed">
+      <created>1614702893918</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1614702893918</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="reformatted code for readablility" />
     <MESSAGE value="testing" />
     <MESSAGE value="fixed indent errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed indent errors" />
+    <MESSAGE value="returned code to normal year change fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="returned code to normal year change fixed" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="989" y="443" key="CommitChangelistDialog2" timestamp="1614702438983">
+    <state x="989" y="443" key="CommitChangelistDialog2" timestamp="1614702893483">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state x="989" y="443" key="CommitChangelistDialog2/0.0.2560.1410@0.0.2560.1410" timestamp="1614702438983" />
+    <state x="989" y="443" key="CommitChangelistDialog2/0.0.2560.1410@0.0.2560.1410" timestamp="1614702893483" />
     <state x="683" y="520" key="SettingsEditor" timestamp="1614702083981">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
     <state x="683" y="520" key="SettingsEditor/0.0.2560.1410@0.0.2560.1410" timestamp="1614702083981" />
-    <state x="954" y="608" key="Vcs.Push.Dialog.v2" timestamp="1614702440338">
+    <state x="954" y="608" key="Vcs.Push.Dialog.v2" timestamp="1614702895091">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state x="954" y="608" key="Vcs.Push.Dialog.v2/0.0.2560.1410@0.0.2560.1410" timestamp="1614702440338" />
+    <state x="954" y="608" key="Vcs.Push.Dialog.v2/0.0.2560.1410@0.0.2560.1410" timestamp="1614702895091" />
   </component>
 </project>
