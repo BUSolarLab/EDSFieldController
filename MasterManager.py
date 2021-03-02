@@ -568,6 +568,9 @@ while True:
         else:
             # Set Activation Flags to False in eds.json at the end of the day
             if json_reset:
+                #checks is json file exists and is useable
+                if self.check_json_file(dt):
+                    return True
                 # load the json file
                 with open('/home/pi/Desktop/eds.json', 'r') as file:
                     json_file = json.load(file)
