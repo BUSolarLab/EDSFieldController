@@ -305,7 +305,6 @@ class ScheduleMaster:
             return True
 
         else:
-            print("yay")
             return False
     
     def check_frequency(self,name,dt):
