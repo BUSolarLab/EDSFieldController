@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f104a842-57df-425f-9fc9-fd5b3f7de1e9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.vs/slnx.sqlite" beforeDir="false" afterPath="$PROJECT_DIR$/.vs/slnx.sqlite" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MasterManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/MasterManager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StaticManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/StaticManager.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,7 +23,7 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RunManager">
     <configuration name="eds_setup.sh" type="ShConfigurationType" temporary="true">
@@ -76,17 +77,9 @@
     <option name="LAST_COMMIT_MESSAGE" value="testing" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="1117" y="458" key="CommitChangelistDialog2" timestamp="1592871977276">
+    <state x="683" y="520" key="SettingsEditor" timestamp="1614702083981">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state x="1117" y="458" key="CommitChangelistDialog2/0.0.2560.1410@0.0.2560.1410" timestamp="1592871977276" />
-    <state x="846" y="512" key="SettingsEditor" timestamp="1592868071741">
-      <screen x="0" y="0" width="2560" height="1410" />
-    </state>
-    <state x="846" y="512" key="SettingsEditor/0.0.2560.1410@0.0.2560.1410" timestamp="1592868071741" />
-    <state x="1082" y="623" key="Vcs.Push.Dialog.v2" timestamp="1592871980151">
-      <screen x="0" y="0" width="2560" height="1410" />
-    </state>
-    <state x="1082" y="623" key="Vcs.Push.Dialog.v2/0.0.2560.1410@0.0.2560.1410" timestamp="1592871980151" />
+    <state x="683" y="520" key="SettingsEditor/0.0.2560.1410@0.0.2560.1410" timestamp="1614702083981" />
   </component>
 </project>

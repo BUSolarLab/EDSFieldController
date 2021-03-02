@@ -323,7 +323,7 @@ class ScheduleMaster:
             else:
                 # check for frequency confirmation, also check if it is first activation, meaning record in json will be blank
                 current_day = self.day_of_year(dt)
-				current_year = dt.tm_year
+                current_year = dt.tm_year
                 #Try except statement for checking if first time activation
                 try:
                     activation_day = self.day_of_year(time.struct_time(tuple(json_file[name]['record_dt'])))
@@ -338,7 +338,7 @@ class ScheduleMaster:
                     return True
                 else:
                     print("Subsequent Activations \n")
-					activation_year = time.struct_time(tuple(json_file[name]['record_dt']).tm_year
+                    activation_year = time.struct_time(tuple(json_file[name]['record_dt'])).tm_year
                     #checks to see if frequency is met 
                     if current_day - activation_day >= self.frequency:
                         json_file[name].update({
@@ -349,17 +349,16 @@ class ScheduleMaster:
                             json.dump(json_file, file)
                         return True
 
-					elif:
-					#checks for change in year
-						if current_year - activation_year >= 1:
-							print("year change")
-							json_file[name].update({
-								'is_activated':True,
-								'record_dt':dt
-							})
-							with open('/home/pi/Desktop/eds.json', 'w') as file:
-								json.dump(json_file, file)
-							return True
+                    elif current_year - activation_year >= 1:
+                    #checks for change in year
+                            print("year change")
+                            json_file[name].update({
+                                'is_activated':True,
+                                'record_dt':dt
+                            })
+                            with open('/home/pi/Desktop/eds.json', 'w') as file:
+                                json.dump(json_file, file)
+                            return True
 
                     else:
                         # don't change the record_dt since did not meet frequency check
