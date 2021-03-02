@@ -568,40 +568,7 @@ while True:
         else:
             # Set Activation Flags to False in eds.json at the end of the day
             if json_reset:
-                #checks is json file exists and is useable (taken from def check_json_file(self, dt),
-                #did not want to use static method as this function is already used as a class method
-                if not path.exists('/home/pi/Desktop/eds.json'):
-                    print("json does not exist")
-                    eds = {
-                        'eds1':{
-                            'is_activated':False,
-                            'record_dt': dt
-                        },
-                        'eds2':{
-                            'is_activated':False,
-                            'record_dt': dt
-                        },
-                        'eds3':{
-                            'is_activated':False,
-                            'record_dt': dt
-                        },
-                        'eds4':{
-                            'is_activated':False,
-                            'record_dt': dt
-                        },
-                        'eds5':{
-                            'is_activated':False,
-                            'record_dt': dt
-                        }
-                    }
-                    with open('/home/pi/Desktop/eds.json', 'w+') as file:
-                        json.dump(eds, file)
-                    break
-                # checks if json is blank
-                elif path.getsize('/home/pi/Desktop/eds.json') <= 2:
-                    print(" Json file is blank ")
-                    with open('/home/pi/Desktop/eds.json', 'w+') as file:
-                        json.dump(eds, file)
+                if check_json_file(current_time()):
                     break
                 # load the json file
                 with open('/home/pi/Desktop/eds.json', 'r') as file:

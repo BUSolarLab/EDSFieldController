@@ -268,7 +268,9 @@ class ScheduleMaster:
         self.longitude = longitude
         self.gmt_off = gmt_off
 
-    def check_json_file(self, dt):
+    #allows for function to be called without a class instance
+    @staticmethod
+    def check_json_file(dt):
         #checks if json exists
         if not path.exists('/home/pi/Desktop/eds.json'):
             print("json does not exist")
@@ -309,7 +311,7 @@ class ScheduleMaster:
     
     def check_frequency(self,name,dt):
         # check if no json file in the desktop directory
-        if self.check_json_file(dt):
+        if check_json_file(dt):
             return True
         else:
             # load the json file
