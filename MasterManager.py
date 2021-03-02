@@ -414,12 +414,12 @@ while True:
                     schedule_pass = eds_panel.check_time(current_time())
                     # check for frequency check only if it meets schedule check
                     #if schedule_pass:
-                    if True
+                    if True:
                         print_l(current_time()," schedule passed for " + eds + " panel")
                         frequency_pass = eds_panel.check_frequency(eds, current_time())
                     # proceed to EDS measurement and activation process
                     #if schedule_pass and frequency_pass:
-                    if True
+                    if True:
                         print_l(current_time()," schedule and frequency passed for " + eds + " panel")
                         # mount the usb for data collection if there is a USB plugged
                         if usb_master.check_usb() == True:
