@@ -570,7 +570,7 @@ while True:
             if json_reset:
                 #checks is json file exists and is useable
                 if self.check_json_file(dt):
-                    return True
+                    break
                 # load the json file
                 with open('/home/pi/Desktop/eds.json', 'r') as file:
                     json_file = json.load(file)
