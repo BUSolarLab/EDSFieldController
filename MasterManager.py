@@ -166,6 +166,8 @@ while True:
         '''
         # switch power supply and EDS relays OFF (make sure this is always off unless testing)
         try:
+            #clean up pin for ocv isc as well
+            GPIO.cleanup(25)
             for eds in range(len(eds_ids)):
                 GPIO.cleanup(test_master.get_pin('EDS' + str(eds + 1)))
                 GPIO.cleanup(test_master.get_pin('EDS' + str(eds + 1) + 'PV'))

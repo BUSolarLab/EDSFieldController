@@ -35,6 +35,7 @@ class USBMaster:
 
     # reset function, basically reboots the system through command line
     def reset(self):
+        GPIO.cleanup()
         print("Rebooting in 10 seconds...")
         time.sleep(10)
         subprocess.call("sudo reboot", shell=True)
