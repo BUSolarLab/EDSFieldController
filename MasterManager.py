@@ -568,7 +568,7 @@ while True:
         else:
             # Set Activation Flags to False in eds.json at the end of the day
             if json_reset:
-                if check_json_file(current_time()):
+                if SM.ScheduleMaster.check_json_file(current_time()):
                     break
                 # load the json file
                 with open('/home/pi/Desktop/eds.json', 'r') as file:
