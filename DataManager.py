@@ -5,6 +5,7 @@ Author: Benjamin Considine, Brian Mahabir, Aditya Wikara
 Started: September 2018
 =============================
 '''
+import RPi.GPIO as GPIO
 import time
 import os
 import subprocess
