@@ -269,8 +269,7 @@ class ScheduleMaster:
         self.gmt_off = gmt_off
 
     #allows for function to be called without a class instance
-    @staticmethod
-    def check_json_file(dt):
+    def check_json_file(self, dt):
         eds = {
                 'eds1':{
                     'is_activated':False,
@@ -311,7 +310,7 @@ class ScheduleMaster:
     
     def check_frequency(self,name,dt):
         # check if no json file in the desktop directory
-        if check_json_file(dt):
+        if self.check_json_file(dt):
             return True
         else:
             # load the json file
