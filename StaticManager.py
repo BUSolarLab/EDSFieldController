@@ -297,7 +297,7 @@ class ScheduleMaster:
                 json.dump(eds, file)
             return True
         # checks if json is blank
-        if path.getsize('/home/pi/Desktop/eds.json') <= 2:
+        else if path.getsize('/home/pi/Desktop/eds.json') <= 2:
             print(" Json file is blank ")
             with open('/home/pi/Desktop/eds.json', 'w+') as file:
                 json.dump(eds, file)
