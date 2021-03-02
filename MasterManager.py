@@ -414,7 +414,7 @@ while True:
                     # check for frequency check only if it meets schedule check
                     #if schedule_pass:
 					if True:
-						schedule_pass = True:
+						schedule_pass = True
                         print_l(current_time()," schedule passed for " + eds + " panel")
                         frequency_pass = eds_panel.check_frequency(eds, current_time())
                     # proceed to EDS measurement and activation process
