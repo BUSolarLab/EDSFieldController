@@ -63,7 +63,7 @@ DEFAULT_CONFIG_PARAM = {
     'minTemperatureCelsius': 10, #degrees C
     'maxRelativeHumidity': 60,   #percentage
     'minRelativeHumidity': 5,    #percentage
-    'testDurationSeconds': 5, #(seconds) 2 minute, duration for EDS activation
+    'testDurationSeconds': 120, #(seconds) 2 minute, duration for EDS activation
     # indicators/switches
     #gpio pin number
     'outPinLEDGreen': 5,
@@ -269,6 +269,7 @@ class ScheduleMaster:
         self.gmt_off = gmt_off
 
     def check_json_file(self, dt):
+        #checks if json exists
         if not path.exists('/home/pi/Desktop/eds.json'):
             eds = {
                 'eds1':{
@@ -292,6 +293,11 @@ class ScheduleMaster:
                     'record_dt': dt
                 }
             }
+            with open('/home/pi/Desktop/eds.json', 'w+') as file:
+                json.dump(eds, file)
+            return True
+        # checks if json is blank
+        if path.getsize('/home/pi/Desktop/eds.json') <= 2:
             with open('/home/pi/Desktop/eds.json', 'w+') as file:
                 json.dump(eds, file)
             return True
