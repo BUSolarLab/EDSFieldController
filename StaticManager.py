@@ -63,7 +63,7 @@ DEFAULT_CONFIG_PARAM = {
     'minTemperatureCelsius': 10, #degrees C
     'maxRelativeHumidity': 60,   #percentage
     'minRelativeHumidity': 5,    #percentage
-    'testDurationSeconds': 120, #(seconds) 2 minute, duration for EDS activation
+    'testDurationSeconds': 5, #(seconds) 2 minute, duration for EDS activation
     # indicators/switches
     #gpio pin number
     'outPinLEDGreen': 5,

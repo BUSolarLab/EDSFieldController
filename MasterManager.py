@@ -234,8 +234,7 @@ while True:
         Field Test Unit Schedule for Measurement only
         --------------------------------------------------------------------------
         '''
-        #if noon: 
-        if True:
+        if noon: 
             print_l(current_time(), "Measurement only process starting...")
             # initialize weather and gpoa reading functions
             w_read = weather.read_humidity_temperature()
@@ -392,7 +391,8 @@ while True:
         --------------------------------------------------------------------------
         '''
         # first check, if it is during the day
-        if day:
+        #if day:
+        if True:
             # Temperature Humidity Sensor Check
             w_read = weather.read_humidity_temperature()
             temp_pass = test_master.check_temp(w_read[1])
@@ -413,11 +413,13 @@ while True:
                     # check for the schedule check
                     schedule_pass = eds_panel.check_time(current_time())
                     # check for frequency check only if it meets schedule check
-                    if schedule_pass:
+                    #if schedule_pass:
+                    if True
                         print_l(current_time()," schedule passed for " + eds + " panel")
                         frequency_pass = eds_panel.check_frequency(eds, current_time())
                     # proceed to EDS measurement and activation process
-                    if schedule_pass and frequency_pass:
+                    #if schedule_pass and frequency_pass:
+                    if True
                         print_l(current_time()," schedule and frequency passed for " + eds + " panel")
                         # mount the usb for data collection if there is a USB plugged
                         if usb_master.check_usb() == True:
