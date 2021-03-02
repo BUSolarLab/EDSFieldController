@@ -271,6 +271,7 @@ class ScheduleMaster:
     def check_json_file(self, dt):
         #checks if json exists
         if not path.exists('/home/pi/Desktop/eds.json'):
+            print("json does not exist")
             eds = {
                 'eds1':{
                     'is_activated':False,
@@ -304,6 +305,7 @@ class ScheduleMaster:
             return True
 
         else:
+            print("yay")
             return False
     
     def check_frequency(self,name,dt):
