@@ -213,6 +213,7 @@ while True:
         No Functionality if its at night (4PM - 9AM) to save power, just do LED blinking
         --------------------------------------------------------------------------
         '''
+        #Get time from RTC or time sync from internet
         current_dt = current_time()
 
         #Make this a while loop to reduce power consumtion
@@ -223,12 +224,18 @@ while True:
             day = True
             json_reset = False
 
+        if (current_dt.tm_hour == 12) and (current_dt.tm_min >= 0 and current_dt.tm_min < 2):
+            noon = True
+        else:
+            noon = False
+
         '''
         --------------------------------------------------------------------------
         Field Test Unit Schedule for Measurement only
         --------------------------------------------------------------------------
         '''
-        if (current_dt.tm_hour == 12) and (current_dt.tm_min >= 0 and current_dt.tm_min < 1):
+        #if noon: 
+        if True:
             print_l(current_time(), "Measurement only process starting...")
             # initialize weather and gpoa reading functions
             w_read = weather.read_humidity_temperature()

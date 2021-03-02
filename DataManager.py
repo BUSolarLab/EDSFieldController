@@ -98,7 +98,7 @@ class USBMaster:
 
     # mount USB
     def setup_usb_mount(self):
-        print("Mounting USB")
+        print(" Mounting USB")
         # get current usb label
         dir = str(subprocess.check_output("sudo blkid", shell=True))
         cur_label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
