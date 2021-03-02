@@ -271,10 +271,7 @@ class ScheduleMaster:
     #allows for function to be called without a class instance
     @staticmethod
     def check_json_file(dt):
-        #checks if json exists
-        if not path.exists('/home/pi/Desktop/eds.json'):
-            print("json does not exist")
-            eds = {
+        eds = {
                 'eds1':{
                     'is_activated':False,
                     'record_dt': dt
@@ -296,6 +293,9 @@ class ScheduleMaster:
                     'record_dt': dt
                 }
             }
+        #checks if json exists
+        if not path.exists('/home/pi/Desktop/eds.json'):
+            print("json does not exist")
             with open('/home/pi/Desktop/eds.json', 'w+') as file:
                 json.dump(eds, file)
             return True
