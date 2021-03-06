@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f104a842-57df-425f-9fc9-fd5b3f7de1e9" name="Default Changelist" comment="" />
+    <list default="true" id="f104a842-57df-425f-9fc9-fd5b3f7de1e9" name="Default Changelist" comment="returned code to normal year change fixed">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/StaticManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/StaticManager.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -93,7 +96,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614702893918</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="returned code to normal year change fixed">
+      <created>1614703369144</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1614703369144</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -104,17 +114,21 @@
     <option name="LAST_COMMIT_MESSAGE" value="returned code to normal year change fixed" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="989" y="443" key="CommitChangelistDialog2" timestamp="1614702893483">
+    <state x="989" y="443" key="CommitChangelistDialog2" timestamp="1614703483280">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state x="989" y="443" key="CommitChangelistDialog2/0.0.2560.1410@0.0.2560.1410" timestamp="1614702893483" />
+    <state x="989" y="443" key="CommitChangelistDialog2/0.0.2560.1410@0.0.2560.1410" timestamp="1614703483280" />
+    <state x="1092" y="504" key="FileChooserDialogImpl" timestamp="1614726911561">
+      <screen x="0" y="0" width="2560" height="1410" />
+    </state>
+    <state x="1092" y="504" key="FileChooserDialogImpl/0.0.2560.1410@0.0.2560.1410" timestamp="1614726911561" />
     <state x="683" y="520" key="SettingsEditor" timestamp="1614702083981">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
     <state x="683" y="520" key="SettingsEditor/0.0.2560.1410@0.0.2560.1410" timestamp="1614702083981" />
-    <state x="954" y="608" key="Vcs.Push.Dialog.v2" timestamp="1614702895091">
+    <state x="954" y="608" key="Vcs.Push.Dialog.v2" timestamp="1614703370125">
       <screen x="0" y="0" width="2560" height="1410" />
     </state>
-    <state x="954" y="608" key="Vcs.Push.Dialog.v2/0.0.2560.1410@0.0.2560.1410" timestamp="1614702895091" />
+    <state x="954" y="608" key="Vcs.Push.Dialog.v2/0.0.2560.1410@0.0.2560.1410" timestamp="1614703370125" />
   </component>
 </project>

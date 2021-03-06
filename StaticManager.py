@@ -38,40 +38,40 @@ EDS_SCHEDULE = {
 DEFAULT_CONFIG_PARAM = {
     #EDS numbers correspond to gpio pin numbers these numbers are different than the pi pinout 
     # EDS Panels for power supply activation pin numbers
-    'EDS1': 4,
-    'EDS2': 17,
-    'EDS3': 6,
-    'EDS4': 19,
-    'EDS5': 26,
-    'EDS6': 27,
+    'EDS1': 4,  # GPIO 4 = pin 7
+    'EDS2': 17, # GPIO 17 = pin 11
+    'EDS3': 6,  # GPIO 6 = pin 31
+    'EDS4': 19, # GPIO 19 = pin 21
+    'EDS5': 26, # GPIO 26 = pin 37
+    'EDS6': 27, # GPIO 27 = pin 13
     # EDS and CTRL Panels measurement pin numbers
-    'EDS1PV': 7,
-    'EDS2PV': 8,
-    'EDS3PV': 12,
-    'EDS4PV': 16,
-    'EDS5PV': 20,
-    'EDS6PV': 21,
-    'CTRL1PV': 15,
-    'CTRL2PV': 23,
-    'CTRLIDS': [1, 2],
+    'EDS1PV': 7, # GPIO 7 = pin 26
+    'EDS2PV': 8, # GPIO 8 = pin 24
+    'EDS3PV': 12, # GPIO 12 = pin 32
+    'EDS4PV': 16, # GPIO 16 = pin 36
+    'EDS5PV': 20, # GPIO 20 = pin 38
+    'EDS6PV': 21, # GPIO 21 = pin 40
+    'CTRL1PV': 15, # GPIO 15 = pin 10
+    'CTRL2PV': 23, # GPIO 23 = pin 16
+    # 'CTRLIDS': [1, 2],
     # for measurement loop
     'PANELIDS':['eds1','eds2','eds3','eds4','eds5','ctrl1','ctrl2'],
     'EDSIDS': ['eds1','eds2','eds3','eds4','eds5'],
     'CTRLIDS': ['ctrl1','ctrl2'],
     # testing requirements
-    'maxTemperatureCelsius': 40, #degrees C
-    'minTemperatureCelsius': 10, #degrees C
-    'maxRelativeHumidity': 60,   #percentage
-    'minRelativeHumidity': 5,    #percentage
-    'testDurationSeconds': 120, #(seconds) 2 minute, duration for EDS activation
+    'maxTemperatureCelsius': 40, # degrees C
+    'minTemperatureCelsius': 10, # degrees C
+    'maxRelativeHumidity': 60,   # percentage
+    'minRelativeHumidity': 5,    # percentage
+    'testDurationSeconds': 120, # (seconds) 2 minute, duration for EDS activation
     # indicators/switches
-    #gpio pin number
-    'outPinLEDGreen': 5,
-    'outPinLEDRed': 13,
-    'inPinManualActivate': 22,
-    'manualEDSNumber': 1, #EDS 5, not pin number
-    'ADC': 25,
-    'solarChargerEDSNumber': 6,
+    # gpio pin number
+    'outPinLEDGreen': 5, # GPIO 5 = pin 29
+    'outPinLEDRed': 13, # GPIO 13 = pin 33
+    'inPinManualActivate': 22, # GPIO 22 = pin 15
+    'manualEDSNumber': 1, # EDS number, not pin number
+    'ADC': 25, # GPIO 25 = pin 22
+    'solarChargerEDSNumber': 6, # EDS number not pin number
     # location data for solar noon calculation
     'degLongitude': -71.05,
     'offsetGMT': -5,
