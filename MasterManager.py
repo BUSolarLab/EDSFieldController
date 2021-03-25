@@ -37,25 +37,19 @@ print(usb_master.get_USB_path())
 # setup sensors
 weather = AM2315.AM2315()
 i2c_bus = busio.I2C(SCL, SDA)
-#uncomment if rtc is working
-#rtc = adafruit_pcf8523.PCF8523(i2c_bus)
 
-#set up rtc or network time
+# set up network or rtc time in a tuple format
 def current_time():
     current_date = datetime.datetime.now()
     current_clock = time.struct_time((current_date.year, current_date.month,current_date.day, 
                                      current_date.hour, current_date.minute,
                                      current_date.second, 0, -1, -1))
-    #comment line above and uncomment line below if using rtc 
-    #current_clock = rtc.datetime
     return current_clock
 
 # creating initial csv and txt files to usb
 print("Setting up initial CSV and TXT files in USB if not exist yet")
 usb_master.setup_usb_mount()
 csv_master = DM.CSVMaster(usb_master.get_USB_path())
-#uncomment for rtc
-#log_master = DM.LogMaster(usb_master.get_USB_path(), current_time())
 log_master = DM.LogMaster(usb_master.get_USB_path(), current_time())
 usb_master.reset_usb_mounts()
 
@@ -87,6 +81,7 @@ GPIO.output(test_master.get_pin('outPinLEDGreen'), 0)
 
 # manual button port setup
 GPIO.setup(test_master.get_pin('inPinManualActivate'), GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+# old button setup
 # GPIO.add_event_detect(test_master.get_pin('inPinManualActivate'), GPIO.RISING)
 
 # adc chip port setup
@@ -175,21 +170,23 @@ while True:
                 GPIO.cleanup(test_master.get_pin('CTRL' + str(ctrl + 1) + 'PV'))
         except:
             add_error("GPIO-Cleanup")
-
         '''
         --------------------------------------------------------------------------
         Checking if RTC is working (initial check)
         --------------------------------------------------------------------------
         '''
-        try:
-            #temp code added until rtc time is fixed
-            current_date = datetime.datetime.now()
-
-            # remove error if corrected
+        #get time in sec
+        sec_old = current_time().tm_sec
+        time.sleep(2)
+        # get time in sec after 2 seconds
+        sec_new = current_time().tm_sec
+        # if the two times match there is an error
+        if sec_old == sec_new :
+            add_error("Sensor-RTC-1")
+        else:
+            # remove error if corrected and proceed to next code
             if "Sensor-RTC-1" in error_list:
                 error_list.remove("Sensor-RTC-1")
-        except:
-            add_error("Sensor-RTC-1")
 
         '''
         --------------------------------------------------------------------------
@@ -213,7 +210,7 @@ while True:
         No Functionality if its at night (4PM - 9AM) to save power, just do LED blinking
         --------------------------------------------------------------------------
         '''
-        #Get time from RTC or time sync from internet
+        #Get time from RTC or time sync from internet 
         current_dt = current_time()
 
         #Make this a while loop to reduce power consumtion
