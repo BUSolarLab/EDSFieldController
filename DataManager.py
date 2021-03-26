@@ -31,8 +31,9 @@ class USBMaster:
         self.USB_path = None
         self.uuid = None
         self.label = None
-        self.set_USB_name()
-        self.check_new_USB()
+        self.fstype = None
+        #self.set_USB_name()
+        #self.check_new_USB()
 
     # reset function, basically reboots the system through command line
     def reset(self):
@@ -48,10 +49,11 @@ class USBMaster:
         if "/dev/sda1:" in dir:
             self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
             self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+            fstype_cap = dir.split('/dev/sda1:')[1].split('FSTYPE=')[1].split('"')[1]
+            self.fstype = fstype_cap.lower()
             print("Found USB named: "+self.uuid)
         else:
             print("USB not mounted! Please insert USB!")
-            self.reset()
 
     # check if it is a new USB
     def check_new_USB(self):
@@ -90,6 +92,7 @@ class USBMaster:
                 self.update_fstab_file()
                 self.reset()
 
+
     # set the USB path for data writing in MasterManager.py
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
@@ -126,7 +129,10 @@ class USBMaster:
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
         os.chmod("/etc/fstab", 0o777)
         f=open("/etc/fstab", "a+")
-        f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" vfat auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
+        if self.fstype == 'ntfs' or  self.fstype == 'fat'
+            f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" "+self.fstype+" auto,nofail,umask=000,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
+        else:
+            f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" "+self.fstype+" auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
 
     # check if there is a usb or not
     def check_usb(self):

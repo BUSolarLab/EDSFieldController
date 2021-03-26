@@ -32,6 +32,15 @@ logging.info('Code started')
 static_master = SM.StaticMaster()
 test_master = TM.TestingMaster(static_master.get_config())
 usb_master = DM.USBMaster()
+
+#loop until a usb drive is inputted
+while usb_mater.check_usb() == False
+    print("USB not found! plug in a USB to continue")
+    time.sleep(1)
+print("USB found continuing... \n")
+#set up usb
+usb_master.set_USB_name()
+usb_master.check_new_USB()
 print(usb_master.get_USB_path())
 
 # setup sensors
