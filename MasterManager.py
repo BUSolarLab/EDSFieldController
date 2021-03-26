@@ -34,7 +34,7 @@ test_master = TM.TestingMaster(static_master.get_config())
 usb_master = DM.USBMaster()
 
 #loop until a usb drive is inputted
-while usb_mater.check_usb() == False
+while usb_mater.check_usb() == False:
     print("USB not found! plug in a USB to continue")
     time.sleep(1)
 print("USB found continuing... \n")
