@@ -41,7 +41,9 @@ echo Installing USB auto mount library and setting config...
 sudo apt-get install ntfs-3g
 sudo apt-get install exfat-fuse
 sudo apt-get install exfat-utils
-sudo apt-get install usbmount
+#do not need usb mount anymore do to errors with ntfs
+#sudo apt-get install usbmount
+#sudo apt-get remove usbmount
 sudo apt install nfs-kernel-server
 # change config settings
 sed -i "s/\(FS_MOUNTOPTIONS *= *\).*/\1\"-fstype=vfat,gid=users,dmask=0007,fmask=0117\"/" /etc/usbmount/usbmount.conf
