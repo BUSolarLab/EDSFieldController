@@ -129,7 +129,7 @@ class USBMaster:
         subprocess.call("sudo chown -R pi:pi /etc/fstab", shell=True)
         os.chmod("/etc/fstab", 0o777)
         f=open("/etc/fstab", "a+")
-        if self.fstype == 'ntfs' or  self.fstype == 'fat'
+        if self.fstype == 'ntfs' or  self.fstype == 'fat':
             f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" "+self.fstype+" auto,nofail,umask=000,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
         else:
             f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" "+self.fstype+" auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
