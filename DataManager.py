@@ -49,8 +49,7 @@ class USBMaster:
         if "/dev/sda1:" in dir:
             self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
             self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
-            fstype_cap = dir.split('/dev/sda1:')[1].split('FSTYPE=')[1].split('"')[1]
-            self.fstype = fstype_cap.lower()
+            self.fstype = dir.split('/dev/sda1:')[1].split('TYPE=')[1].split('"')[1]
             print("Found USB named: "+self.uuid)
         else:
             print("USB not mounted! Please insert USB!")
