@@ -54,7 +54,7 @@ class USBMaster:
             if check_label == None or check_uuid == None or check_fstype == None:
                 print("Invalid USB either label, uuid or fstype is not listed for the drive! Please inset a new USB or reformat this one to Fat32")
                 return False
-            elif check_fstype != 'vfat' and check_fstype != 'ntfs' and check_fstype != 'exfat' check_fstype != 'ext4':
+            elif check_fstype != 'vfat' and check_fstype != 'ntfs' and check_fstype != 'exfat' and check_fstype != 'ext4':
                 print("USB format is invalid please reformat to FAT32 preferably")
                 return False
             elif ' ' in check_label:
