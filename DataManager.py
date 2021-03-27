@@ -67,7 +67,7 @@ class USBMaster:
                 try:
                     if self.fstype == 'vfat':
                         subprocess.call("sudo umount /dev/sda1", shell=True)
-                        subprocess.call("sudo mlabel -i /dev/sda1/ ::"+str(self.label), shell=True)
+                        subprocess.call("sudo mlabel -i /dev/sda1 ::"+str(self.label), shell=True)
                         return True
                     if self.fstype == 'ext4':
                         subprocess.call("sudo umount /dev/sda1", shell=True)
