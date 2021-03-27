@@ -71,15 +71,15 @@ class USBMaster:
                         return True
                     if self.fstype == 'ext4':
                         subprocess.call("sudo umount /dev/sda1", shell=True)
-                        subprocess.call("sudo e2label /dev/sda1/ "+str(self.label), shell=True)
+                        subprocess.call("sudo e2label /dev/sda1 "+str(self.label), shell=True)
                         return True
                     if self.fstype == 'ntfs':
                         subprocess.call("sudo umount /dev/sda1", shell=True)
-                        subprocess.call("sudo ntfslabel /dev/sda1/ "+str(self.label), shell=True)
+                        subprocess.call("sudo ntfslabel /dev/sda1 "+str(self.label), shell=True)
                         return True
                     if self.fstype == 'exfat':
                         subprocess.call("sudo umount /dev/sda1", shell=True)
-                        subprocess.call("sudo exfatlabel /dev/sda1/ "+str(self.label), shell=True)
+                        subprocess.call("sudo exfatlabel /dev/sda1 "+str(self.label), shell=True)
                         return True
                 except:
                     print("Dependencies to rename USB is not found please retry eds_setup.sh")
