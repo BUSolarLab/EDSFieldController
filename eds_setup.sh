@@ -46,6 +46,8 @@ sudo apt-get install exfat-utils
 #sudo apt-get install usbmount
 sudo apt-get remove usbmount
 sudo apt install nfs-kernel-server
+#install python editor if not already installed
+sudo apt-get install thonny
 # change config settings
 sed -i "s/\(FS_MOUNTOPTIONS *= *\).*/\1\"-fstype=vfat,gid=users,dmask=0007,fmask=0117\"/" /etc/usbmount/usbmount.conf
 sed -i "s/\(MountFlags *= *\).*/\1shared/" /lib/systemd/system/systemd-udevd.service
