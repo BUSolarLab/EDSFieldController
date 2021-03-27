@@ -47,12 +47,52 @@ class USBMaster:
         # check if USB mounted
         dir = str(subprocess.check_output("sudo blkid", shell=True))
         if "/dev/sda1:" in dir:
-            self.label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
-            self.uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
-            self.fstype = dir.split('/dev/sda1:')[1].split('TYPE=')[1].split('"')[1]
-            print("Found USB named: "+self.uuid)
+            check_label = dir.split('/dev/sda1:')[1].split('LABEL=')[1].split('"')[1]
+            check_uuid = dir.split('/dev/sda1:')[1].split('UUID=')[1].split('"')[1]
+            check_fstype = dir.split('/dev/sda1:')[1].split('TYPE=')[1].split('"')[1]
+            # check if one either uuid label or fstype is not available 
+            if check_label == None or check_uuid == None or check_fstype == None:
+                print("Invalid USB either label, uuid or fstype is not listed for the drive! Please inset a new USB or reformat this one to Fat32")
+                return False
+            elif check_fstype != 'vfat' and check_fstype != 'ntfs' and check_fstype != 'exfat' check_fstype != 'ext4':
+                print("USB format is invalid please reformat to FAT32 preferably")
+                return False
+            elif ' ' in check_label:
+                #set uuid to class variable as it satisfies the contraints
+                #set fstype to class variable as it satisfies the contraints
+                self.uuid = check_uuid
+                self.fstype = check_fstype
+                print("USB name has spaces in name changing to underscore to comply with code")
+                self.label = check_label.replace(' ', '_')
+                try:
+                    if self.fstype == 'vfat':
+                        subprocess.call("sudo umount /dev/sda1", shell=True)
+                        subprocess.call("sudo mlabel -i /dev/sda1/ ::"+str(self.label), shell=True)
+                        return True
+                    if self.fstype == 'ext4':
+                        subprocess.call("sudo umount /dev/sda1", shell=True)
+                        subprocess.call("sudo e2label /dev/sda1/ "+str(self.label), shell=True)
+                        return True
+                    if self.fstype == 'ntfs':
+                        subprocess.call("sudo umount /dev/sda1", shell=True)
+                        subprocess.call("sudo ntfslabel /dev/sda1/ "+str(self.label), shell=True)
+                        return True
+                    if self.fstype == 'exfat':
+                        subprocess.call("sudo umount /dev/sda1", shell=True)
+                        subprocess.call("sudo exfatlabel /dev/sda1/ "+str(self.label), shell=True)
+                        return True
+                except:
+                    print("Dependencies to rename USB is not found please retry eds_setup.sh")
+                    return False
+            else:
+                self.uuid = check_uuid
+                self.fstype = check_fstype
+                self.label = check_label
+                print("Found USB named: "+self.uuid)
+                return True
         else:
             print("USB not mounted! Please insert USB!")
+            return False
 
     # check if it is a new USB
     def check_new_USB(self):
@@ -96,7 +136,7 @@ class USBMaster:
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
         if self.uuid is not None:
-            self.USB_path = "/media/" + self.label
+            self.USB_path = "/media/" + str(self.label)
 
     # mount USB
     def setup_usb_mount(self):

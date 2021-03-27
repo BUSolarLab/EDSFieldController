@@ -37,9 +37,10 @@ usb_master = DM.USBMaster()
 while usb_master.check_usb() == False:
     print("USB not found! plug in a USB to continue")
     time.sleep(1)
-print("USB found continuing... \n")
+print("USB found continuing to set up... \n")
 #set up usb
-usb_master.set_USB_name()
+while usb_master.set_USB_name() == False:
+    print("USB is invalid")
 usb_master.check_new_USB()
 print(usb_master.get_USB_path())
 
