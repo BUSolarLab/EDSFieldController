@@ -38,6 +38,7 @@ sudo python3 setup.py install
 echo ---
 # usb mounting dependancies
 echo Installing USB auto mount library and setting config...
+sudo apt-get install mtools
 sudo apt-get install ntfs-3g
 sudo apt-get install exfat-fuse
 sudo apt-get install exfat-utils
