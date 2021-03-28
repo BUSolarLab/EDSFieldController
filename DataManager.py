@@ -136,7 +136,7 @@ class USBMaster:
     def set_USB_path(self):
         # gets USB file path for saving if USB name found
         if self.uuid is not None:
-            self.USB_path = "/media/" + str(self.label)
+            self.USB_path = "/media/" + str(self.uuid)+"/"+str(self.label)
 
     # mount USB
     def setup_usb_mount(self):
@@ -153,8 +153,8 @@ class USBMaster:
         # mount the usb
         if not os.path.exists("/media/"+str(self.label)):
             subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
-        subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
-        subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
+        subprocess.call("sudo chown -R pi:pi /media/" + str(self.uuid)+"/"+str(self.label), shell=True)
+        subprocess.call("sudo mount /dev/sda1 /media/" + str(self.uuid)+"/"+str(self.label)" -o uid=pi,gid=pi", shell=True)
 
     # un-mount all USBs
     def reset_usb_mounts(self):
@@ -170,9 +170,9 @@ class USBMaster:
         os.chmod("/etc/fstab", 0o777)
         f=open("/etc/fstab", "a+")
         if self.fstype == 'ntfs' or  self.fstype == 'fat':
-            f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" "+self.fstype+" auto,nofail,umask=000,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
+            f.write("UUID="+str(self.uuid)+" /media/" + str(self.uuid)+"/"+str(self.label)" "+self.fstype+" auto,nofail,umask=000,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
         else:
-            f.write("UUID="+str(self.uuid)+" /media/"+str(self.label)+" "+self.fstype+" auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
+            f.write("UUID="+str(self.uuid)+" /media/" + str(self.uuid)+"/"+str(self.label)" "+self.fstype+" auto,nofail,noatime,users,permissions,rw,uid=pi,gid=pi 0 0\n")
 
     # check if there is a usb or not
     def check_usb(self):
