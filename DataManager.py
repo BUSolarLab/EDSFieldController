@@ -102,7 +102,7 @@ class USBMaster:
         f.close()
         # if empty list
         if not usb_names:
-            print("Configurating new USB drive in FTU system!")
+            print("Empty List! Configurating new USB drive in FTU system!")
             f = open("/home/pi/Desktop/usb_names.txt", "a+")
             f.write(str(self.uuid)+" "+str(self.label)+"\n")
             f.close()
@@ -118,7 +118,7 @@ class USBMaster:
                 uuid_list.append(x.split()[0])
                 label_list.append(x.split()[1])
             # current usb is registered
-            if self.label in label_list:
+            if self.label in label_list and self.uuid in uuid_list:
                 print("USB Already Registered!")
                 self.set_USB_path()
             # current usb is not registered
