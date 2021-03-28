@@ -162,6 +162,7 @@ class USBMaster:
     # un-mount all USBs
     def reset_usb_mounts(self):
         print("Un-Mounting USB")
+        time.sleep(0.5)
         #subprocess.call("sudo umount /media/"+str(self.label), shell=True)
         subprocess.call("sudo umount /dev/sda1", shell=True)
 
