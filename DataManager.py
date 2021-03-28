@@ -155,7 +155,7 @@ class USBMaster:
             subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
         subprocess.call("sudo chown -R pi:pi /media/"+str(self.label), shell=True)
         #unmount if already mounted wait then mount to make sure its writable on mount
-        subprocess.call("sudo umount /media/"+str(self.label), shell=True)
+        subprocess.call("sudo umount /dev/sda1", shell=True)
         time.sleep(0.5)
         subprocess.call("sudo mount /dev/sda1 /media/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
 
