@@ -160,7 +160,7 @@ class USBMaster:
     def reset_usb_mounts(self):
         print("Un-Mounting USB")
         time.sleep(0.1)
-        subprocess.call("sudo umount /media/"+str(self.label), shell=True)
+        subprocess.call("sudo umount /media/" + str(self.uuid)+"/"+str(self.label), shell=True)
 
     # edit fstab file to auto-mount when boot
     def update_fstab_file(self):
