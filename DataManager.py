@@ -54,7 +54,7 @@ class USBMaster:
             if check_label == None or check_uuid == None or check_fstype == None:
                 print("Invalid USB either label, uuid or fstype is not listed for the drive! Please inset a new USB or reformat this one to Fat32")
                 return False
-            elif check_fstype != 'vfat' and check_fstype != 'ntfs' and check_fstype != 'exfat' and check_fstype != 'ext4':
+            elif check_fstype != 'vfat' and check_fstype != 'ntfs' and check_fstype != 'exfat' and check_fstype != 'ext4' and check_fstype != 'hfsplus':
                 print("USB format is invalid please reformat to FAT32 preferably")
                 return False
             elif ' ' in check_label:
@@ -81,6 +81,9 @@ class USBMaster:
                         subprocess.call("sudo umount /dev/sda1", shell=True)
                         subprocess.call("sudo exfatlabel /dev/sda1 "+str(self.label), shell=True)
                         return True
+                    if self.fstype == 'hfsplus':
+                        print("Cannot rename Apple formated USB since name is invalid. Please Rename USB without spaces")
+                        return False
                 except:
                     print("Dependencies to rename USB is not found please retry eds_setup.sh")
                     return False
@@ -154,7 +157,11 @@ class USBMaster:
         if not os.path.exists("/media/"+str(self.label)):
             subprocess.call("sudo mkdir /media/"+str(self.label), shell=True)
         subprocess.call("sudo chown -R pi:pi /media/" + str(self.uuid)+"/"+str(self.label), shell=True)
-        subprocess.call("sudo mount /dev/sda1 /media/" + str(self.uuid)+"/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
+        if self.fstype == 'hfsplus':
+            print("Mounting Apple USB")
+            subprocess.call("sudo mount -t hfsplus -o force,rw /dev/sda1 /media/" + str(self.uuid)+"/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
+        else:
+            subprocess.call("sudo mount /dev/sda1 /media/" + str(self.uuid)+"/"+str(self.label)+" -o uid=pi,gid=pi", shell=True)
 
     # un-mount all USBs
     def reset_usb_mounts(self):
