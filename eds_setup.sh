@@ -42,6 +42,7 @@ sudo apt-get install mtools
 sudo apt-get install ntfs-3g
 sudo apt-get install exfat-fuse
 sudo apt-get install exfat-utils
+sudo apt-get install hfsprogs
 #do not need usb mount anymore do to errors with ntfs
 #sudo apt-get install usbmount
 sudo apt-get remove usbmount
