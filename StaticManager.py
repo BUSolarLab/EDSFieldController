@@ -3,6 +3,7 @@
 Title: Configuration File Management - EDS Field Control
 Author: Benjamin Considine, Brian Mahabir, Aditya Wikara
 Started: September 2018
+Version 2: (Json Act)
 =============================
 '''
 from os import path

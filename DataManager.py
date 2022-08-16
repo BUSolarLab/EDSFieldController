@@ -3,6 +3,7 @@
 Title: USB and Data Writing - EDS Field Control
 Author: Benjamin Considine, Brian Mahabir, Aditya Wikara
 Started: September 2018
+Version 2 (Change activation times with json file)
 =============================
 '''
 import RPi.GPIO as GPIO

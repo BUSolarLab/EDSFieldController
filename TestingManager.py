@@ -3,6 +3,7 @@
 Title: Testing and Data Collection - EDS Field Control
 Author: Benjamin Considine, Brian Mahabir, Aditya Wikara
 Started: September 2018
+Version 2 (All in one Motherboard)
 =============================
 '''
 
